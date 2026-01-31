@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
+const APP_VERSION = '1.3.0'
+
 const PROJECTS = [
   { id: 'eignamat', name: 'Eignamat', icon: 'Home', color: '#10b981', description: 'AI Property Valuation SaaS' },
   { id: 'takkarena', name: 'Takk Arena', icon: 'Trophy', color: '#f59e0b', description: 'Gamified Sales Tracking' },
@@ -16,9 +18,21 @@ const HABITS = [
   { id: 'cocopuffs', name: 'Coco Puffs', icon: 'Cat', target: 'Quality time with kitty' },
 ]
 
+const ACCENT_COLORS = {
+  blue: '#3b82f6',
+  purple: '#a855f7',
+  cyan: '#06b6d4',
+  green: '#22c55e',
+  orange: '#f97316',
+  pink: '#ec4899',
+}
+
 const useStore = create(
   persist(
     (set, get) => ({
+      // App version
+      appVersion: APP_VERSION,
+      
       // Projects
       projects: PROJECTS,
       
@@ -144,10 +158,43 @@ const useStore = create(
       settingsOpen: false,
       setSettingsOpen: (open) => set({ settingsOpen: open }),
 
+      // Keyboard shortcuts modal
+      keyboardShortcutsOpen: false,
+      setKeyboardShortcutsOpen: (open) => set({ keyboardShortcutsOpen: open }),
+
+      // About modal
+      aboutOpen: false,
+      setAboutOpen: (open) => set({ aboutOpen: open }),
+
+      // What's New modal
+      whatsNewOpen: false,
+      setWhatsNewOpen: (open) => set({ whatsNewOpen: open }),
+      lastSeenVersion: null,
+      markWhatsNewSeen: (version) => set({ lastSeenVersion: version }),
+      shouldShowWhatsNew: () => {
+        const state = get()
+        return state.lastSeenVersion !== APP_VERSION
+      },
+
+      // Theme settings
+      theme: 'dark', // 'dark' | 'light' | 'system'
+      setTheme: (theme) => set({ theme }),
+      
+      // Accent color
+      accentColor: 'blue',
+      setAccentColor: (color) => set({ accentColor: color }),
+      getAccentColorValue: () => ACCENT_COLORS[get().accentColor] || ACCENT_COLORS.blue,
+
+      // Notifications
+      notificationsEnabled: true,
+      setNotificationsEnabled: (enabled) => set({ notificationsEnabled: enabled }),
+
       // Keyboard shortcuts
       shortcuts: {
         quickAdd: 'Ctrl+K',
         commandPalette: 'Ctrl+P',
+        settings: 'Ctrl+,',
+        help: '?',
         dashboard: 'G D',
         ideas: 'G I',
         habits: 'G H',
@@ -159,4 +206,5 @@ const useStore = create(
   )
 )
 
+export { APP_VERSION, ACCENT_COLORS }
 export default useStore

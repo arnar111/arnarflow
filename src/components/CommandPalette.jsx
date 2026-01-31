@@ -8,8 +8,8 @@ import {
   Target, 
   Plus,
   Settings,
-  Moon,
-  Command
+  Keyboard,
+  Info
 } from 'lucide-react'
 
 function CommandPalette() {
@@ -18,6 +18,9 @@ function CommandPalette() {
     setActiveView, 
     setSelectedProject,
     setQuickAddOpen,
+    setSettingsOpen,
+    setKeyboardShortcutsOpen,
+    setAboutOpen,
     projects 
   } = useStore()
   
@@ -26,7 +29,7 @@ function CommandPalette() {
   const inputRef = useRef(null)
 
   const commands = [
-    { id: 'new-task', icon: Plus, label: 'New Task', shortcut: 'Ctrl+K', action: () => { setCommandPaletteOpen(false); setQuickAddOpen(true) } },
+    { id: 'new-task', icon: Plus, label: 'New Task', shortcut: '⌘K', action: () => { setCommandPaletteOpen(false); setQuickAddOpen(true) } },
     { id: 'dashboard', icon: LayoutDashboard, label: 'Go to Dashboard', shortcut: 'G D', action: () => { setActiveView('dashboard'); setSelectedProject(null) } },
     { id: 'ideas', icon: Lightbulb, label: 'Go to Ideas', shortcut: 'G I', action: () => { setActiveView('ideas'); setSelectedProject(null) } },
     { id: 'habits', icon: Target, label: 'Go to Habits', shortcut: 'G H', action: () => { setActiveView('habits'); setSelectedProject(null) } },
@@ -36,6 +39,9 @@ function CommandPalette() {
       label: `Go to ${p.name}`,
       action: () => { setActiveView('project'); setSelectedProject(p.id) }
     })),
+    { id: 'settings', icon: Settings, label: 'Open Settings', shortcut: '⌘,', action: () => { setCommandPaletteOpen(false); setSettingsOpen(true) } },
+    { id: 'shortcuts', icon: Keyboard, label: 'Keyboard Shortcuts', shortcut: '?', action: () => { setCommandPaletteOpen(false); setKeyboardShortcutsOpen(true) } },
+    { id: 'about', icon: Info, label: 'About ArnarFlow', action: () => { setCommandPaletteOpen(false); setAboutOpen(true) } },
   ]
 
   const filtered = query 

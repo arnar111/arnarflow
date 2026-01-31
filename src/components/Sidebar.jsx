@@ -1,5 +1,5 @@
 import React from 'react'
-import useStore from '../store/useStore'
+import useStore, { APP_VERSION } from '../store/useStore'
 import DynamicIcon from './Icons'
 import { 
   LayoutDashboard, 
@@ -8,7 +8,6 @@ import {
   Plus,
   Zap,
   Command,
-  Timer,
   Square,
   Settings
 } from 'lucide-react'
@@ -192,8 +191,8 @@ function Sidebar() {
           className="w-full flex items-center justify-between px-2 py-1.5 text-xs text-zinc-600 hover:text-zinc-400 hover:bg-dark-800 rounded-lg transition-colors"
         >
           <div className="flex items-center gap-2">
-            <Timer size={12} />
-            <span>v1.3.0</span>
+            <Zap size={12} />
+            <span>v{APP_VERSION}</span>
           </div>
           <Settings size={12} />
         </button>

@@ -9,6 +9,10 @@ import HabitsView from './components/HabitsView'
 import QuickAddModal from './components/QuickAddModal'
 import CommandPalette from './components/CommandPalette'
 import SettingsModal from './components/SettingsModal'
+import KeyboardShortcutsModal from './components/KeyboardShortcutsModal'
+import WhatsNewModal from './components/WhatsNewModal'
+import AboutModal from './components/AboutModal'
+import { ACCENT_COLORS } from './store/useStore'
 
 function App() {
   const { 
@@ -19,9 +23,46 @@ function App() {
     setCommandPaletteOpen,
     settingsOpen,
     setSettingsOpen,
+    keyboardShortcutsOpen,
+    setKeyboardShortcutsOpen,
+    aboutOpen,
+    whatsNewOpen,
+    setWhatsNewOpen,
     focusStartTime,
-    updateFocusElapsed
+    updateFocusElapsed,
+    shouldShowWhatsNew,
+    theme,
+    accentColor
   } = useStore()
+
+  // Check for "What's New" on mount
+  useEffect(() => {
+    if (shouldShowWhatsNew()) {
+      // Small delay for better UX
+      const timer = setTimeout(() => {
+        setWhatsNewOpen(true)
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [])
+
+  // Apply theme
+  useEffect(() => {
+    const root = document.documentElement
+    if (theme === 'light') {
+      root.classList.add('light-theme')
+    } else {
+      root.classList.remove('light-theme')
+    }
+  }, [theme])
+
+  // Apply accent color
+  useEffect(() => {
+    const root = document.documentElement
+    const color = ACCENT_COLORS[accentColor] || ACCENT_COLORS.blue
+    root.style.setProperty('--accent', color)
+    root.style.setProperty('--accent-glow', `${color}26`)
+  }, [accentColor])
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -40,24 +81,31 @@ function App() {
         e.preventDefault()
         setCommandPaletteOpen(true)
       }
+
+      // Cmd/Ctrl + , for settings
+      if ((e.metaKey || e.ctrlKey) && e.key === ',') {
+        e.preventDefault()
+        setSettingsOpen(true)
+      }
+
+      // ? for keyboard shortcuts help (only when not typing)
+      if (e.key === '?' && !isTyping) {
+        e.preventDefault()
+        setKeyboardShortcutsOpen(true)
+      }
       
       // Escape to close modals
       if (e.key === 'Escape') {
         setQuickAddOpen(false)
         setCommandPaletteOpen(false)
         setSettingsOpen(false)
-      }
-      
-      // Comma for settings
-      if (e.key === ',' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setSettingsOpen(true)
+        setKeyboardShortcutsOpen(false)
       }
     }
     
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [setQuickAddOpen, setCommandPaletteOpen])
+  }, [setQuickAddOpen, setCommandPaletteOpen, setSettingsOpen, setKeyboardShortcutsOpen])
 
   // Focus timer tick
   useEffect(() => {
@@ -92,17 +140,20 @@ function App() {
       <div className="noise-overlay" />
       
       <div className="flex flex-1 overflow-hidden">
-      <Sidebar />
-      <main className="flex-1 overflow-auto relative">
-        {/* Subtle gradient overlay at top */}
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-dark-950/50 to-transparent pointer-events-none z-10" />
-        {renderView()}
-      </main>
+        <Sidebar />
+        <main className="flex-1 overflow-auto relative">
+          {/* Subtle gradient overlay at top */}
+          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-dark-950/50 to-transparent pointer-events-none z-10" />
+          {renderView()}
+        </main>
       
-      {/* Modals */}
-      {quickAddOpen && <QuickAddModal />}
-      {commandPaletteOpen && <CommandPalette />}
-      {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
+        {/* Modals */}
+        {quickAddOpen && <QuickAddModal />}
+        {commandPaletteOpen && <CommandPalette />}
+        {settingsOpen && <SettingsModal />}
+        {keyboardShortcutsOpen && <KeyboardShortcutsModal />}
+        {whatsNewOpen && <WhatsNewModal />}
+        {aboutOpen && <AboutModal />}
       </div>
     </div>
   )
