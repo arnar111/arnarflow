@@ -35,6 +35,13 @@ function App() {
     accentColor
   } = useStore()
 
+  // Seed initial tasks on first run
+  const seedProjectTasks = useStore(state => state.seedProjectTasks)
+  
+  useEffect(() => {
+    seedProjectTasks()
+  }, [seedProjectTasks])
+
   // Check for "What's New" on mount
   useEffect(() => {
     if (shouldShowWhatsNew()) {
