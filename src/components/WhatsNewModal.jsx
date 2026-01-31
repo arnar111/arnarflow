@@ -20,6 +20,28 @@ import {
 
 const changelog = [
   {
+    version: '2.0.0',
+    date: 'January 2026',
+    title: 'Pro Task Cards & Layout Fix',
+    features: [
+      {
+        icon: LayoutGrid,
+        title: 'Redesigned Task Cards',
+        description: 'Beautiful Linear/Notion-inspired cards with priority indicators, gradient headers, and smooth animations.'
+      },
+      {
+        icon: Sparkles,
+        title: 'Visual Polish',
+        description: 'Glowing status dots, pill badges, better drag-and-drop feedback, and hover effects.'
+      },
+      {
+        icon: RefreshCw,
+        title: 'Layout Fix',
+        description: 'Fixed window maximize issue - all views now properly resize and fill the window.'
+      },
+    ]
+  },
+  {
     version: '1.9.0',
     date: 'January 2026',
     title: 'Calendar & Timeline Update',

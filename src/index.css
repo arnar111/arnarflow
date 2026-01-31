@@ -59,12 +59,16 @@
 .light-theme .title-bar { background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%); }
 .light-theme .noise-overlay { opacity: 0.01; }
 
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: 'Outfit', system-ui, sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
-  min-height: 100vh;
-  overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
