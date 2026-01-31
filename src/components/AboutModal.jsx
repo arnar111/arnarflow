@@ -1,7 +1,6 @@
 import React from 'react'
-import useStore from '../store/useStore'
+import useStore, { APP_VERSION } from '../store/useStore'
 import { X, Zap, Github, Heart, RefreshCw } from 'lucide-react'
-import { APP_VERSION } from './WhatsNewModal'
 
 function AboutModal() {
   const { setAboutOpen, setWhatsNewOpen } = useStore()
