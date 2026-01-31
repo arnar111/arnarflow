@@ -140,6 +140,10 @@ const useStore = create(
       quickAddOpen: false,
       setQuickAddOpen: (open) => set({ quickAddOpen: open }),
 
+      // Settings modal
+      settingsOpen: false,
+      setSettingsOpen: (open) => set({ settingsOpen: open }),
+
       // Keyboard shortcuts
       shortcuts: {
         quickAdd: 'Ctrl+K',

@@ -8,6 +8,7 @@ import IdeasInbox from './components/IdeasInbox'
 import HabitsView from './components/HabitsView'
 import QuickAddModal from './components/QuickAddModal'
 import CommandPalette from './components/CommandPalette'
+import SettingsModal from './components/SettingsModal'
 
 function App() {
   const { 
@@ -16,6 +17,8 @@ function App() {
     setQuickAddOpen,
     commandPaletteOpen,
     setCommandPaletteOpen,
+    settingsOpen,
+    setSettingsOpen,
     focusStartTime,
     updateFocusElapsed
   } = useStore()
@@ -42,6 +45,13 @@ function App() {
       if (e.key === 'Escape') {
         setQuickAddOpen(false)
         setCommandPaletteOpen(false)
+        setSettingsOpen(false)
+      }
+      
+      // Comma for settings
+      if (e.key === ',' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setSettingsOpen(true)
       }
     }
     
@@ -92,6 +102,7 @@ function App() {
       {/* Modals */}
       {quickAddOpen && <QuickAddModal />}
       {commandPaletteOpen && <CommandPalette />}
+      {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
       </div>
     </div>
   )

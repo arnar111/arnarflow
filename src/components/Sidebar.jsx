@@ -9,7 +9,8 @@ import {
   Zap,
   Command,
   Timer,
-  Square
+  Square,
+  Settings
 } from 'lucide-react'
 
 function Sidebar() {
@@ -24,7 +25,9 @@ function Sidebar() {
     focusProject,
     focusElapsed,
     endFocus,
-    tasks
+    tasks,
+    settingsOpen,
+    setSettingsOpen
   } = useStore()
 
   const navItems = [
@@ -184,10 +187,16 @@ function Sidebar() {
 
       {/* Footer */}
       <div className="p-3 border-t border-dark-600/50">
-        <div className="flex items-center gap-2 text-xs text-zinc-600 px-2">
-          <Timer size={12} />
-          <span>v1.0 · Built for Arnar</span>
-        </div>
+        <button
+          onClick={() => setSettingsOpen(true)}
+          className="w-full flex items-center justify-between px-2 py-1.5 text-xs text-zinc-600 hover:text-zinc-400 hover:bg-dark-800 rounded-lg transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Timer size={12} />
+            <span>v1.3.0</span>
+          </div>
+          <Settings size={12} />
+        </button>
       </div>
     </aside>
   )
