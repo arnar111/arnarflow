@@ -1,5 +1,5 @@
-import React from 'react'
-import useStore from '../store/useStore'
+import React, { useState, useEffect } from 'react'
+import useStore, { APP_VERSION } from '../store/useStore'
 import { 
   X, 
   Sun, 
@@ -11,10 +11,59 @@ import {
   Info,
   Palette,
   Bell,
-  Database
+  Database,
+  RefreshCw,
+  CheckCircle,
+  AlertCircle,
+  ArrowDownCircle
 } from 'lucide-react'
 
 function SettingsModal() {
+  const [updateStatus, setUpdateStatus] = useState({ status: 'idle' })
+  
+  useEffect(() => {
+    // Listen for update status from Electron
+    if (window.electronAPI?.onUpdateStatus) {
+      window.electronAPI.onUpdateStatus((data) => {
+        setUpdateStatus(data)
+      })
+    }
+  }, [])
+  
+  const handleCheckUpdates = () => {
+    if (window.electronAPI?.checkForUpdates) {
+      setUpdateStatus({ status: 'checking' })
+      window.electronAPI.checkForUpdates()
+    } else {
+      setUpdateStatus({ status: 'error', message: 'Not running in Electron' })
+    }
+  }
+  
+  const handleInstallUpdate = () => {
+    if (window.electronAPI?.installUpdate) {
+      window.electronAPI.installUpdate()
+    }
+  }
+  
+  const getUpdateStatusDisplay = () => {
+    switch (updateStatus.status) {
+      case 'checking':
+        return { icon: RefreshCw, text: 'Checking for updates...', spin: true, color: 'text-zinc-400' }
+      case 'available':
+        return { icon: ArrowDownCircle, text: `Update ${updateStatus.version} available!`, color: 'text-green-400' }
+      case 'downloading':
+        return { icon: RefreshCw, text: `Downloading ${updateStatus.percent}%...`, spin: true, color: 'text-accent' }
+      case 'ready':
+        return { icon: CheckCircle, text: `v${updateStatus.version} ready to install!`, color: 'text-green-400', showInstall: true }
+      case 'up-to-date':
+        return { icon: CheckCircle, text: 'You\'re up to date!', color: 'text-green-400' }
+      case 'error':
+        return { icon: AlertCircle, text: updateStatus.message || 'Update failed', color: 'text-red-400' }
+      default:
+        return { icon: RefreshCw, text: 'Check for Updates', color: 'text-zinc-400' }
+    }
+  }
+  
   const { 
     setSettingsOpen,
     theme,
@@ -201,6 +250,45 @@ function SettingsModal() {
                 <Upload size={14} />
                 Import Data
               </button>
+            </div>
+          </section>
+
+          {/* Updates */}
+          <section>
+            <h3 className="text-sm font-medium flex items-center gap-2 mb-3">
+              <RefreshCw size={14} className="text-accent" />
+              Updates
+            </h3>
+            <div className="bg-dark-800 rounded-lg p-4 border border-dark-600">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm text-zinc-400">Current version</span>
+                <span className="text-sm font-mono text-zinc-300">v{APP_VERSION}</span>
+              </div>
+              
+              {(() => {
+                const status = getUpdateStatusDisplay()
+                return (
+                  <div className="space-y-2">
+                    <button
+                      onClick={handleCheckUpdates}
+                      disabled={updateStatus.status === 'checking' || updateStatus.status === 'downloading'}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 bg-dark-700 hover:bg-dark-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors text-sm"
+                    >
+                      <status.icon size={14} className={`${status.color} ${status.spin ? 'animate-spin' : ''}`} />
+                      <span className={status.color}>{status.text}</span>
+                    </button>
+                    
+                    {status.showInstall && (
+                      <button
+                        onClick={handleInstallUpdate}
+                        className="w-full flex items-center justify-center gap-2 py-2.5 bg-green-600 hover:bg-green-500 rounded-lg transition-colors text-sm font-medium"
+                      >
+                        Restart & Install
+                      </button>
+                    )}
+                  </div>
+                )
+              })()}
             </div>
           </section>
 

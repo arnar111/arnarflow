@@ -7,6 +7,8 @@ let mainWindow
 // Auto-updater config
 autoUpdater.autoDownload = true
 autoUpdater.autoInstallOnAppQuit = true
+autoUpdater.logger = require('electron-log')
+autoUpdater.logger.transports.file.level = 'info'
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -22,36 +24,41 @@ function createWindow() {
   })
 
   // In development, load from Vite dev server
-  // In production, load the built files
   if (process.env.NODE_ENV === 'development') {
     mainWindow.loadURL('http://localhost:5173')
     mainWindow.webContents.openDevTools()
   } else {
     mainWindow.loadFile(path.join(__dirname, 'dist/index.html'))
-    
-    // Check for updates after window loads
-    mainWindow.webContents.once('did-finish-load', () => {
-      autoUpdater.checkForUpdatesAndNotify()
-    })
+  }
+}
+
+// Send update status to renderer
+function sendUpdateStatus(status, data = {}) {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('update-status', { status, ...data })
   }
 }
 
 // Auto-updater events
+autoUpdater.on('checking-for-update', () => {
+  sendUpdateStatus('checking')
+})
+
 autoUpdater.on('update-available', (info) => {
-  mainWindow?.webContents.send('update-status', {
-    status: 'available',
-    version: info.version
-  })
+  sendUpdateStatus('available', { version: info.version })
+})
+
+autoUpdater.on('update-not-available', (info) => {
+  sendUpdateStatus('up-to-date', { version: info.version })
 })
 
 autoUpdater.on('download-progress', (progress) => {
-  mainWindow?.webContents.send('update-status', {
-    status: 'downloading',
-    percent: Math.round(progress.percent)
-  })
+  sendUpdateStatus('downloading', { percent: Math.round(progress.percent) })
 })
 
 autoUpdater.on('update-downloaded', (info) => {
+  sendUpdateStatus('ready', { version: info.version })
+  
   dialog.showMessageBox(mainWindow, {
     type: 'info',
     title: 'Update Ready',
@@ -66,20 +73,35 @@ autoUpdater.on('update-downloaded', (info) => {
 })
 
 autoUpdater.on('error', (error) => {
-  console.log('Auto-updater error:', error.message)
+  sendUpdateStatus('error', { message: error.message })
 })
 
-// Window controls via IPC
-ipcMain.on('window-minimize', () => mainWindow.minimize())
+// IPC handlers
+ipcMain.on('window-minimize', () => mainWindow?.minimize())
 ipcMain.on('window-maximize', () => {
-  if (mainWindow.isMaximized()) {
+  if (mainWindow?.isMaximized()) {
     mainWindow.unmaximize()
   } else {
-    mainWindow.maximize()
+    mainWindow?.maximize()
   }
 })
-ipcMain.on('window-close', () => mainWindow.close())
-ipcMain.on('check-for-updates', () => autoUpdater.checkForUpdatesAndNotify())
+ipcMain.on('window-close', () => mainWindow?.close())
+
+ipcMain.on('check-for-updates', () => {
+  sendUpdateStatus('checking')
+  autoUpdater.checkForUpdates().catch(err => {
+    sendUpdateStatus('error', { message: err.message })
+  })
+})
+
+ipcMain.on('install-update', () => {
+  autoUpdater.quitAndInstall()
+})
+
+// Get app version
+ipcMain.handle('get-app-version', () => {
+  return app.getVersion()
+})
 
 app.whenReady().then(createWindow)
 

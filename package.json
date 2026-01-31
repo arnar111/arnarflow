@@ -1,6 +1,6 @@
 {
   "name": "arnarflow",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Personal project management for Arnar",
   "main": "electron.js",
   "scripts": {
@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "date-fns": "^2.30.0",
+    "electron-log": "^5.0.0",
     "electron-updater": "^6.1.7",
     "lucide-react": "^0.294.0",
     "react": "^18.2.0",

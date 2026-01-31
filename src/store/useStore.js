@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const APP_VERSION = '1.4.0'
+const APP_VERSION = '1.5.0'
 
 const PROJECTS = [
   { id: 'eignamat', name: 'Eignamat', icon: 'Home', color: '#10b981', description: 'AI Property Valuation SaaS' },
