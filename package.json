@@ -1,6 +1,6 @@
 {
   "name": "arnarflow",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Personal project management for Arnar",
   "main": "electron.js",
   "scripts": {
@@ -50,7 +50,8 @@
     "publish": {
       "provider": "github",
       "owner": "arnar111",
-      "repo": "arnarflow"
+      "repo": "arnarflow",
+      "releaseType": "release"
     }
   }
 }
