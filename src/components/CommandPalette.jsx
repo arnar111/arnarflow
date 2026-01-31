@@ -75,6 +75,14 @@ function CommandPalette() {
       shortcut: 'G H', 
       action: () => { setActiveView('habits'); setSelectedProject(null) } 
     },
+    { 
+      id: 'calendar', 
+      type: 'command',
+      icon: Clock, 
+      label: 'Go to Calendar', 
+      shortcut: 'G C', 
+      action: () => { setActiveView('calendar'); setSelectedProject(null) } 
+    },
     ...projects.map(p => ({
       id: `project-${p.id}`,
       type: 'command',

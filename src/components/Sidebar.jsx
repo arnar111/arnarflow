@@ -9,7 +9,8 @@ import {
   Zap,
   Command,
   Square,
-  Settings
+  Settings,
+  Calendar
 } from 'lucide-react'
 
 function Sidebar() {
@@ -26,11 +27,14 @@ function Sidebar() {
     endFocus,
     tasks,
     settingsOpen,
-    setSettingsOpen
+    setSettingsOpen,
+    addProjectOpen,
+    setAddProjectOpen
   } = useStore()
 
   const navItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', shortcut: 'G D' },
+    { id: 'calendar', icon: Calendar, label: 'Calendar', shortcut: 'G C' },
     { id: 'ideas', icon: Lightbulb, label: 'Ideas', shortcut: 'G I' },
     { id: 'habits', icon: Target, label: 'Habits', shortcut: 'G H' },
   ]
@@ -139,9 +143,18 @@ function Sidebar() {
 
         {/* Projects Section */}
         <div className="pt-4 pb-2">
-          <h3 className="text-2xs font-semibold text-zinc-600 uppercase tracking-wider px-3 mb-2">
-            Projects
-          </h3>
+          <div className="flex items-center justify-between px-3 mb-2">
+            <h3 className="text-2xs font-semibold text-zinc-600 uppercase tracking-wider">
+              Projects
+            </h3>
+            <button
+              onClick={() => setAddProjectOpen(true)}
+              className="p-1 hover:bg-dark-700 rounded text-zinc-600 hover:text-zinc-400 transition-colors"
+              title="Add project"
+            >
+              <Plus size={12} />
+            </button>
+          </div>
           <div className="space-y-0.5 stagger-children">
             {projects.map(project => (
               <button

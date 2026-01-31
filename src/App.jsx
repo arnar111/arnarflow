@@ -6,9 +6,11 @@ import Dashboard from './components/Dashboard'
 import ProjectView from './components/ProjectView'
 import IdeasInbox from './components/IdeasInbox'
 import HabitsView from './components/HabitsView'
+import CalendarView from './components/CalendarView'
 import QuickAddModal from './components/QuickAddModal'
 import CommandPalette from './components/CommandPalette'
 import SettingsModal from './components/SettingsModal'
+import AddProjectModal from './components/AddProjectModal'
 import KeyboardShortcutsModal from './components/KeyboardShortcutsModal'
 import WhatsNewModal from './components/WhatsNewModal'
 import AboutModal from './components/AboutModal'
@@ -23,6 +25,8 @@ function App() {
     setCommandPaletteOpen,
     settingsOpen,
     setSettingsOpen,
+    addProjectOpen,
+    setAddProjectOpen,
     keyboardShortcutsOpen,
     setKeyboardShortcutsOpen,
     aboutOpen,
@@ -133,6 +137,8 @@ function App() {
         return <IdeasInbox />
       case 'habits':
         return <HabitsView />
+      case 'calendar':
+        return <CalendarView />
       default:
         return <Dashboard />
     }
@@ -158,6 +164,7 @@ function App() {
         {quickAddOpen && <QuickAddModal />}
         {commandPaletteOpen && <CommandPalette />}
         {settingsOpen && <SettingsModal />}
+        {addProjectOpen && <AddProjectModal onClose={() => setAddProjectOpen(false)} />}
         {keyboardShortcutsOpen && <KeyboardShortcutsModal />}
         {whatsNewOpen && <WhatsNewModal />}
         {aboutOpen && <AboutModal />}

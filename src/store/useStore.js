@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const APP_VERSION = '1.8.0'
+const APP_VERSION = '1.9.0'
 
 const PROJECTS = [
   { id: 'eignamat', name: 'Eignamat', icon: 'Home', color: '#10b981', description: 'AI Property Valuation SaaS' },
@@ -35,6 +35,19 @@ const useStore = create(
       
       // Projects
       projects: PROJECTS,
+      addProject: (project) => set((state) => ({
+        projects: [...state.projects, {
+          id: Date.now().toString(),
+          ...project
+        }]
+      })),
+      updateProject: (id, updates) => set((state) => ({
+        projects: state.projects.map(p => p.id === id ? { ...p, ...updates } : p)
+      })),
+      deleteProject: (id) => set((state) => ({
+        projects: state.projects.filter(p => p.id !== id),
+        tasks: state.tasks.filter(t => t.projectId !== id)
+      })),
       
       // Tasks - enhanced with due dates
       tasks: [],
@@ -201,6 +214,10 @@ const useStore = create(
       // Settings modal
       settingsOpen: false,
       setSettingsOpen: (open) => set({ settingsOpen: open }),
+
+      // Add Project modal
+      addProjectOpen: false,
+      setAddProjectOpen: (open) => set({ addProjectOpen: open }),
 
       // Keyboard shortcuts modal
       keyboardShortcutsOpen: false,
