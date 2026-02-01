@@ -1,6 +1,6 @@
 {
   "name": "arnarflow",
-  "version": "2.0.0",
+  "version": "4.4.0",
   "description": "Personal project management for Arnar",
   "main": "electron.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "electron:preview": "electron ."
   },
   "dependencies": {
-    "date-fns": "^2.30.0",
+    "date-fns": "^3.6.0",
     "electron-log": "^5.0.0",
     "electron-updater": "^6.1.7",
     "lucide-react": "^0.294.0",
@@ -53,5 +53,8 @@
       "repo": "arnarflow",
       "releaseType": "release"
     }
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.57.1"
   }
 }

@@ -1,45 +1,47 @@
 import React from 'react'
 import useStore from '../store/useStore'
+import { useTranslation } from '../i18n/useTranslation'
 import { X, Keyboard } from 'lucide-react'
 
 function KeyboardShortcutsModal() {
+  const { t } = useTranslation()
   const { setKeyboardShortcutsOpen } = useStore()
 
   const shortcutGroups = [
     {
-      title: 'General',
+      title: t('keyboardShortcuts.general'),
       shortcuts: [
-        { keys: ['⌘', 'K'], description: 'Quick add task' },
-        { keys: ['⌘', 'P'], description: 'Open command palette' },
-        { keys: ['⌘', ','], description: 'Open settings' },
-        { keys: ['?'], description: 'Show keyboard shortcuts' },
-        { keys: ['Esc'], description: 'Close modal / Cancel' },
+        { keys: ['⌘', 'K'], description: t('keyboardShortcuts.quickAddTask') },
+        { keys: ['⌘', 'P'], description: t('keyboardShortcuts.openCommandPalette') },
+        { keys: ['⌘', ','], description: t('keyboardShortcuts.openSettings') },
+        { keys: ['?'], description: t('keyboardShortcuts.showShortcuts') },
+        { keys: ['Esc'], description: t('keyboardShortcuts.closeModal') },
       ]
     },
     {
-      title: 'Navigation',
+      title: t('keyboardShortcuts.navigation'),
       shortcuts: [
-        { keys: ['G', 'D'], description: 'Go to Dashboard' },
-        { keys: ['G', 'I'], description: 'Go to Ideas' },
-        { keys: ['G', 'H'], description: 'Go to Habits' },
-        { keys: ['G', 'P'], description: 'Go to Projects' },
+        { keys: ['G', 'D'], description: t('keyboardShortcuts.goToDashboard') },
+        { keys: ['G', 'I'], description: t('keyboardShortcuts.goToIdeas') },
+        { keys: ['G', 'H'], description: t('keyboardShortcuts.goToHabits') },
+        { keys: ['G', 'P'], description: t('keyboardShortcuts.goToProjects') },
       ]
     },
     {
-      title: 'Tasks',
+      title: t('keyboardShortcuts.tasks'),
       shortcuts: [
-        { keys: ['N'], description: 'New task' },
-        { keys: ['Enter'], description: 'Complete task (when selected)' },
-        { keys: ['E'], description: 'Edit task' },
-        { keys: ['Delete'], description: 'Delete task' },
+        { keys: ['N'], description: t('keyboardShortcuts.newTask') },
+        { keys: ['Enter'], description: t('keyboardShortcuts.completeTask') },
+        { keys: ['E'], description: t('keyboardShortcuts.editTask') },
+        { keys: ['Delete'], description: t('keyboardShortcuts.deleteTask') },
       ]
     },
     {
-      title: 'Focus Mode',
+      title: t('keyboardShortcuts.focusMode'),
       shortcuts: [
-        { keys: ['F'], description: 'Start focus on selected task' },
-        { keys: ['S'], description: 'Stop current focus session' },
-        { keys: ['Space'], description: 'Pause/resume timer' },
+        { keys: ['F'], description: t('keyboardShortcuts.startFocus') },
+        { keys: ['S'], description: t('keyboardShortcuts.stopFocus') },
+        { keys: ['Space'], description: t('keyboardShortcuts.pauseResume') },
       ]
     },
   ]
@@ -60,7 +62,7 @@ function KeyboardShortcutsModal() {
         <div className="flex items-center justify-between px-5 py-4 border-b border-dark-600">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <Keyboard size={20} className="text-accent" />
-            Keyboard Shortcuts
+            {t('keyboardShortcuts.title')}
           </h2>
           <button
             onClick={() => setKeyboardShortcutsOpen(false)}
@@ -108,7 +110,7 @@ function KeyboardShortcutsModal() {
         {/* Footer */}
         <div className="px-5 py-3 border-t border-dark-600 bg-dark-800/50">
           <p className="text-xs text-zinc-500 text-center">
-            Press <kbd className="kbd">?</kbd> anytime to show this help
+            {t('keyboardShortcuts.helpHint')} <kbd className="kbd">?</kbd> {t('keyboardShortcuts.helpHintEnd')}
           </p>
         </div>
       </div>

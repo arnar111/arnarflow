@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import useStore from '../store/useStore'
+import { useTranslation } from '../i18n/useTranslation'
 import { X, Plus, Folder } from 'lucide-react'
 
 const ICONS = [
@@ -14,6 +15,7 @@ const COLORS = [
 ]
 
 function AddProjectModal({ onClose }) {
+  const { t } = useTranslation()
   const { addProject } = useStore()
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
@@ -48,7 +50,7 @@ function AddProjectModal({ onClose }) {
         <div className="flex items-center justify-between px-5 py-4 border-b border-dark-600">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <Plus size={18} className="text-accent" />
-            New Project
+            {t('addProject.title')}
           </h2>
           <button
             onClick={onClose}
@@ -62,12 +64,12 @@ function AddProjectModal({ onClose }) {
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {/* Name */}
           <div>
-            <label className="text-xs text-zinc-500 block mb-1.5">Project Name</label>
+            <label className="text-xs text-zinc-500 block mb-1.5">{t('addProject.projectName')}</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="My New Project"
+              placeholder={t('addProject.projectNamePlaceholder')}
               className="w-full bg-dark-800 border border-dark-600 rounded-xl px-4 py-2.5 text-sm focus:border-accent transition-colors"
               autoFocus
             />
@@ -75,19 +77,19 @@ function AddProjectModal({ onClose }) {
 
           {/* Description */}
           <div>
-            <label className="text-xs text-zinc-500 block mb-1.5">Description</label>
+            <label className="text-xs text-zinc-500 block mb-1.5">{t('addProject.description')}</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="What's this project about?"
+              placeholder={t('addProject.descriptionPlaceholder')}
               className="w-full bg-dark-800 border border-dark-600 rounded-xl px-4 py-2.5 text-sm focus:border-accent transition-colors"
             />
           </div>
 
           {/* Color */}
           <div>
-            <label className="text-xs text-zinc-500 block mb-1.5">Color</label>
+            <label className="text-xs text-zinc-500 block mb-1.5">{t('addProject.color')}</label>
             <div className="flex gap-2 flex-wrap">
               {COLORS.map(c => (
                 <button
@@ -105,7 +107,7 @@ function AddProjectModal({ onClose }) {
 
           {/* Icon */}
           <div>
-            <label className="text-xs text-zinc-500 block mb-1.5">Icon</label>
+            <label className="text-xs text-zinc-500 block mb-1.5">{t('addProject.icon')}</label>
             <div className="flex gap-2 flex-wrap">
               {ICONS.map(i => (
                 <button
@@ -126,7 +128,7 @@ function AddProjectModal({ onClose }) {
 
           {/* Preview */}
           <div className="pt-2">
-            <label className="text-xs text-zinc-500 block mb-1.5">Preview</label>
+            <label className="text-xs text-zinc-500 block mb-1.5">{t('addProject.preview')}</label>
             <div 
               className="flex items-center gap-3 p-3 rounded-xl border border-dark-600"
               style={{ backgroundColor: `${color}10` }}
@@ -138,8 +140,8 @@ function AddProjectModal({ onClose }) {
                 {icon.slice(0, 2)}
               </div>
               <div>
-                <p className="font-medium" style={{ color }}>{name || 'Project Name'}</p>
-                <p className="text-xs text-zinc-500">{description || 'Description'}</p>
+                <p className="font-medium" style={{ color }}>{name || t('addProject.projectNamePlaceholder')}</p>
+                <p className="text-xs text-zinc-500">{description || t('addProject.description')}</p>
               </div>
             </div>
           </div>
@@ -150,7 +152,7 @@ function AddProjectModal({ onClose }) {
             disabled={!name.trim()}
             className="w-full py-2.5 bg-accent hover:bg-accent/90 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl font-medium transition-colors"
           >
-            Create Project
+            {t('addProject.create')}
           </button>
         </form>
       </div>

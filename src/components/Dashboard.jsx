@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import useStore from '../store/useStore'
+import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
+import DailyGoals from './DailyGoals'
 import { format, isToday, isTomorrow, isPast, parseISO, subDays, startOfDay } from 'date-fns'
 import { 
   CheckCircle2, 
@@ -17,10 +19,13 @@ import {
   Target,
   Sparkles,
   Trophy,
-  BarChart3
+  BarChart3,
+  Square
 } from 'lucide-react'
+import { checkTaskReminders, checkHabitReminders } from '../utils/notifications'
 
 function Dashboard() {
+  const { t, language } = useTranslation()
   const { 
     projects, 
     tasks, 
@@ -31,8 +36,16 @@ function Dashboard() {
     focusProject,
     setFocusProject,
     setFocusTask,
+    endFocus,
+    focusElapsed,
+    focusTask,
     setActiveView,
-    setSelectedProject
+    setSelectedProject,
+    notificationsEnabled,
+    taskRemindersEnabled,
+    habitRemindersEnabled,
+    lastNotificationCheck,
+    setLastNotificationCheck
   } = useStore()
 
   const today = format(new Date(), 'yyyy-MM-dd')
@@ -42,7 +55,23 @@ function Dashboard() {
     t.completedAt && t.completedAt.startsWith(today)
   ).length
   const inboxIdeas = ideas.filter(i => i.status === 'inbox').length
-  const overdueTasks = openTasks.filter(t => t.dueDate && isPast(parseISO(t.dueDate)))
+  const overdueTasks = openTasks.filter(t => t.dueDate && isPast(parseISO(t.dueDate)) && !isToday(parseISO(t.dueDate)))
+
+  // Check for notifications periodically
+  useEffect(() => {
+    const now = Date.now()
+    const hourAgo = now - 3600000
+    
+    if (!lastNotificationCheck || lastNotificationCheck < hourAgo) {
+      if (notificationsEnabled && taskRemindersEnabled) {
+        checkTaskReminders(tasks, true, language)
+      }
+      if (notificationsEnabled && habitRemindersEnabled) {
+        checkHabitReminders(habits, habitLogs, true, language)
+      }
+      setLastNotificationCheck(now)
+    }
+  }, [notificationsEnabled, taskRemindersEnabled, habitRemindersEnabled])
 
   // Weekly activity data
   const getWeeklyActivity = () => {
@@ -94,15 +123,34 @@ function Dashboard() {
 
   const getProjectById = (id) => projects.find(p => p.id === id)
   const focusedProject = focusProject ? getProjectById(focusProject) : null
+  const focusedTask = focusTask ? tasks.find(t => t.id === focusTask) : null
   const currentStreak = getCurrentStreak()
 
   const formatDueDate = (dateStr) => {
     if (!dateStr) return null
     const date = parseISO(dateStr)
-    if (isToday(date)) return 'Today'
-    if (isTomorrow(date)) return 'Tomorrow'
-    if (isPast(date)) return 'Overdue'
+    if (isToday(date)) return t('time.today')
+    if (isTomorrow(date)) return t('time.tomorrow')
+    if (isPast(date)) return t('tasks.overdue')
     return format(date, 'MMM d')
+  }
+
+  const formatFocusTime = (seconds) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
+
+  const getTimeOfDayGreeting = () => {
+    const hour = new Date().getHours()
+    if (language === 'is') {
+      if (hour < 12) return 'Góðan dag'
+      if (hour < 17) return 'Góðan dag'
+      return 'Gott kvöld'
+    }
+    if (hour < 12) return 'Good morning'
+    if (hour < 17) return 'Good afternoon'
+    return 'Good evening'
   }
 
   return (
@@ -113,7 +161,7 @@ function Dashboard() {
           {format(new Date(), 'EEEE, MMMM d')}
         </p>
         <h1 className="text-3xl font-bold tracking-tight">
-          Good {getTimeOfDay()}, <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Arnar</span>
+          {getTimeOfDayGreeting()}, <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Arnar</span>
         </h1>
       </header>
 
@@ -125,15 +173,15 @@ function Dashboard() {
           </div>
           <div className="flex-1">
             <p className="text-red-400 font-medium">
-              {overdueTasks.length} overdue task{overdueTasks.length > 1 ? 's' : ''}
+              {overdueTasks.length} {language === 'is' ? 'seinkuð verkefni' : `overdue task${overdueTasks.length > 1 ? 's' : ''}`}
             </p>
-            <p className="text-xs text-red-400/70">Need your attention</p>
+            <p className="text-xs text-red-400/70">{language === 'is' ? 'Þarfnast athygli' : 'Need your attention'}</p>
           </div>
           <button 
-            onClick={() => setActiveView('ideas')}
+            onClick={() => setActiveView('calendar')}
             className="text-xs text-red-400 hover:text-red-300 transition-colors"
           >
-            View all →
+            {language === 'is' ? 'Sjá allt →' : 'View all →'}
           </button>
         </div>
       )}
@@ -142,21 +190,21 @@ function Dashboard() {
       <div className="grid grid-cols-5 gap-3 mb-8">
         <StatCard 
           icon={CheckCircle2}
-          label="Done Today"
+          label={t('dashboard.completed')}
           value={completedToday}
           color="#22c55e"
           gradient="from-green-500/20 to-emerald-500/10"
         />
         <StatCard 
           icon={Circle}
-          label="Open Tasks"
+          label={t('dashboard.pending')}
           value={openTasks.length}
           color="#3b82f6"
           gradient="from-blue-500/20 to-cyan-500/10"
         />
         <StatCard 
           icon={Lightbulb}
-          label="Ideas"
+          label={t('nav.ideas')}
           value={inboxIdeas}
           color="#f59e0b"
           gradient="from-amber-500/20 to-yellow-500/10"
@@ -164,7 +212,7 @@ function Dashboard() {
         />
         <StatCard 
           icon={Target}
-          label="Habits"
+          label={t('nav.habits')}
           value={`${getHabitsDoneToday()}/${habits.length}`}
           color="#a855f7"
           gradient="from-purple-500/20 to-pink-500/10"
@@ -172,8 +220,8 @@ function Dashboard() {
         />
         <StatCard 
           icon={Flame}
-          label="Streak"
-          value={`${currentStreak}d`}
+          label={t('habits.streak')}
+          value={`${currentStreak}${language === 'is' ? 'd' : 'd'}`}
           color="#f97316"
           gradient="from-orange-500/20 to-red-500/10"
         />
@@ -188,11 +236,11 @@ function Dashboard() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-medium flex items-center gap-2">
                 <BarChart3 size={16} className="text-accent" />
-                Weekly Activity
+                {language === 'is' ? 'Virkni vikunnar' : 'Weekly Activity'}
               </h2>
               <div className="flex items-center gap-2 text-xs text-zinc-500">
                 <span className="font-mono text-accent">{weeklyTotal}</span>
-                <span>tasks completed</span>
+                <span>{language === 'is' ? 'verkefnum lokið' : 'tasks completed'}</span>
               </div>
             </div>
             
@@ -223,13 +271,13 @@ function Dashboard() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-medium flex items-center gap-2">
                 <Clock size={16} className="text-accent" />
-                Up Next
+                {t('dashboard.todaysTasks')}
               </h2>
               <button 
-                onClick={() => setActiveView('ideas')}
+                onClick={() => setActiveView('calendar')}
                 className="text-xs text-zinc-500 hover:text-zinc-300 flex items-center gap-1 transition-colors"
               >
-                View all <ArrowRight size={12} />
+                {language === 'is' ? 'Sjá allt' : 'View all'} <ArrowRight size={12} />
               </button>
             </div>
             
@@ -238,17 +286,17 @@ function Dashboard() {
                 <div className="w-12 h-12 rounded-2xl bg-dark-700 flex items-center justify-center mx-auto mb-3">
                   <Sparkles size={24} className="text-zinc-600" />
                 </div>
-                <p className="text-zinc-500 text-sm">All clear!</p>
+                <p className="text-zinc-500 text-sm">{t('dashboard.noTasksToday')}</p>
                 <p className="text-zinc-600 text-xs mt-1">
-                  Press <kbd className="kbd">⌘K</kbd> to add a task
+                  {language === 'is' ? 'Ýttu á' : 'Press'} <kbd className="kbd">⌘K</kbd> {language === 'is' ? 'til að bæta við verkefni' : 'to add a task'}
                 </p>
               </div>
             ) : (
-              <ul className="space-y-2">
+              <ul className="space-y-2 stagger-children">
                 {todaysTasks.map(task => {
                   const project = getProjectById(task.projectId)
                   const dueLabel = formatDueDate(task.dueDate)
-                  const isOverdue = task.dueDate && isPast(parseISO(task.dueDate))
+                  const isOverdue = task.dueDate && isPast(parseISO(task.dueDate)) && !isToday(parseISO(task.dueDate))
                   
                   return (
                     <li 
@@ -287,7 +335,7 @@ function Dashboard() {
                             setFocusTask(task.id)
                           }}
                           className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-accent/20 rounded-lg transition-all"
-                          title="Start focus session"
+                          title={t('dashboard.startFocus')}
                         >
                           <Play size={12} className="text-accent" />
                         </button>
@@ -303,10 +351,17 @@ function Dashboard() {
         {/* Right Column - Focus & Projects */}
         <div className="space-y-6">
           {/* Focus Mode */}
-          <div className="bg-dark-800/30 rounded-2xl border border-dark-600/30 p-5">
+          <div className={`bg-dark-800/30 rounded-2xl border transition-all ${
+            focusedProject ? 'border-accent/30 animate-glow' : 'border-dark-600/30'
+          } p-5`}>
             <h2 className="text-sm font-medium flex items-center gap-2 mb-4">
-              <Zap size={16} className="text-yellow-400" />
-              Focus
+              <Zap size={16} className={focusedProject ? 'text-yellow-400 animate-pulse-subtle' : 'text-yellow-400'} />
+              {t('dashboard.focusMode')}
+              {focusedProject && (
+                <span className="ml-auto text-2xs px-2 py-0.5 bg-accent/20 text-accent rounded-full">
+                  {t('dashboard.focusActive')}
+                </span>
+              )}
             </h2>
             
             {focusedProject ? (
@@ -320,25 +375,52 @@ function Dashboard() {
                 <h3 className="font-semibold" style={{ color: focusedProject.color }}>
                   {focusedProject.name}
                 </h3>
-                <p className="text-xs text-zinc-500 mt-1">{focusedProject.description}</p>
+                {focusedTask && (
+                  <p className="text-xs text-zinc-400 mt-1 truncate">{focusedTask.title}</p>
+                )}
+                
+                {/* Timer */}
+                <div className="mt-4 mb-3">
+                  <p className="text-3xl font-mono font-bold text-accent">
+                    {formatFocusTime(focusElapsed)}
+                  </p>
+                  <p className="text-xs text-zinc-500 mt-1">{t('dashboard.timeSpent')}</p>
+                </div>
+                
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => useStore.getState().setPomodoroOpen(true)}
+                    className="px-4 py-2 bg-accent hover:bg-accent/90 rounded-lg text-sm transition-colors flex items-center gap-2"
+                  >
+                    <Clock size={14} />
+                    Pomodoro
+                  </button>
+                  <button
+                    onClick={endFocus}
+                    className="px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-sm transition-colors flex items-center gap-2"
+                  >
+                    <Square size={14} />
+                    {t('dashboard.endFocus')}
+                  </button>
+                </div>
               </div>
             ) : (
               <div>
-                <p className="text-zinc-500 text-xs mb-3">Quick focus:</p>
+                <p className="text-zinc-500 text-xs mb-3">{t('dashboard.selectTask')}:</p>
                 <div className="space-y-1.5">
                   {projects.slice(0, 4).map(project => (
                     <button
                       key={project.id}
                       onClick={() => setFocusProject(project.id)}
-                      className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-dark-700 transition-colors text-left"
+                      className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-dark-700 transition-colors text-left group"
                     >
                       <div 
-                        className="w-8 h-8 rounded-lg flex items-center justify-center"
+                        className="w-8 h-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
                         style={{ backgroundColor: `${project.color}15` }}
                       >
                         <DynamicIcon name={project.icon} size={16} style={{ color: project.color }} />
                       </div>
-                      <span className="text-sm text-zinc-400">{project.name}</span>
+                      <span className="text-sm text-zinc-400 group-hover:text-zinc-200 transition-colors">{project.name}</span>
                     </button>
                   ))}
                 </div>
@@ -346,12 +428,15 @@ function Dashboard() {
             )}
           </div>
 
+          {/* Daily Goals */}
+          <DailyGoals />
+
           {/* Projects Mini Grid */}
           <div className="bg-dark-800/30 rounded-2xl border border-dark-600/30 p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-medium flex items-center gap-2">
                 <Trophy size={16} className="text-accent" />
-                Projects
+                {t('dashboard.projectProgress')}
               </h2>
             </div>
             
@@ -409,13 +494,6 @@ function StatCard({ icon: Icon, label, value, color, gradient, onClick }) {
       <p className="text-xs text-zinc-500 mt-0.5">{label}</p>
     </button>
   )
-}
-
-function getTimeOfDay() {
-  const hour = new Date().getHours()
-  if (hour < 12) return 'morning'
-  if (hour < 17) return 'afternoon'
-  return 'evening'
 }
 
 export default Dashboard

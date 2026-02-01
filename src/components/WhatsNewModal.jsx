@@ -1,5 +1,6 @@
 import React from 'react'
 import useStore, { APP_VERSION } from '../store/useStore'
+import { useTranslation } from '../i18n/useTranslation'
 import { 
   X, 
   Sparkles, 
@@ -19,6 +20,121 @@ import {
 } from 'lucide-react'
 
 const changelog = [
+  {
+    version: '4.3.0',
+    date: 'February 2026',
+    title: 'The Journal Update',
+    features: [
+      {
+        icon: CheckSquare,
+        title: 'Glósur / Notes',
+        description: 'Daily journal/notes feature. Write, edit, and search through your daily entries.'
+      },
+      {
+        icon: BarChart3,
+        title: 'Stats View',
+        description: 'Full productivity dashboard with streak tracking, completion charts, and project progress.'
+      },
+      {
+        icon: Calendar,
+        title: 'Date Navigation',
+        description: 'Easily navigate between days to view and edit notes from any date.'
+      },
+    ]
+  },
+  {
+    version: '4.1.0',
+    date: 'February 2026',
+    title: 'The Deep Work Update',
+    features: [
+      {
+        icon: Calendar,
+        title: 'Weekly Review',
+        description: 'See your week at a glance: tasks completed, habits tracked, focus time. Compare to last week.'
+      },
+      {
+        icon: BarChart3,
+        title: 'Focus History',
+        description: 'New Focus view in sidebar. Track all your Pomodoro sessions, grouped by day with stats.'
+      },
+      {
+        icon: CheckSquare,
+        title: 'Task Subtasks',
+        description: 'Break tasks into smaller steps with checklists. Progress bar shows completion.'
+      },
+    ]
+  },
+  {
+    version: '4.0.0',
+    date: 'February 2026',
+    title: 'The Productivity Update',
+    features: [
+      {
+        icon: Zap,
+        title: 'Pomodoro Timer',
+        description: 'Built-in focus timer with customizable work/break intervals. Circular progress, notifications, and session tracking.'
+      },
+      {
+        icon: BarChart3,
+        title: 'Daily Goals',
+        description: 'Set and track daily goals for tasks, habits, and focus time. Beautiful progress rings on your dashboard.'
+      },
+      {
+        icon: LayoutGrid,
+        title: 'Task Tags',
+        description: '17 color-coded tags to organize your tasks. Urgent, Bug, Feature, Design, and more.'
+      },
+      {
+        icon: Search,
+        title: 'Quick Capture',
+        description: 'Floating capture bar for instant task/idea entry. Smart parsing: #project @today !high'
+      },
+    ]
+  },
+  {
+    version: '2.2.0',
+    date: 'January 2026',
+    title: 'Plane-Inspired Polish',
+    features: [
+      {
+        icon: Flame,
+        title: 'Streak Tracking',
+        description: 'HabitsView now shows streak counters with animated fire icons that intensify at 7, 14, 30+ days.'
+      },
+      {
+        icon: BarChart3,
+        title: 'Progress Rings',
+        description: 'Circular progress indicators in habits and Kanban, inspired by Plane\'s UI components.'
+      },
+      {
+        icon: LayoutGrid,
+        title: 'Kanban Polish',
+        description: 'Drag handles, drop indicators, card hover effects - smoother project management experience.'
+      },
+    ]
+  },
+  {
+    version: '2.1.0',
+    date: 'January 2026',
+    title: 'Icelandic & Persistence',
+    features: [
+      {
+        icon: Sparkles,
+        title: 'Icelandic Translation',
+        description: 'Full Icelandic (Íslenska) language support. Switch languages in Settings.'
+      },
+      {
+        icon: Download,
+        title: 'Data Persistence',
+        description: 'All your projects, tasks, habits, and ideas are automatically saved to localStorage.'
+      },
+      {
+        icon: Settings,
+        title: 'Language Toggle',
+        description: 'Quick language switcher in Settings modal - switch between Icelandic and English.'
+      },
+    ]
+  },
   {
     version: '2.0.0',
     date: 'January 2026',
@@ -166,6 +282,7 @@ const changelog = [
 ]
 
 function WhatsNewModal() {
+  const { t } = useTranslation()
   const { setWhatsNewOpen, markWhatsNewSeen } = useStore()
 
   const handleClose = () => {
@@ -201,7 +318,7 @@ function WhatsNewModal() {
               <Sparkles size={24} className="text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold">What's New</h2>
+              <h2 className="text-xl font-bold">{t('whatsNew.title')}</h2>
               <p className="text-xs text-zinc-500">ArnarFlow v{APP_VERSION}</p>
             </div>
           </div>
@@ -229,7 +346,7 @@ function WhatsNewModal() {
           <details className="group">
             <summary className="cursor-pointer text-xs text-zinc-500 hover:text-zinc-400 transition-colors flex items-center gap-1 mb-3">
               <ArrowRight size={12} className="group-open:rotate-90 transition-transform" />
-              Previous updates
+              {t('whatsNew.previousUpdates')}
             </summary>
             
             <div className="space-y-4 pl-2 border-l border-dark-600">
@@ -257,13 +374,13 @@ function WhatsNewModal() {
         {/* Footer */}
         <div className="px-6 py-4 border-t border-dark-600 flex items-center justify-between bg-dark-800/30">
           <p className="text-2xs text-zinc-600">
-            Built with ❤️ for Arnar
+            {t('whatsNew.builtWith')}
           </p>
           <button
             onClick={handleClose}
             className="px-5 py-2 bg-gradient-to-r from-accent to-purple-500 hover:opacity-90 rounded-xl text-sm font-semibold transition-all shadow-lg"
           >
-            Let's Go!
+            {t('whatsNew.letsGo')}
           </button>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import useStore, { APP_VERSION } from '../store/useStore'
+import { useTranslation } from '../i18n/useTranslation'
 import { 
   X, 
   Sun, 
@@ -15,10 +16,16 @@ import {
   RefreshCw,
   CheckCircle,
   AlertCircle,
-  ArrowDownCircle
+  ArrowDownCircle,
+  Languages,
+  BellRing,
+  Clock,
+  HardDrive
 } from 'lucide-react'
+import DataExportImport from './DataExportImport'
 
 function SettingsModal() {
+  const { t, language } = useTranslation()
   const [updateStatus, setUpdateStatus] = useState({ status: 'idle' })
   
   useEffect(() => {
@@ -48,19 +55,19 @@ function SettingsModal() {
   const getUpdateStatusDisplay = () => {
     switch (updateStatus.status) {
       case 'checking':
-        return { icon: RefreshCw, text: 'Checking for updates...', spin: true, color: 'text-zinc-400' }
+        return { icon: RefreshCw, text: t('settings.checking'), spin: true, color: 'text-zinc-400' }
       case 'available':
-        return { icon: ArrowDownCircle, text: `Update ${updateStatus.version} available!`, color: 'text-green-400' }
+        return { icon: ArrowDownCircle, text: `${t('settings.updateAvailable')} v${updateStatus.version}`, color: 'text-green-400' }
       case 'downloading':
-        return { icon: RefreshCw, text: `Downloading ${updateStatus.percent}%...`, spin: true, color: 'text-accent' }
+        return { icon: RefreshCw, text: `${t('settings.downloading')} ${updateStatus.percent}%`, spin: true, color: 'text-accent' }
       case 'ready':
-        return { icon: CheckCircle, text: `v${updateStatus.version} ready to install!`, color: 'text-green-400', showInstall: true }
+        return { icon: CheckCircle, text: `v${updateStatus.version} ${t('settings.readyToInstall')}`, color: 'text-green-400', showInstall: true }
       case 'up-to-date':
-        return { icon: CheckCircle, text: 'You\'re up to date!', color: 'text-green-400' }
+        return { icon: CheckCircle, text: t('settings.upToDate'), color: 'text-green-400' }
       case 'error':
         return { icon: AlertCircle, text: updateStatus.message || 'Update failed', color: 'text-red-400' }
       default:
-        return { icon: RefreshCw, text: 'Check for Updates', color: 'text-zinc-400' }
+        return { icon: RefreshCw, text: t('settings.checkUpdates'), color: 'text-zinc-400' }
     }
   }
   
@@ -72,14 +79,24 @@ function SettingsModal() {
     setAccentColor,
     notificationsEnabled,
     setNotificationsEnabled,
+    habitRemindersEnabled,
+    setHabitRemindersEnabled,
+    taskRemindersEnabled,
+    setTaskRemindersEnabled,
     setKeyboardShortcutsOpen,
-    setAboutOpen
+    setAboutOpen,
+    setLanguage
   } = useStore()
 
   const themes = [
-    { id: 'dark', icon: Moon, label: 'Dark' },
-    { id: 'light', icon: Sun, label: 'Light' },
-    { id: 'system', icon: Monitor, label: 'System' },
+    { id: 'dark', icon: Moon, label: t('settings.dark') },
+    { id: 'light', icon: Sun, label: t('settings.light') },
+    { id: 'system', icon: Monitor, label: t('settings.system') },
+  ]
+
+  const languages = [
+    { id: 'is', label: t('settings.icelandic'), flag: '🇮🇸' },
+    { id: 'en', label: t('settings.english'), flag: '🇬🇧' },
   ]
 
   const accentColors = [
@@ -137,6 +154,20 @@ function SettingsModal() {
     }
   }
 
+  // Request notification permission
+  const handleEnableNotifications = async (enabled) => {
+    if (enabled && 'Notification' in window) {
+      const permission = await Notification.requestPermission()
+      if (permission === 'granted') {
+        setNotificationsEnabled(true)
+      } else {
+        setNotificationsEnabled(false)
+      }
+    } else {
+      setNotificationsEnabled(enabled)
+    }
+  }
+
   return (
     <div 
       className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in"
@@ -145,7 +176,7 @@ function SettingsModal() {
       <div className="w-full max-w-lg bg-dark-900 rounded-xl border border-dark-500 shadow-2xl shadow-black/50 overflow-hidden animate-fade-in-scale">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-dark-600">
-          <h2 className="text-lg font-semibold">Settings</h2>
+          <h2 className="text-lg font-semibold">{t('settings.title')}</h2>
           <button
             onClick={() => setSettingsOpen(false)}
             className="p-1.5 hover:bg-dark-700 rounded-lg transition-colors"
@@ -156,29 +187,53 @@ function SettingsModal() {
 
         {/* Content */}
         <div className="p-5 space-y-6 max-h-[70vh] overflow-y-auto">
+          {/* Language */}
+          <section>
+            <h3 className="text-sm font-medium flex items-center gap-2 mb-3">
+              <Languages size={14} className="text-accent" />
+              {t('settings.language')}
+            </h3>
+            <div className="flex gap-2">
+              {languages.map(lang => (
+                <button
+                  key={lang.id}
+                  onClick={() => setLanguage(lang.id)}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border transition-all ${
+                    language === lang.id
+                      ? 'bg-accent/10 border-accent/50 text-accent'
+                      : 'bg-dark-800 border-dark-600 text-zinc-400 hover:border-dark-500'
+                  }`}
+                >
+                  <span className="text-lg">{lang.flag}</span>
+                  <span className="text-sm">{lang.label}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
           {/* Appearance */}
           <section>
             <h3 className="text-sm font-medium flex items-center gap-2 mb-3">
               <Palette size={14} className="text-accent" />
-              Appearance
+              {t('settings.appearance')}
             </h3>
             
             {/* Theme */}
             <div className="mb-4">
-              <label className="text-xs text-zinc-500 block mb-2">Theme</label>
+              <label className="text-xs text-zinc-500 block mb-2">{t('settings.theme')}</label>
               <div className="flex gap-2">
-                {themes.map(t => (
+                {themes.map(thm => (
                   <button
-                    key={t.id}
-                    onClick={() => setTheme(t.id)}
+                    key={thm.id}
+                    onClick={() => setTheme(thm.id)}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border transition-all ${
-                      theme === t.id
+                      theme === thm.id
                         ? 'bg-accent/10 border-accent/50 text-accent'
                         : 'bg-dark-800 border-dark-600 text-zinc-400 hover:border-dark-500'
                     }`}
                   >
-                    <t.icon size={14} />
-                    <span className="text-sm">{t.label}</span>
+                    <thm.icon size={14} />
+                    <span className="text-sm">{thm.label}</span>
                   </button>
                 ))}
               </div>
@@ -186,13 +241,13 @@ function SettingsModal() {
 
             {/* Accent Color */}
             <div>
-              <label className="text-xs text-zinc-500 block mb-2">Accent Color</label>
+              <label className="text-xs text-zinc-500 block mb-2">{t('settings.accentColor')}</label>
               <div className="flex gap-2">
                 {accentColors.map(c => (
                   <button
                     key={c.id}
                     onClick={() => setAccentColor(c.id)}
-                    className={`w-8 h-8 rounded-lg transition-all ${
+                    className={`w-8 h-8 rounded-lg transition-all hover:scale-110 ${
                       accentColor === c.id ? 'ring-2 ring-offset-2 ring-offset-dark-900' : ''
                     }`}
                     style={{ 
@@ -210,58 +265,87 @@ function SettingsModal() {
           <section>
             <h3 className="text-sm font-medium flex items-center gap-2 mb-3">
               <Bell size={14} className="text-accent" />
-              Notifications
+              {t('settings.notifications')}
             </h3>
-            <label className="flex items-center justify-between cursor-pointer">
-              <span className="text-sm text-zinc-400">Enable desktop notifications</span>
-              <button
-                onClick={() => setNotificationsEnabled(!notificationsEnabled)}
-                className={`w-10 h-6 rounded-full transition-all relative ${
-                  notificationsEnabled ? 'bg-accent' : 'bg-dark-600'
-                }`}
-              >
-                <span 
-                  className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${
-                    notificationsEnabled ? 'left-5' : 'left-1'
+            <div className="space-y-3">
+              <label className="flex items-center justify-between cursor-pointer">
+                <span className="text-sm text-zinc-400">{t('settings.enableNotifications')}</span>
+                <button
+                  onClick={() => handleEnableNotifications(!notificationsEnabled)}
+                  className={`w-10 h-6 rounded-full transition-all relative ${
+                    notificationsEnabled ? 'bg-accent' : 'bg-dark-600'
                   }`}
-                />
-              </button>
-            </label>
+                >
+                  <span 
+                    className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                      notificationsEnabled ? 'left-5' : 'left-1'
+                    }`}
+                  />
+                </button>
+              </label>
+              
+              {notificationsEnabled && (
+                <div className="pl-4 space-y-3 border-l-2 border-dark-600 animate-fade-in">
+                  <label className="flex items-center justify-between cursor-pointer">
+                    <div className="flex items-center gap-2">
+                      <BellRing size={14} className="text-zinc-500" />
+                      <span className="text-sm text-zinc-400">{t('settings.habitReminders')}</span>
+                    </div>
+                    <button
+                      onClick={() => setHabitRemindersEnabled(!habitRemindersEnabled)}
+                      className={`w-10 h-6 rounded-full transition-all relative ${
+                        habitRemindersEnabled ? 'bg-accent' : 'bg-dark-600'
+                      }`}
+                    >
+                      <span 
+                        className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                          habitRemindersEnabled ? 'left-5' : 'left-1'
+                        }`}
+                      />
+                    </button>
+                  </label>
+                  
+                  <label className="flex items-center justify-between cursor-pointer">
+                    <div className="flex items-center gap-2">
+                      <Clock size={14} className="text-zinc-500" />
+                      <span className="text-sm text-zinc-400">{t('settings.taskReminders')}</span>
+                    </div>
+                    <button
+                      onClick={() => setTaskRemindersEnabled(!taskRemindersEnabled)}
+                      className={`w-10 h-6 rounded-full transition-all relative ${
+                        taskRemindersEnabled ? 'bg-accent' : 'bg-dark-600'
+                      }`}
+                    >
+                      <span 
+                        className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${
+                          taskRemindersEnabled ? 'left-5' : 'left-1'
+                        }`}
+                      />
+                    </button>
+                  </label>
+                </div>
+              )}
+            </div>
           </section>
 
           {/* Data */}
           <section>
             <h3 className="text-sm font-medium flex items-center gap-2 mb-3">
-              <Database size={14} className="text-accent" />
-              Data Management
+              <HardDrive size={14} className="text-accent" />
+              {language === 'is' ? 'Gögn og Afrit' : 'Data & Backup'}
             </h3>
-            <div className="flex gap-2">
-              <button
-                onClick={handleExport}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded-lg transition-colors text-sm"
-              >
-                <Download size={14} />
-                Export Data
-              </button>
-              <button
-                onClick={handleImport}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded-lg transition-colors text-sm"
-              >
-                <Upload size={14} />
-                Import Data
-              </button>
-            </div>
+            <DataExportImport />
           </section>
 
           {/* Updates */}
           <section>
             <h3 className="text-sm font-medium flex items-center gap-2 mb-3">
               <RefreshCw size={14} className="text-accent" />
-              Updates
+              {t('settings.updates')}
             </h3>
             <div className="bg-dark-800 rounded-lg p-4 border border-dark-600">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm text-zinc-400">Current version</span>
+                <span className="text-sm text-zinc-400">{t('settings.currentVersion')}</span>
                 <span className="text-sm font-mono text-zinc-300">v{APP_VERSION}</span>
               </div>
               
@@ -283,7 +367,7 @@ function SettingsModal() {
                         onClick={handleInstallUpdate}
                         className="w-full flex items-center justify-center gap-2 py-2.5 bg-green-600 hover:bg-green-500 rounded-lg transition-colors text-sm font-medium"
                       >
-                        Restart & Install
+                        {t('settings.installRestart')}
                       </button>
                     )}
                   </div>
@@ -294,7 +378,7 @@ function SettingsModal() {
 
           {/* Quick Links */}
           <section>
-            <h3 className="text-sm font-medium mb-3">More</h3>
+            <h3 className="text-sm font-medium mb-3">{t('settings.more')}</h3>
             <div className="space-y-1">
               <button
                 onClick={() => {
@@ -304,7 +388,7 @@ function SettingsModal() {
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-dark-800 transition-colors text-left"
               >
                 <Keyboard size={16} className="text-zinc-500" />
-                <span className="text-sm">Keyboard Shortcuts</span>
+                <span className="text-sm">{t('settings.keyboardShortcuts')}</span>
                 <kbd className="kbd ml-auto">?</kbd>
               </button>
               <button
@@ -315,7 +399,7 @@ function SettingsModal() {
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-dark-800 transition-colors text-left"
               >
                 <Info size={16} className="text-zinc-500" />
-                <span className="text-sm">About ArnarFlow</span>
+                <span className="text-sm">{t('settings.about')}</span>
               </button>
             </div>
           </section>

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const APP_VERSION = '2.0.0'
+const APP_VERSION = '4.4.0'
 
 const PROJECTS = [
   { id: 'eignamat', name: 'Eignamat', icon: 'Home', color: '#10b981', description: 'AI Property Valuation SaaS' },
@@ -12,10 +12,10 @@ const PROJECTS = [
 ]
 
 const HABITS = [
-  { id: 'exercise', name: 'Exercise', icon: 'Dumbbell', target: 'Move for 15 min (gentle on back)' },
-  { id: 'clean', name: 'Clean', icon: 'Sparkles', target: 'Tidy one area' },
-  { id: 'cook', name: 'Cook', icon: 'ChefHat', target: 'Make a healthy meal' },
-  { id: 'cocopuffs', name: 'Coco Puffs', icon: 'Cat', target: 'Quality time with kitty' },
+  { id: 'exercise', name: 'Exercise', nameIs: 'Hreyfing', icon: 'Dumbbell', target: 'Move for 15 min (gentle on back)', targetIs: 'Hreyfa sig í 15 mín (varlega á bakið)' },
+  { id: 'clean', name: 'Clean', nameIs: 'Þrifa', icon: 'Sparkles', target: 'Tidy one area', targetIs: 'Þrífa eitt svæði' },
+  { id: 'cook', name: 'Cook', nameIs: 'Elda', icon: 'ChefHat', target: 'Make a healthy meal', targetIs: 'Elda hollt mat' },
+  { id: 'cocopuffs', name: 'Coco Puffs', nameIs: 'Coco Puffs', icon: 'Cat', target: 'Quality time with kitty', targetIs: 'Gæðatími með kettinum' },
 ]
 
 const ACCENT_COLORS = {
@@ -27,11 +27,36 @@ const ACCENT_COLORS = {
   pink: '#ec4899',
 }
 
+// Idea categories/tags
+const IDEA_CATEGORIES = [
+  { id: 'product', name: 'Product', nameIs: 'Vara', color: '#3b82f6' },
+  { id: 'marketing', name: 'Marketing', nameIs: 'Markaðssetning', color: '#22c55e' },
+  { id: 'tech', name: 'Tech', nameIs: 'Tækni', color: '#a855f7' },
+  { id: 'content', name: 'Content', nameIs: 'Efni', color: '#f59e0b' },
+  { id: 'personal', name: 'Personal', nameIs: 'Persónulegt', color: '#ec4899' },
+]
+
+// v3.0.0 - Task Tags
+const DEFAULT_TAGS = [
+  { id: 'urgent', name: 'Urgent', nameIs: 'Brýnt', color: 'red' },
+  { id: 'bug', name: 'Bug', nameIs: 'Villa', color: 'orange' },
+  { id: 'feature', name: 'Feature', nameIs: 'Eiginleiki', color: 'blue' },
+  { id: 'design', name: 'Design', nameIs: 'Hönnun', color: 'purple' },
+  { id: 'research', name: 'Research', nameIs: 'Rannsókn', color: 'cyan' },
+  { id: 'content', name: 'Content', nameIs: 'Efni', color: 'amber' },
+  { id: 'meeting', name: 'Meeting', nameIs: 'Fundur', color: 'green' },
+  { id: 'blocked', name: 'Blocked', nameIs: 'Blokkað', color: 'slate' },
+]
+
 const useStore = create(
   persist(
     (set, get) => ({
       // App version
       appVersion: APP_VERSION,
+      
+      // Language - default to Icelandic
+      language: 'is',
+      setLanguage: (lang) => set({ language: lang }),
       
       // Projects
       projects: PROJECTS,
@@ -126,13 +151,89 @@ const useStore = create(
         )
       })),
 
-      // Ideas Inbox
+      // v4.1.0 - Task Subtasks/Checklist
+      addSubtask: (taskId, subtask) => set((state) => ({
+        tasks: state.tasks.map(t => 
+          t.id === taskId 
+            ? { 
+                ...t, 
+                subtasks: [...(t.subtasks || []), { 
+                  id: Date.now().toString(), 
+                  title: subtask,
+                  completed: false,
+                  createdAt: new Date().toISOString()
+                }] 
+              }
+            : t
+        )
+      })),
+      toggleSubtask: (taskId, subtaskId) => set((state) => ({
+        tasks: state.tasks.map(t => 
+          t.id === taskId 
+            ? { 
+                ...t, 
+                subtasks: (t.subtasks || []).map(s => 
+                  s.id === subtaskId ? { ...s, completed: !s.completed } : s
+                )
+              }
+            : t
+        )
+      })),
+      deleteSubtask: (taskId, subtaskId) => set((state) => ({
+        tasks: state.tasks.map(t => 
+          t.id === taskId 
+            ? { ...t, subtasks: (t.subtasks || []).filter(s => s.id !== subtaskId) }
+            : t
+        )
+      })),
+      reorderSubtasks: (taskId, subtaskIds) => set((state) => ({
+        tasks: state.tasks.map(t => 
+          t.id === taskId 
+            ? { 
+                ...t, 
+                subtasks: subtaskIds.map(id => (t.subtasks || []).find(s => s.id === id)).filter(Boolean)
+              }
+            : t
+        )
+      })),
+
+      // v3.0.0 - Task Tags
+      tags: DEFAULT_TAGS,
+      addTag: (tag) => set((state) => ({
+        tags: [...state.tags, { id: Date.now().toString(), ...tag }]
+      })),
+      updateTag: (id, updates) => set((state) => ({
+        tags: state.tags.map(t => t.id === id ? { ...t, ...updates } : t)
+      })),
+      deleteTag: (id) => set((state) => ({
+        tags: state.tags.filter(t => t.id !== id)
+      })),
+      addTagToTask: (taskId, tagId) => set((state) => ({
+        tasks: state.tasks.map(t => 
+          t.id === taskId 
+            ? { ...t, tags: [...(t.tags || []), tagId].filter((v, i, a) => a.indexOf(v) === i) }
+            : t
+        )
+      })),
+      removeTagFromTask: (taskId, tagId) => set((state) => ({
+        tasks: state.tasks.map(t => 
+          t.id === taskId 
+            ? { ...t, tags: (t.tags || []).filter(id => id !== tagId) }
+            : t
+        )
+      })),
+
+      // Ideas Inbox - enhanced with categories and tags
       ideas: [],
+      ideaCategories: IDEA_CATEGORIES,
       addIdea: (idea) => set((state) => ({
         ideas: [...state.ideas, {
           id: Date.now().toString(),
           createdAt: new Date().toISOString(),
           status: 'inbox',
+          tags: [],
+          category: null,
+          projectId: null,
           ...idea
         }]
       })),
@@ -142,15 +243,98 @@ const useStore = create(
       deleteIdea: (id) => set((state) => ({
         ideas: state.ideas.filter(i => i.id !== id)
       })),
+      addTagToIdea: (id, tag) => set((state) => ({
+        ideas: state.ideas.map(i => 
+          i.id === id 
+            ? { ...i, tags: [...new Set([...(i.tags || []), tag])] }
+            : i
+        )
+      })),
+      removeTagFromIdea: (id, tag) => set((state) => ({
+        ideas: state.ideas.map(i => 
+          i.id === id 
+            ? { ...i, tags: (i.tags || []).filter(t => t !== tag) }
+            : i
+        )
+      })),
 
-      // Habits
+      // Habits - enhanced with streak tracking
       habits: HABITS,
       habitLogs: {},
+      habitStreaks: {}, // { habitId: { current: number, longest: number } }
       toggleHabit: (habitId, date) => set((state) => {
         const key = `${habitId}-${date}`
         const newLogs = { ...state.habitLogs }
-        newLogs[key] = !newLogs[key]
-        return { habitLogs: newLogs }
+        const wasCompleted = newLogs[key]
+        newLogs[key] = !wasCompleted
+        
+        // Recalculate streak for this habit
+        const newStreaks = { ...state.habitStreaks }
+        const streak = calculateStreak(habitId, newLogs)
+        newStreaks[habitId] = streak
+        
+        return { habitLogs: newLogs, habitStreaks: newStreaks }
+      }),
+      getHabitStreak: (habitId) => {
+        const state = get()
+        return state.habitStreaks[habitId] || { current: 0, longest: 0 }
+      },
+      recalculateAllStreaks: () => set((state) => {
+        const newStreaks = {}
+        state.habits.forEach(habit => {
+          newStreaks[habit.id] = calculateStreak(habit.id, state.habitLogs)
+        })
+        return { habitStreaks: newStreaks }
+      }),
+
+      // Recurring Tasks
+      recurringTasks: [],
+      addRecurringTask: (task) => set((state) => ({
+        recurringTasks: [...state.recurringTasks, {
+          id: Date.now().toString(),
+          ...task
+        }]
+      })),
+      updateRecurringTask: (id, updates) => set((state) => ({
+        recurringTasks: state.recurringTasks.map(t => 
+          t.id === id ? { ...t, ...updates } : t
+        )
+      })),
+      deleteRecurringTask: (id) => set((state) => ({
+        recurringTasks: state.recurringTasks.filter(t => t.id !== id)
+      })),
+      toggleRecurringTask: (id) => set((state) => ({
+        recurringTasks: state.recurringTasks.map(t =>
+          t.id === id ? { ...t, enabled: !t.enabled } : t
+        )
+      })),
+
+      // Notes / Journal
+      notes: {},
+      addNote: (date, content) => set((state) => ({
+        notes: {
+          ...state.notes,
+          [date]: {
+            content,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          }
+        }
+      })),
+      updateNote: (date, content) => set((state) => ({
+        notes: {
+          ...state.notes,
+          [date]: {
+            ...state.notes[date],
+            content,
+            updatedAt: new Date().toISOString(),
+          }
+        }
+      })),
+      deleteNote: (date) => set((state) => {
+        const newNotes = { ...state.notes }
+        delete newNotes[date]
+        return { notes: newNotes }
       }),
 
       // Focus Timer - enhanced
@@ -210,6 +394,14 @@ const useStore = create(
       // Quick add modal
       quickAddOpen: false,
       setQuickAddOpen: (open) => set({ quickAddOpen: open }),
+      
+      // Quick idea capture mode
+      quickIdeaMode: false,
+      setQuickIdeaMode: (mode) => set({ quickIdeaMode: mode }),
+
+      // v3.0.0 - Quick Capture Bar
+      quickCaptureExpanded: false,
+      setQuickCaptureExpanded: (expanded) => set({ quickCaptureExpanded: expanded }),
 
       // Settings modal
       settingsOpen: false,
@@ -230,6 +422,17 @@ const useStore = create(
       // What's New modal
       whatsNewOpen: false,
       setWhatsNewOpen: (open) => set({ whatsNewOpen: open }),
+      
+      // Recurring Tasks Modal
+      recurringOpen: false,
+      setRecurringOpen: (open) => set({ recurringOpen: open }),
+      
+      // Onboarding
+      onboardingComplete: false,
+      onboardingOpen: false,
+      setOnboardingComplete: (complete) => set({ onboardingComplete: complete }),
+      setOnboardingOpen: (open) => set({ onboardingOpen: open }),
+      shouldShowOnboarding: () => !get().onboardingComplete,
       lastSeenVersion: null,
       markWhatsNewSeen: (version) => set({ lastSeenVersion: version }),
       shouldShowWhatsNew: () => {
@@ -249,6 +452,12 @@ const useStore = create(
       // Notifications
       notificationsEnabled: true,
       setNotificationsEnabled: (enabled) => set({ notificationsEnabled: enabled }),
+      habitRemindersEnabled: true,
+      setHabitRemindersEnabled: (enabled) => set({ habitRemindersEnabled: enabled }),
+      taskRemindersEnabled: true,
+      setTaskRemindersEnabled: (enabled) => set({ taskRemindersEnabled: enabled }),
+      lastNotificationCheck: null,
+      setLastNotificationCheck: (time) => set({ lastNotificationCheck: time }),
 
       // Keyboard shortcuts
       shortcuts: {
@@ -260,6 +469,55 @@ const useStore = create(
         ideas: 'G I',
         habits: 'G H',
       },
+
+      // v3.0.0 - Daily Goals
+      dailyGoals: {
+        tasks: 5,
+        habits: 4,
+        focusMinutes: 90,
+        pomodoroSessions: 4,
+      },
+      setDailyGoals: (goals) => set((state) => ({
+        dailyGoals: { ...state.dailyGoals, ...goals }
+      })),
+
+      // v3.0.0 - Pomodoro Timer
+      pomodoroOpen: false,
+      setPomodoroOpen: (open) => set({ pomodoroOpen: open }),
+      pomodoroSettings: {
+        preset: 'pomodoro',
+        customWork: 25,
+        customBreak: 5,
+        customLongBreak: 15,
+        sessionsBeforeLong: 4,
+        soundEnabled: true,
+        autoStartBreaks: false,
+        autoStartPomodoros: false,
+      },
+      setPomodoroSettings: (settings) => set((state) => ({
+        pomodoroSettings: { ...state.pomodoroSettings, ...settings }
+      })),
+      pomodoroSessions: [],
+      addPomodoroSession: (session) => set((state) => ({
+        pomodoroSessions: [...state.pomodoroSessions, {
+          id: Date.now().toString(),
+          ...session
+        }]
+      })),
+      getPomodoroStats: () => {
+        const sessions = get().pomodoroSessions
+        const today = new Date().toISOString().split('T')[0]
+        const todaySessions = sessions.filter(s => s.completedAt?.startsWith(today))
+        const totalMinutes = sessions.reduce((sum, s) => sum + (s.duration || 0), 0)
+        const todayMinutes = todaySessions.reduce((sum, s) => sum + (s.duration || 0), 0)
+        return {
+          totalSessions: sessions.length,
+          todaySessions: todaySessions.length,
+          totalMinutes,
+          todayMinutes,
+          totalHours: Math.round(totalMinutes / 60 * 10) / 10,
+        }
+      },
     }),
     {
       name: 'arnarflow-storage',
@@ -267,5 +525,63 @@ const useStore = create(
   )
 )
 
-export { APP_VERSION, ACCENT_COLORS }
+// Helper function to calculate streak
+function calculateStreak(habitId, habitLogs) {
+  let currentStreak = 0
+  let longestStreak = 0
+  let tempStreak = 0
+  
+  // Get all dates with logs for this habit
+  const dates = Object.keys(habitLogs)
+    .filter(key => key.startsWith(`${habitId}-`) && habitLogs[key])
+    .map(key => key.replace(`${habitId}-`, ''))
+    .sort()
+    .reverse()
+  
+  // Calculate current streak (consecutive days from today)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  
+  for (let i = 0; i < 365; i++) {
+    const checkDate = new Date(today)
+    checkDate.setDate(checkDate.getDate() - i)
+    const dateStr = checkDate.toISOString().split('T')[0]
+    
+    if (habitLogs[`${habitId}-${dateStr}`]) {
+      currentStreak++
+    } else {
+      break
+    }
+  }
+  
+  // Calculate longest streak
+  for (const dateStr of dates) {
+    const prevDate = new Date(dateStr)
+    prevDate.setDate(prevDate.getDate() - 1)
+    const prevDateStr = prevDate.toISOString().split('T')[0]
+    
+    if (habitLogs[`${habitId}-${prevDateStr}`]) {
+      tempStreak++
+    } else {
+      if (tempStreak > longestStreak) {
+        longestStreak = tempStreak
+      }
+      tempStreak = 1
+    }
+  }
+  
+  // Final check for longest
+  if (tempStreak > longestStreak) {
+    longestStreak = tempStreak
+  }
+  
+  // Current streak should count in longest
+  if (currentStreak > longestStreak) {
+    longestStreak = currentStreak
+  }
+  
+  return { current: currentStreak, longest: longestStreak }
+}
+
+export { APP_VERSION, ACCENT_COLORS, IDEA_CATEGORIES, DEFAULT_TAGS }
 export default useStore

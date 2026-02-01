@@ -1,8 +1,10 @@
 import React from 'react'
 import useStore, { APP_VERSION } from '../store/useStore'
+import { useTranslation } from '../i18n/useTranslation'
 import { X, Zap, Github, Heart, RefreshCw } from 'lucide-react'
 
 function AboutModal() {
+  const { t } = useTranslation()
   const { setAboutOpen, setWhatsNewOpen } = useStore()
 
   const handleBackdropClick = (e) => {
@@ -39,11 +41,11 @@ function AboutModal() {
 
           {/* App Name */}
           <h1 className="text-xl font-semibold mb-1">ArnarFlow</h1>
-          <p className="text-sm text-zinc-500 mb-4">Version {APP_VERSION}</p>
+          <p className="text-sm text-zinc-500 mb-4">{t('aboutModal.version')} {APP_VERSION}</p>
 
           {/* Description */}
           <p className="text-sm text-zinc-400 mb-6">
-            Personal project management and productivity app designed for Arnar.
+            {t('aboutModal.description')}
           </p>
 
           {/* Links */}
@@ -53,7 +55,7 @@ function AboutModal() {
               className="w-full flex items-center justify-center gap-2 py-2.5 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded-lg transition-colors text-sm"
             >
               <RefreshCw size={14} />
-              Check for Updates
+              {t('aboutModal.checkForUpdates')}
             </button>
             
             <button
@@ -63,7 +65,7 @@ function AboutModal() {
               }}
               className="w-full flex items-center justify-center gap-2 py-2.5 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded-lg transition-colors text-sm"
             >
-              View Changelog
+              {t('aboutModal.viewChangelog')}
             </button>
 
             <a
@@ -73,13 +75,13 @@ function AboutModal() {
               className="w-full flex items-center justify-center gap-2 py-2.5 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded-lg transition-colors text-sm"
             >
               <Github size={14} />
-              View on GitHub
+              {t('aboutModal.viewOnGitHub')}
             </a>
           </div>
 
           {/* Footer */}
           <p className="text-xs text-zinc-600 flex items-center justify-center gap-1">
-            Made with <Heart size={12} className="text-red-500" /> for Arnar
+            {t('aboutModal.madeWith')} <Heart size={12} className="text-red-500" /> {t('aboutModal.forArnar')}
           </p>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import useStore from './store/useStore'
 import TitleBar from './components/TitleBar'
 import Sidebar from './components/Sidebar'
@@ -14,13 +14,23 @@ import AddProjectModal from './components/AddProjectModal'
 import KeyboardShortcutsModal from './components/KeyboardShortcutsModal'
 import WhatsNewModal from './components/WhatsNewModal'
 import AboutModal from './components/AboutModal'
+import PomodoroTimer from './components/PomodoroTimer'
+import QuickCaptureBar from './components/QuickCaptureBar'
+import FocusHistory from './components/FocusHistory'
+import WeeklyReview from './components/WeeklyReview'
+import StatsView from './components/StatsView'
+import NotesView from './components/NotesView'
+import OnboardingModal from './components/OnboardingModal'
+import RecurringTasksModal from './components/RecurringTasksModal'
 import { ACCENT_COLORS } from './store/useStore'
+import { requestNotificationPermission } from './utils/notifications'
 
 function App() {
   const { 
     activeView, 
     quickAddOpen, 
     setQuickAddOpen,
+    setQuickIdeaMode,
     commandPaletteOpen,
     setCommandPaletteOpen,
     settingsOpen,
@@ -32,19 +42,47 @@ function App() {
     aboutOpen,
     whatsNewOpen,
     setWhatsNewOpen,
+    onboardingOpen,
+    setOnboardingOpen,
+    shouldShowOnboarding,
+    recurringOpen,
+    setRecurringOpen,
     focusStartTime,
     updateFocusElapsed,
     shouldShowWhatsNew,
     theme,
-    accentColor
+    accentColor,
+    notificationsEnabled,
+    pomodoroOpen,
+    setPomodoroOpen,
+    focusProject,
+    quickCaptureExpanded,
+    setQuickCaptureExpanded
   } = useStore()
+
+  // Local state for quick capture if not in store
+  const [localQuickCapture, setLocalQuickCapture] = useState(false)
+  const isQuickCaptureOpen = quickCaptureExpanded ?? localQuickCapture
+  const toggleQuickCapture = setQuickCaptureExpanded ?? setLocalQuickCapture
+
+  // Weekly Review modal state
+  const [weeklyReviewOpen, setWeeklyReviewOpen] = useState(false)
 
   // Seed initial tasks on first run
   const seedProjectTasks = useStore(state => state.seedProjectTasks)
+  const recalculateAllStreaks = useStore(state => state.recalculateAllStreaks)
   
   useEffect(() => {
     seedProjectTasks()
-  }, [seedProjectTasks])
+    recalculateAllStreaks()
+  }, [seedProjectTasks, recalculateAllStreaks])
+
+  // Request notification permission on mount if enabled
+  useEffect(() => {
+    if (notificationsEnabled) {
+      requestNotificationPermission()
+    }
+  }, [notificationsEnabled])
 
   // Check for "What's New" on mount
   useEffect(() => {
@@ -53,6 +91,17 @@ function App() {
       const timer = setTimeout(() => {
         setWhatsNewOpen(true)
       }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [])
+
+  // Check for onboarding on first run
+  useEffect(() => {
+    if (shouldShowOnboarding()) {
+      // Small delay for better UX
+      const timer = setTimeout(() => {
+        setOnboardingOpen(true)
+      }, 300)
       return () => clearTimeout(timer)
     }
   }, [])
@@ -81,9 +130,17 @@ function App() {
       // Don't trigger if typing in input
       const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)
       
-      // Cmd/Ctrl + K for quick add
+      // Cmd/Ctrl + K for quick add task
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
+        setQuickIdeaMode(false)
+        setQuickAddOpen(true)
+      }
+      
+      // Cmd/Ctrl + I for quick add idea
+      if ((e.metaKey || e.ctrlKey) && e.key === 'i') {
+        e.preventDefault()
+        setQuickIdeaMode(true)
         setQuickAddOpen(true)
       }
       
@@ -97,6 +154,14 @@ function App() {
       if ((e.metaKey || e.ctrlKey) && e.key === ',') {
         e.preventDefault()
         setSettingsOpen(true)
+      }
+
+      // Cmd/Ctrl + Shift + F for Pomodoro/Focus timer (when in focus mode)
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'F') {
+        e.preventDefault()
+        if (focusProject) {
+          setPomodoroOpen(true)
+        }
       }
 
       // ? for keyboard shortcuts help (only when not typing)
@@ -116,7 +181,7 @@ function App() {
     
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [setQuickAddOpen, setCommandPaletteOpen, setSettingsOpen, setKeyboardShortcutsOpen])
+  }, [setQuickAddOpen, setCommandPaletteOpen, setSettingsOpen, setKeyboardShortcutsOpen, setQuickIdeaMode])
 
   // Focus timer tick
   useEffect(() => {
@@ -139,6 +204,12 @@ function App() {
         return <HabitsView />
       case 'calendar':
         return <CalendarView />
+      case 'focus':
+        return <FocusHistory />
+      case 'stats':
+        return <StatsView />
+      case 'notes':
+        return <NotesView />
       default:
         return <Dashboard />
     }
@@ -168,6 +239,17 @@ function App() {
         {keyboardShortcutsOpen && <KeyboardShortcutsModal />}
         {whatsNewOpen && <WhatsNewModal />}
         {aboutOpen && <AboutModal />}
+        {pomodoroOpen && <PomodoroTimer onClose={() => setPomodoroOpen(false)} />}
+        {weeklyReviewOpen && <WeeklyReview onClose={() => setWeeklyReviewOpen(false)} />}
+        {onboardingOpen && <OnboardingModal />}
+        {recurringOpen && <RecurringTasksModal onClose={() => setRecurringOpen(false)} />}
+        
+        {/* Quick Capture Bar (Floating) */}
+        <QuickCaptureBar 
+          isExpanded={isQuickCaptureOpen}
+          onExpand={() => toggleQuickCapture(true)}
+          onCollapse={() => toggleQuickCapture(false)}
+        />
       </div>
     </div>
   )

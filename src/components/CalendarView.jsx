@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import useStore from '../store/useStore'
+import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
 import { 
   format, 
@@ -16,6 +17,7 @@ import {
   parseISO,
   isPast
 } from 'date-fns'
+import { is, enUS } from 'date-fns/locale'
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -27,9 +29,12 @@ import {
 } from 'lucide-react'
 
 function CalendarView() {
+  const { t, language } = useTranslation()
   const { tasks, projects, toggleTask, setActiveView, setSelectedProject } = useStore()
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState(new Date())
+
+  const locale = language === 'is' ? is : enUS
 
   // Get all days to display in the calendar grid
   const calendarDays = useMemo(() => {
@@ -81,8 +86,8 @@ function CalendarView() {
               <Calendar size={24} className="text-blue-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Calendar</h1>
-              <p className="text-sm text-zinc-500">Tasks by due date</p>
+              <h1 className="text-2xl font-bold tracking-tight">{t('calendarView.title')}</h1>
+              <p className="text-sm text-zinc-500">{t('calendarView.subtitle')}</p>
             </div>
           </div>
           
@@ -92,7 +97,7 @@ function CalendarView() {
               onClick={goToToday}
               className="px-3 py-1.5 text-xs font-medium bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors"
             >
-              Today
+              {t('calendarView.today')}
             </button>
             <button
               onClick={prevMonth}
@@ -101,7 +106,7 @@ function CalendarView() {
               <ChevronLeft size={18} />
             </button>
             <span className="text-lg font-semibold min-w-[160px] text-center">
-              {format(currentMonth, 'MMMM yyyy')}
+              {format(currentMonth, 'MMMM yyyy', { locale })}
             </span>
             <button
               onClick={nextMonth}
@@ -118,7 +123,7 @@ function CalendarView() {
         <div className="flex-1 p-6 overflow-auto">
           {/* Weekday Headers */}
           <div className="grid grid-cols-7 gap-1 mb-2">
-            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
+            {t('calendarView.weekdays').map(day => (
               <div key={day} className="text-center text-xs font-medium text-zinc-500 py-2">
                 {day}
               </div>
@@ -176,7 +181,7 @@ function CalendarView() {
                       })}
                       {dayTasks.length > 3 && (
                         <span className="text-2xs text-zinc-500">
-                          +{dayTasks.length - 3} more
+                          +{dayTasks.length - 3} {t('projectView.more')}
                         </span>
                       )}
                     </div>
@@ -198,10 +203,10 @@ function CalendarView() {
         <div className="w-80 border-l border-dark-600/30 bg-dark-800/20 flex flex-col">
           <div className="p-4 border-b border-dark-600/30">
             <h2 className="font-semibold">
-              {isToday(selectedDate) ? 'Today' : format(selectedDate, 'EEEE, MMM d')}
+              {isToday(selectedDate) ? t('calendarView.today') : format(selectedDate, 'EEEE, MMM d', { locale })}
             </h2>
             <p className="text-xs text-zinc-500 mt-0.5">
-              {selectedDateTasks.length} task{selectedDateTasks.length !== 1 ? 's' : ''}
+              {selectedDateTasks.length} {selectedDateTasks.length === 1 ? t('calendarView.task') : t('calendarView.tasks')}
             </p>
           </div>
 
@@ -209,7 +214,7 @@ function CalendarView() {
             {selectedDateTasks.length === 0 ? (
               <div className="text-center py-8">
                 <Calendar size={32} className="mx-auto text-zinc-700 mb-2" />
-                <p className="text-sm text-zinc-500">No tasks due</p>
+                <p className="text-sm text-zinc-500">{t('calendarView.noTasksDue')}</p>
               </div>
             ) : (
               <ul className="space-y-2">
