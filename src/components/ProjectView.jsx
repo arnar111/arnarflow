@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef } from 'react'
 import useStore from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
-import { format, parseISO, isPast, isToday, isTomorrow, differenceInDays } from 'date-fns'
+import { format, parseISO, isPast, isToday, isTomorrow, differenceInDays, addDays } from 'date-fns'
 import { is, enUS } from 'date-fns/locale'
 import { 
   Plus, 
@@ -29,7 +29,11 @@ import {
   Lock,
   Link,
   Unlink,
-  GitBranch
+  GitBranch,
+  Filter,
+  X,
+  AlertTriangle,
+  CalendarClock
 } from 'lucide-react'
 
 // Plane-inspired Drop Indicator
@@ -150,22 +154,100 @@ function ProjectView() {
   // expandedCard state removed - now using TaskDetailPanel via setSelectedTaskId
   const [blaerCopied, setBlaerCopied] = useState(false)
   
+  // v5.2.2 - Quick Filters
+  const [activeFilters, setActiveFilters] = useState({
+    priority: null,      // 'urgent' | 'high' | 'medium' | 'low'
+    dueStatus: null,     // 'overdue' | 'today' | 'week' | 'noDue'
+    hasBlocked: false,   // Only show blocked tasks
+  })
+  
   const project = projects.find(p => p.id === selectedProject)
   
   const projectTasks = useMemo(() => {
     return tasks.filter(t => t.projectId === selectedProject)
   }, [tasks, selectedProject])
   
+  // Apply quick filters to tasks
+  const applyFilters = (taskList) => {
+    return taskList.filter(task => {
+      // Priority filter
+      if (activeFilters.priority && task.priority !== activeFilters.priority) {
+        return false
+      }
+      
+      // Due status filter
+      if (activeFilters.dueStatus) {
+        if (!task.dueDate && activeFilters.dueStatus !== 'noDue') return false
+        if (task.dueDate) {
+          const dueDate = parseISO(task.dueDate)
+          const today = new Date()
+          const weekFromNow = addDays(today, 7)
+          
+          if (activeFilters.dueStatus === 'overdue' && !isPast(dueDate)) return false
+          if (activeFilters.dueStatus === 'today' && !isToday(dueDate)) return false
+          if (activeFilters.dueStatus === 'week' && (isPast(dueDate) || dueDate > weekFromNow)) return false
+          if (activeFilters.dueStatus === 'noDue' && task.dueDate) return false
+        }
+      }
+      
+      // Blocked filter
+      if (activeFilters.hasBlocked) {
+        const isBlocked = task.blockedBy && task.blockedBy.length > 0 && 
+          task.blockedBy.some(bid => {
+            const blockingTask = tasks.find(bt => bt.id === bid)
+            return blockingTask && !blockingTask.completed
+          })
+        if (!isBlocked) return false
+      }
+      
+      return true
+    })
+  }
+  
   const getTasksByStatus = (status) => {
-    return projectTasks.filter(t => {
+    let filtered = projectTasks.filter(t => {
       if (status === 'done') return t.completed
       if (status === 'in-progress') return !t.completed && t.status === 'in-progress'
       return !t.completed && t.status !== 'in-progress'
-    }).sort((a, b) => {
+    })
+    
+    // Apply quick filters (except on done column)
+    if (status !== 'done') {
+      filtered = applyFilters(filtered)
+    }
+    
+    return filtered.sort((a, b) => {
       const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 }
       return (priorityOrder[a.priority] || 3) - (priorityOrder[b.priority] || 3)
     })
   }
+  
+  // Check if any filter is active
+  const hasActiveFilters = activeFilters.priority || activeFilters.dueStatus || activeFilters.hasBlocked
+  
+  // Filter counts for badges
+  const filterCounts = useMemo(() => {
+    const openTasks = projectTasks.filter(t => !t.completed)
+    return {
+      urgent: openTasks.filter(t => t.priority === 'urgent').length,
+      high: openTasks.filter(t => t.priority === 'high').length,
+      overdue: openTasks.filter(t => t.dueDate && isPast(parseISO(t.dueDate)) && !isToday(parseISO(t.dueDate))).length,
+      today: openTasks.filter(t => t.dueDate && isToday(parseISO(t.dueDate))).length,
+      thisWeek: openTasks.filter(t => {
+        if (!t.dueDate) return false
+        const due = parseISO(t.dueDate)
+        const weekFromNow = addDays(new Date(), 7)
+        return !isPast(due) && due <= weekFromNow
+      }).length,
+      blocked: openTasks.filter(t => 
+        t.blockedBy && t.blockedBy.length > 0 && 
+        t.blockedBy.some(bid => {
+          const bt = tasks.find(x => x.id === bid)
+          return bt && !bt.completed
+        })
+      ).length,
+    }
+  }, [projectTasks, tasks])
 
   const completedCount = projectTasks.filter(t => t.completed).length
   const progress = projectTasks.length > 0 ? (completedCount / projectTasks.length) * 100 : 0
