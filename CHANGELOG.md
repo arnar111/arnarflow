@@ -5,6 +5,110 @@ All notable changes to ArnarFlow are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.0.0] - 2026-02-15
+
+### 🚀 The Pro Update
+
+The biggest update yet! Professional-grade productivity with a beautiful Linear-style UI.
+
+#### 🎨 UI/UX Overhaul: "Linear Style"
+- **New Design System** - Complete redesign with Linear-inspired dark theme
+  - Inter font for clean, modern typography
+  - New color palette: `--bg-primary: #0D0D0D`, indigo accent (#6366F1)
+  - Slim 6px scrollbars
+  - CSS variables for easy theming
+  - Glassmorphism effects for modals and floating elements
+  - Spring-based micro-animations
+
+- **Bento Grid Dashboard** - Apple-inspired modular layout
+  - Draggable card positions (saved to localStorage)
+  - Responsive breakpoints for tablet and mobile
+  - Quick stats, today's tasks, focus timer, activity chart
+  - Habits mini-view and streak card
+
+#### ⏱️ Time Tracking
+- **Full Time Tracker** - Track work sessions by project/task
+  - One-click timer start from any task
+  - Persistent timer in sidebar
+  - Session history grouped by day
+  - Weekly time reports with bar chart
+  - Billable hours toggle
+  - Export to CSV
+
+#### 🔗 Task Dependencies
+- **Blocked By/Blocks** - Task dependency management
+  - Add dependencies via task card dropdown
+  - Visual blocked indicator (🔒) on tasks
+  - Blocked tasks can't be completed until dependencies done
+  - Auto-computed reverse dependencies (blocks)
+  - Sidebar shows blocked task count per project
+
+#### 🔔 Notifications System
+- **In-App Notifications** - Never miss important updates
+  - Due soon alerts (< 2 hours)
+  - Overdue task warnings
+  - Streak at risk notifications
+  - Quiet hours setting (no notifications 23:00-08:00)
+  - Bell icon with unread count badge
+  - Mark read/clear all actions
+
+#### 🗓️ Roadmap View
+- **Gantt-Style Timeline** - Visualize project schedules
+  - Week/Month/Quarter zoom levels
+  - Task bars with drag-to-reschedule (coming soon)
+  - Today marker
+  - Dependency arrows (coming soon)
+  - Color-coded by project
+  - Blocked task indicators
+
+#### 🤖 AI Smart Prioritization (Prep)
+- **Gemini API Integration Ready**
+  - Store state for AI suggestions
+  - aiPriority and aiReason fields on tasks
+  - Apply/dismiss AI suggestion actions
+  - ✨ indicator for AI-suggested tasks
+
+#### 📅 Calendar Sync
+- **Google Calendar** - OAuth flow ready (simulation in v5.0)
+  - Two-way sync toggle
+  - Sync status indicator
+  - Last synced timestamp
+
+- **Apple Calendar (iCal)** - Export support
+  - Download .ics file with all tasks
+  - Compatible with Apple Calendar, Outlook
+  - Includes project categories and priorities
+
+#### 📱 Mobile Responsive
+- **Tablet (768-1024px)** - Optimized layout
+  - 8-column bento grid
+  - Collapsible sidebar
+
+- **Mobile (< 768px)** - Touch-friendly
+  - 4-column single-stack layout
+  - Bottom navigation (coming soon)
+  - Swipeable kanban columns (coming soon)
+  - FAB menu for quick actions (coming soon)
+
+- **Touch Optimizations**
+  - 44px minimum touch targets
+  - Reduced hover effects on touch devices
+
+#### Changed
+- Default accent color changed to Indigo (#6366F1)
+- Updated version display to 5.0.0
+- Improved task card with dependency UI
+- Enhanced sidebar with time tracker widget and notification bell
+- Better CSS variable usage throughout
+
+#### Technical
+- New components: TimeTracker, NotificationSystem, RoadmapView, CalendarSync
+- Store additions: timeSessions, notifications, dependencies, calendarSync
+- CSS overhaul with CSS custom properties
+- Improved animation performance with CSS variables
+
+---
+
 ## [4.3.0] - 2026-02-01
 
 ### 📝 The Journal Update

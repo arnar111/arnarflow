@@ -25,7 +25,11 @@ import {
   MoreVertical,
   Zap,
   Copy,
-  Check
+  Check,
+  Lock,
+  Link,
+  Unlink,
+  GitBranch
 } from 'lucide-react'
 
 // Plane-inspired Drop Indicator
@@ -616,10 +620,41 @@ function TaskCard({
   t,
   language
 }) {
+  const { 
+    tasks, 
+    isTaskBlocked, 
+    getBlockingTasks, 
+    addDependency, 
+    removeDependency,
+    updateTask
+  } = useStore()
+  
   const dueInfo = formatDueDate(task.dueDate)
   const timeSpent = formatTime(task.timeSpent)
   const priorityConfig = priorities[task.priority] || priorities.medium
   const [showActions, setShowActions] = useState(false)
+  const [showDependencyPicker, setShowDependencyPicker] = useState(false)
+  
+  const isBlocked = isTaskBlocked(task.id)
+  const blockingTasks = getBlockingTasks(task.id)
+  const hasBlockedBy = task.blockedBy && task.blockedBy.length > 0
+  
+  // Available tasks for dependency (same project, not self, not completed)
+  const availableDependencies = tasks.filter(t => 
+    t.projectId === task.projectId && 
+    t.id !== task.id && 
+    !t.completed &&
+    !(task.blockedBy || []).includes(t.id)
+  )
+
+  const handleAddDependency = (blockedByTaskId) => {
+    addDependency(task.id, blockedByTaskId)
+    setShowDependencyPicker(false)
+  }
+
+  const handleRemoveDependency = (blockedByTaskId) => {
+    removeDependency(task.id, blockedByTaskId)
+  }
 
   return (
     <div
@@ -628,21 +663,35 @@ function TaskCard({
       onDragEnd={onDragEnd}
       onDragOver={onDragOver}
       onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
+      onMouseLeave={() => { setShowActions(false); setShowDependencyPicker(false) }}
       className={`
         group relative rounded-xl border transition-all duration-200
         ${isDragging ? 'opacity-50 scale-95 rotate-1' : ''}
         ${task.completed 
           ? 'bg-dark-800/30 border-dark-600/20' 
-          : 'bg-dark-800/60 border-dark-600/40 hover:bg-dark-700/70 hover:border-dark-500/60 hover:shadow-xl hover:shadow-black/30 hover:-translate-y-0.5'
+          : isBlocked
+            ? 'bg-dark-800/40 border-red-500/30 task-blocked'
+            : 'bg-dark-800/60 border-dark-600/40 hover:bg-dark-700/70 hover:border-dark-500/60 hover:shadow-xl hover:shadow-black/30 hover:-translate-y-0.5'
         }
         ${isExpanded ? 'ring-2 ring-accent/30' : ''}
       `}
     >
+      {/* Blocked indicator overlay */}
+      {isBlocked && !task.completed && (
+        <div className="absolute top-2 right-2">
+          <div className="flex items-center gap-1 px-2 py-0.5 bg-red-500/10 border border-red-500/20 rounded-full">
+            <Lock size={10} className="text-red-400" />
+            <span className="text-[10px] text-red-400 font-medium">
+              {language === 'is' ? 'Blokkað' : 'Blocked'}
+            </span>
+          </div>
+        </div>
+      )}
+      
       {/* Priority indicator bar */}
       <div 
         className="absolute left-0 top-4 bottom-4 w-1 rounded-full transition-all group-hover:h-3/4 group-hover:top-[12.5%]"
-        style={{ backgroundColor: priorityConfig.color }}
+        style={{ backgroundColor: isBlocked ? '#ef4444' : priorityConfig.color }}
       />
 
       <div className="p-4 pl-5">
@@ -655,19 +704,24 @@ function TaskCard({
           
           {/* Checkbox */}
           <button 
-            onClick={(e) => { e.stopPropagation(); onToggle(); }}
+            onClick={(e) => { e.stopPropagation(); if (!isBlocked) onToggle(); }}
             className={`mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all flex-shrink-0 ${
               task.completed 
                 ? 'bg-green-500 border-green-500 shadow-lg shadow-green-500/30' 
-                : 'border-dark-400 hover:border-accent hover:bg-accent/10 hover:scale-110'
+                : isBlocked
+                  ? 'border-red-400/50 cursor-not-allowed'
+                  : 'border-dark-400 hover:border-accent hover:bg-accent/10 hover:scale-110'
             }`}
+            disabled={isBlocked}
+            title={isBlocked ? (language === 'is' ? 'Verkefni er blokkað' : 'Task is blocked') : ''}
           >
             {task.completed && <CheckCircle2 size={12} className="text-white" />}
+            {isBlocked && !task.completed && <Lock size={10} className="text-red-400" />}
           </button>
           
           <div className="flex-1 min-w-0" onClick={onExpand}>
             <h4 className={`text-sm font-medium leading-snug cursor-pointer ${
-              task.completed ? 'line-through text-zinc-500' : 'hover:text-white transition-colors'
+              task.completed ? 'line-through text-zinc-500' : isBlocked ? 'text-zinc-400' : 'hover:text-white transition-colors'
             }`}>
               {task.title}
             </h4>
@@ -675,7 +729,79 @@ function TaskCard({
 
           {/* Actions */}
           <div className={`flex items-center gap-1 transition-opacity duration-150 ${showActions ? 'opacity-100' : 'opacity-0'}`}>
-            {onFocus && !task.completed && !isFocusing && (
+            {/* Dependency button */}
+            {!task.completed && (
+              <div className="relative">
+                <button
+                  onClick={(e) => { e.stopPropagation(); setShowDependencyPicker(!showDependencyPicker) }}
+                  className={`p-1.5 rounded-lg transition-all hover:scale-110 ${
+                    hasBlockedBy 
+                      ? 'bg-orange-500/20 text-orange-400' 
+                      : 'hover:bg-zinc-500/20 text-zinc-500 hover:text-zinc-300'
+                  }`}
+                  title={language === 'is' ? 'Tengingar' : 'Dependencies'}
+                >
+                  <GitBranch size={14} />
+                </button>
+                
+                {/* Dependency Picker Dropdown */}
+                {showDependencyPicker && (
+                  <div 
+                    className="absolute right-0 top-full mt-1 w-64 bg-dark-800 border border-dark-600 rounded-xl shadow-xl z-50 overflow-hidden animate-scale-in"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="p-2 border-b border-dark-600">
+                      <p className="text-xs font-medium text-zinc-400">
+                        {language === 'is' ? 'Blokkað af' : 'Blocked by'}
+                      </p>
+                    </div>
+                    
+                    {/* Current dependencies */}
+                    {blockingTasks.length > 0 && (
+                      <div className="p-2 border-b border-dark-600 space-y-1">
+                        {blockingTasks.map(bt => (
+                          <div key={bt.id} className="flex items-center gap-2 p-2 bg-orange-500/10 rounded-lg">
+                            <Lock size={12} className="text-orange-400 flex-shrink-0" />
+                            <span className="flex-1 text-xs truncate">{bt.title}</span>
+                            <button
+                              onClick={() => handleRemoveDependency(bt.id)}
+                              className="p-1 hover:bg-red-500/20 rounded text-zinc-500 hover:text-red-400"
+                            >
+                              <Unlink size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Add dependency */}
+                    {availableDependencies.length > 0 ? (
+                      <div className="p-2 max-h-48 overflow-y-auto">
+                        <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-2 px-2">
+                          {language === 'is' ? 'Bæta við tengingu' : 'Add dependency'}
+                        </p>
+                        {availableDependencies.map(t => (
+                          <button
+                            key={t.id}
+                            onClick={() => handleAddDependency(t.id)}
+                            className="w-full flex items-center gap-2 p-2 hover:bg-dark-700 rounded-lg text-left transition-colors"
+                          >
+                            <Link size={12} className="text-zinc-500 flex-shrink-0" />
+                            <span className="flex-1 text-xs truncate">{t.title}</span>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-4 text-center text-xs text-zinc-500">
+                        {language === 'is' ? 'Engin verkefni tiltæk' : 'No tasks available'}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {onFocus && !task.completed && !isFocusing && !isBlocked && (
               <button
                 onClick={(e) => { e.stopPropagation(); onFocus(); }}
                 className="p-1.5 hover:bg-accent/20 rounded-lg transition-all hover:scale-110"
@@ -702,6 +828,14 @@ function TaskCard({
             {priorityConfig.label}
           </span>
           
+          {/* Blocked By Badge */}
+          {hasBlockedBy && blockingTasks.some(bt => !bt.completed) && (
+            <Badge variant="danger" size="sm">
+              <Lock size={10} />
+              {blockingTasks.filter(bt => !bt.completed).length} {language === 'is' ? 'í bið' : 'blocking'}
+            </Badge>
+          )}
+          
           {/* Due Date */}
           {dueInfo && !task.completed && (
             <Badge variant={dueInfo.urgent ? 'danger' : 'default'} size="sm">
@@ -715,6 +849,14 @@ function TaskCard({
             <Badge variant="accent" size="sm">
               <Timer size={10} />
               {timeSpent}
+            </Badge>
+          )}
+          
+          {/* AI Suggested indicator */}
+          {task.aiPriority && (
+            <Badge variant="accent" size="sm" className="ai-suggested">
+              <Sparkles size={10} />
+              AI
             </Badge>
           )}
         </div>

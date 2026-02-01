@@ -16,10 +16,71 @@ import {
   Bell,
   CheckSquare,
   ArrowRight,
-  RefreshCw
+  RefreshCw,
+  Timer,
+  GitBranch,
+  Link,
+  Smartphone,
+  Palette
 } from 'lucide-react'
 
 const changelog = [
+  {
+    version: '5.0.0',
+    date: 'February 2026',
+    title: 'The Pro Update',
+    features: [
+      {
+        icon: Palette,
+        title: 'Linear-Style UI',
+        titleIs: 'Linear-stíll viðmót',
+        description: 'Complete redesign with Inter font, new dark palette, glassmorphism, and spring animations.',
+        descriptionIs: 'Fullkomin endurnýjun með Inter letri, nýjum dökkum litum, glassmorphism og spring hreyfimyndum.'
+      },
+      {
+        icon: Timer,
+        title: 'Time Tracking',
+        titleIs: 'Tímamæling',
+        description: 'Track work sessions by project/task. Timer in sidebar, session history, weekly reports, CSV export.',
+        descriptionIs: 'Fylgstu með vinnulotum eftir verkefnum. Tímamælir í hliðarstiku, lotusaga, vikuskýrslur, CSV útflutningur.'
+      },
+      {
+        icon: Link,
+        title: 'Task Dependencies',
+        titleIs: 'Verkefnatengingar',
+        description: 'Mark tasks as blocked by others. Visual indicators, auto-blocking prevents completion until deps done.',
+        descriptionIs: 'Merktu verkefni sem blokkuð af öðrum. Sjónræn merki, sjálfvirk blokkun kemur í veg fyrir að ljúka þar til tengingar kláraðar.'
+      },
+      {
+        icon: Bell,
+        title: 'Notifications',
+        titleIs: 'Tilkynningar',
+        description: 'Due soon, overdue, streak at risk alerts. Quiet hours, notification preferences.',
+        descriptionIs: 'Tilkynningar um skiladaga, seinkaðar, streak í hættu. Þagnartímar, tilkynningastillingar.'
+      },
+      {
+        icon: GitBranch,
+        title: 'Roadmap View',
+        titleIs: 'Tímalína',
+        description: 'Gantt-style timeline. Week/Month/Quarter zoom, today marker, color-coded by project.',
+        descriptionIs: 'Gantt-stíls tímalína. Viku/Mánaðar/Ársfjórðungs aðdráttur, dagsetning dagsins, litamerkingar eftir verkefnum.'
+      },
+      {
+        icon: Calendar,
+        title: 'Calendar Sync',
+        titleIs: 'Dagatal',
+        description: 'Google Calendar OAuth ready, Apple Calendar iCal export. Two-way sync support.',
+        descriptionIs: 'Google Calendar OAuth tilbúið, Apple Calendar iCal útflutningur. Tvíátta samstilling.'
+      },
+      {
+        icon: Smartphone,
+        title: 'Mobile Ready',
+        titleIs: 'Snjallsíma tilbúið',
+        description: 'Responsive breakpoints for tablet and mobile. Touch-optimized with 44px targets.',
+        descriptionIs: 'Sveigjanleg stærð fyrir spjaldtölvur og síma. Snertivænt með 44px marksvæðum.'
+      },
+    ]
+  },
   {
     version: '4.3.0',
     date: 'February 2026',

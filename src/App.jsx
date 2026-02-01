@@ -22,6 +22,11 @@ import StatsView from './components/StatsView'
 import NotesView from './components/NotesView'
 import OnboardingModal from './components/OnboardingModal'
 import RecurringTasksModal from './components/RecurringTasksModal'
+// v5.0.0 imports
+import TimeTracker from './components/TimeTracker'
+import NotificationSystem, { useNotificationChecker } from './components/NotificationSystem'
+import RoadmapView from './components/RoadmapView'
+import CalendarSync from './components/CalendarSync'
 import { ACCENT_COLORS } from './store/useStore'
 import { requestNotificationPermission } from './utils/notifications'
 
@@ -57,8 +62,17 @@ function App() {
     setPomodoroOpen,
     focusProject,
     quickCaptureExpanded,
-    setQuickCaptureExpanded
+    setQuickCaptureExpanded,
+    // v5.0.0 state
+    timeTrackerOpen,
+    setTimeTrackerOpen,
+    notificationsPanelOpen,
+    setNotificationsPanelOpen,
+    activeTimeSession
   } = useStore()
+
+  // v5.0.0 - Calendar Sync modal
+  const [calendarSyncOpen, setCalendarSyncOpen] = useState(false)
 
   // Local state for quick capture if not in store
   const [localQuickCapture, setLocalQuickCapture] = useState(false)
@@ -76,6 +90,9 @@ function App() {
     seedProjectTasks()
     recalculateAllStreaks()
   }, [seedProjectTasks, recalculateAllStreaks])
+
+  // v5.0.0 - Use notification checker hook
+  useNotificationChecker()
 
   // Request notification permission on mount if enabled
   useEffect(() => {
@@ -119,9 +136,11 @@ function App() {
   // Apply accent color
   useEffect(() => {
     const root = document.documentElement
-    const color = ACCENT_COLORS[accentColor] || ACCENT_COLORS.blue
+    const color = ACCENT_COLORS[accentColor] || ACCENT_COLORS.indigo
     root.style.setProperty('--accent', color)
-    root.style.setProperty('--accent-glow', `${color}26`)
+    root.style.setProperty('--accent-hover', color + 'dd')
+    root.style.setProperty('--accent-muted', color + '26')
+    root.style.setProperty('--accent-glow', color + '40')
   }, [accentColor])
 
   // Keyboard shortcuts
@@ -164,6 +183,12 @@ function App() {
         }
       }
 
+      // Cmd/Ctrl + T for Time Tracker (v5.0.0)
+      if ((e.metaKey || e.ctrlKey) && e.key === 't') {
+        e.preventDefault()
+        setTimeTrackerOpen(true)
+      }
+
       // ? for keyboard shortcuts help (only when not typing)
       if (e.key === '?' && !isTyping) {
         e.preventDefault()
@@ -176,12 +201,14 @@ function App() {
         setCommandPaletteOpen(false)
         setSettingsOpen(false)
         setKeyboardShortcutsOpen(false)
+        setTimeTrackerOpen(false)
+        setNotificationsPanelOpen(false)
       }
     }
     
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [setQuickAddOpen, setCommandPaletteOpen, setSettingsOpen, setKeyboardShortcutsOpen, setQuickIdeaMode])
+  }, [setQuickAddOpen, setCommandPaletteOpen, setSettingsOpen, setKeyboardShortcutsOpen, setQuickIdeaMode, setTimeTrackerOpen, setNotificationsPanelOpen])
 
   // Focus timer tick
   useEffect(() => {
@@ -210,13 +237,15 @@ function App() {
         return <StatsView />
       case 'notes':
         return <NotesView />
+      case 'roadmap':
+        return <RoadmapView />
       default:
         return <Dashboard />
     }
   }
 
   return (
-    <div className="flex flex-col h-screen bg-dark-950">
+    <div className="flex flex-col h-screen bg-[var(--bg-primary)]">
       {/* Custom Title Bar */}
       <TitleBar />
       
@@ -224,10 +253,12 @@ function App() {
       <div className="noise-overlay" />
       
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
+        <Sidebar 
+          onOpenCalendarSync={() => setCalendarSyncOpen(true)}
+        />
         <main className="flex-1 overflow-auto relative">
           {/* Subtle gradient overlay at top */}
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-dark-950/50 to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[var(--bg-primary)]/50 to-transparent pointer-events-none z-10" />
           {renderView()}
         </main>
       
@@ -243,6 +274,11 @@ function App() {
         {weeklyReviewOpen && <WeeklyReview onClose={() => setWeeklyReviewOpen(false)} />}
         {onboardingOpen && <OnboardingModal />}
         {recurringOpen && <RecurringTasksModal onClose={() => setRecurringOpen(false)} />}
+        
+        {/* v5.0.0 Modals */}
+        {timeTrackerOpen && <TimeTracker onClose={() => setTimeTrackerOpen(false)} />}
+        {notificationsPanelOpen && <NotificationSystem onClose={() => setNotificationsPanelOpen(false)} />}
+        {calendarSyncOpen && <CalendarSync onClose={() => setCalendarSyncOpen(false)} />}
         
         {/* Quick Capture Bar (Floating) */}
         <QuickCaptureBar 
