@@ -253,6 +253,13 @@ h1, h2, h3, h4, h5, h6 {
 .animate-bounce-subtle { animation: bounce-subtle 0.4s var(--ease-spring); }
 .animate-glow { animation: glow 2s ease-in-out infinite; }
 .animate-spin { animation: spin 1s linear infinite; }
+.animate-task-complete { animation: taskComplete 500ms var(--ease-out); }
+
+@keyframes taskComplete {
+  0% { opacity: 1; transform: scale(1); }
+  30% { opacity: 1; transform: scale(1.02); background: rgba(34, 197, 94, 0.15); }
+  100% { opacity: 0.5; transform: scale(0.98); }
+}
 
 /* View transitions */
 .view-transition {

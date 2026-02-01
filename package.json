@@ -1,6 +1,6 @@
 {
   "name": "arnarflow",
-  "version": "5.2.1",
+  "version": "5.3.0",
   "description": "Personal project management for Arnar",
   "main": "electron.js",
   "scripts": {
