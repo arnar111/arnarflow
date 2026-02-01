@@ -35,26 +35,38 @@ export const DEFAULT_TAGS = [
   { id: 'blocked', name: 'Blocked', nameIs: 'Blokkað', color: 'slate' },
 ]
 
-function TagBadge({ tag, size = 'sm', onRemove, onClick, language = 'en' }) {
+function TagBadge({ tag, size = 'sm', onRemove, onClick, language = 'en', showDot = true }) {
   const colors = TAG_COLORS[tag.color] || TAG_COLORS.slate
   const name = language === 'is' && tag.nameIs ? tag.nameIs : tag.name
   
   const sizeClasses = {
-    xs: 'text-2xs px-1.5 py-0.5',
-    sm: 'text-xs px-2 py-0.5',
-    md: 'text-sm px-2.5 py-1',
+    xs: 'text-2xs px-2 py-0.5',
+    sm: 'text-xs px-2.5 py-1',
+    md: 'text-sm px-3 py-1.5',
+  }
+
+  const dotSizes = {
+    xs: 'w-1.5 h-1.5',
+    sm: 'w-2 h-2',
+    md: 'w-2.5 h-2.5',
   }
   
   return (
     <span
       onClick={onClick}
-      className={`inline-flex items-center gap-1 rounded-full font-medium transition-all ${sizeClasses[size]} ${onClick ? 'cursor-pointer hover:opacity-80' : ''}`}
+      className={`inline-flex items-center gap-1.5 rounded-full font-medium transition-all ${sizeClasses[size]} ${onClick ? 'cursor-pointer hover:opacity-80' : ''}`}
       style={{
         backgroundColor: colors.bg,
         color: colors.text,
         border: `1px solid ${colors.border}`,
       }}
     >
+      {showDot && (
+        <span 
+          className={`${dotSizes[size]} rounded-full flex-shrink-0`}
+          style={{ backgroundColor: colors.text }}
+        />
+      )}
       {name}
       {onRemove && (
         <button

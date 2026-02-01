@@ -1,6 +1,6 @@
 {
   "name": "arnarflow",
-  "version": "5.0.0",
+  "version": "5.1.1",
   "description": "Personal project management for Arnar",
   "main": "electron.js",
   "scripts": {
@@ -10,6 +10,8 @@
     "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
     "electron:build": "vite build && electron-builder",
     "electron:publish": "vite build && electron-builder --publish always",
+    "electron:publish:fast": "vite build && electron-builder --publish always --config.compression=store",
+    "electron:publish:skip-build": "electron-builder --publish always",
     "electron:preview": "electron ."
   },
   "dependencies": {
@@ -41,11 +43,33 @@
     "files": [
       "dist/**/*",
       "electron.js",
-      "preload.js"
+      "preload.js",
+      "package.json"
     ],
+    "extraMetadata": {
+      "main": "electron.js"
+    },
+    "nodeGypRebuild": false,
+    "npmRebuild": false,
+    "buildDependenciesFromSource": false,
+    "compression": "normal",
+    "electronDownload": {
+      "cache": "./electron-cache"
+    },
     "win": {
-      "target": "nsis",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
       "icon": "public/icon.ico"
+    },
+    "asar": true,
+    "asarUnpack": [],
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false
     },
     "publish": {
       "provider": "github",

@@ -22,6 +22,7 @@ import StatsView from './components/StatsView'
 import NotesView from './components/NotesView'
 import OnboardingModal from './components/OnboardingModal'
 import RecurringTasksModal from './components/RecurringTasksModal'
+import BlaerSync from './components/BlaerSync'
 // v5.0.0 imports
 import TimeTracker from './components/TimeTracker'
 import NotificationSystem, { useNotificationChecker } from './components/NotificationSystem'
@@ -286,6 +287,9 @@ function App() {
           onExpand={() => toggleQuickCapture(true)}
           onCollapse={() => toggleQuickCapture(false)}
         />
+        
+        {/* Blær AI Sync */}
+        <BlaerSync />
       </div>
     </div>
   )

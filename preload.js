@@ -14,5 +14,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   
   // App info
-  getAppVersion: () => ipcRenderer.invoke('get-app-version')
+  getAppVersion: () => ipcRenderer.invoke('get-app-version'),
+  
+  // Blær Sync
+  readSyncFile: () => ipcRenderer.invoke('read-sync-file')
 })

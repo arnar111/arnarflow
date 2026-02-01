@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const { autoUpdater } = require('electron-updater')
 const path = require('path')
+const fs = require('fs')
 
 let mainWindow
 
@@ -101,6 +102,36 @@ ipcMain.on('install-update', () => {
 // Get app version
 ipcMain.handle('get-app-version', () => {
   return app.getVersion()
+})
+
+// Blær Sync - read sync file
+ipcMain.handle('read-sync-file', async () => {
+  try {
+    // Try multiple locations
+    const locations = [
+      path.join(__dirname, 'public', 'blaer-sync.json'),
+      path.join(__dirname, 'blaer-sync.json'),
+      path.join(app.getPath('userData'), 'blaer-sync.json'),
+      'C:\\Users\\Administrator\\arnarflow\\public\\blaer-sync.json'
+    ]
+    
+    for (const filePath of locations) {
+      try {
+        if (fs.existsSync(filePath)) {
+          const data = fs.readFileSync(filePath, 'utf8')
+          return JSON.parse(data)
+        }
+      } catch (e) {
+        continue
+      }
+    }
+    
+    // Return empty if not found
+    return { tasks: [], ideas: [], notes: [] }
+  } catch (error) {
+    console.error('Failed to read sync file:', error)
+    return { tasks: [], ideas: [], notes: [] }
+  }
 })
 
 app.whenReady().then(createWindow)

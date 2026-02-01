@@ -668,12 +668,12 @@ function TaskCard({
         group relative rounded-xl border transition-all duration-200
         ${isDragging ? 'opacity-50 scale-95 rotate-1' : ''}
         ${task.completed 
-          ? 'bg-dark-800/30 border-dark-600/20' 
+          ? 'bg-dark-800/40 border-dark-700/40' 
           : isBlocked
-            ? 'bg-dark-800/40 border-red-500/30 task-blocked'
-            : 'bg-dark-800/60 border-dark-600/40 hover:bg-dark-700/70 hover:border-dark-500/60 hover:shadow-xl hover:shadow-black/30 hover:-translate-y-0.5'
+            ? 'bg-dark-800/50 border-red-500/20 task-blocked'
+            : 'bg-dark-800/50 border-dark-600/30 hover:bg-dark-700/60 hover:border-dark-500/40 hover:shadow-lg hover:shadow-black/20 hover:-translate-y-0.5'
         }
-        ${isExpanded ? 'ring-2 ring-accent/30' : ''}
+        ${isExpanded ? 'ring-1 ring-accent/20' : ''}
       `}
     >
       {/* Blocked indicator overlay */}
@@ -720,11 +720,20 @@ function TaskCard({
           </button>
           
           <div className="flex-1 min-w-0" onClick={onExpand}>
-            <h4 className={`text-sm font-medium leading-snug cursor-pointer ${
-              task.completed ? 'line-through text-zinc-500' : isBlocked ? 'text-zinc-400' : 'hover:text-white transition-colors'
+            {/* Bold Title - White, prominent */}
+            <h4 className={`text-[15px] font-bold leading-snug cursor-pointer tracking-tight ${
+              task.completed ? 'line-through text-zinc-500' : isBlocked ? 'text-zinc-400' : 'text-white'
             }`}>
               {task.title}
             </h4>
+            {/* Description - Gray muted, smaller, lighter weight */}
+            {task.description && (
+              <p className={`text-[13px] text-[#9ca3af] mt-1.5 leading-relaxed line-clamp-2 font-normal ${
+                task.completed ? 'line-through opacity-60' : ''
+              }`}>
+                {task.description}
+              </p>
+            )}
           </div>
 
           {/* Actions */}
@@ -819,45 +828,58 @@ function TaskCard({
           </div>
         </div>
         
-        {/* Metadata Row */}
-        <div className="flex items-center gap-2 flex-wrap mt-3 ml-8">
-          {/* Priority Badge */}
-          <span className={`text-2xs px-2.5 py-1 rounded-full border font-medium ${priorityConfig.bg} ${priorityConfig.border}`}
-            style={{ color: priorityConfig.color }}
+        {/* Tags Row - Colored dot + label style */}
+        <div className="flex items-center gap-2 flex-wrap mt-4 ml-8">
+          {/* Priority Tag - colored dot + label */}
+          <span 
+            className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full font-medium border"
+            style={{ 
+              backgroundColor: `${priorityConfig.color}15`,
+              borderColor: `${priorityConfig.color}30`,
+              color: priorityConfig.color 
+            }}
           >
+            <span 
+              className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+              style={{ backgroundColor: priorityConfig.color }}
+            />
             {priorityConfig.label}
           </span>
           
-          {/* Blocked By Badge */}
+          {/* Blocked Tag - red dot + label */}
           {hasBlockedBy && blockingTasks.some(bt => !bt.completed) && (
-            <Badge variant="danger" size="sm">
-              <Lock size={10} />
+            <span className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full font-medium bg-red-500/10 border border-red-500/30 text-red-400">
+              <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-red-500" />
               {blockingTasks.filter(bt => !bt.completed).length} {language === 'is' ? 'í bið' : 'blocking'}
-            </Badge>
+            </span>
           )}
           
-          {/* Due Date */}
+          {/* Due Date Tag - colored dot + label */}
           {dueInfo && !task.completed && (
-            <Badge variant={dueInfo.urgent ? 'danger' : 'default'} size="sm">
-              <Calendar size={10} />
+            <span className={`inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full font-medium border ${
+              dueInfo.urgent 
+                ? 'bg-red-500/10 border-red-500/30 text-red-400' 
+                : 'bg-zinc-500/10 border-zinc-500/30 text-zinc-400'
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dueInfo.urgent ? 'bg-red-500' : 'bg-zinc-400'}`} />
               {dueInfo.text}
-            </Badge>
+            </span>
           )}
           
-          {/* Time Tracked */}
+          {/* Time Tracked Tag - purple dot + label */}
           {timeSpent && (
-            <Badge variant="accent" size="sm">
-              <Timer size={10} />
+            <span className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full font-medium bg-purple-500/10 border border-purple-500/30 text-purple-400">
+              <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-purple-500" />
               {timeSpent}
-            </Badge>
+            </span>
           )}
           
-          {/* AI Suggested indicator */}
+          {/* AI Tag - accent dot + label */}
           {task.aiPriority && (
-            <Badge variant="accent" size="sm" className="ai-suggested">
-              <Sparkles size={10} />
+            <span className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full font-medium bg-accent/10 border border-accent/30 text-accent">
+              <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-accent" />
               AI
-            </Badge>
+            </span>
           )}
         </div>
       </div>

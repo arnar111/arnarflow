@@ -301,29 +301,38 @@ function Dashboard() {
                   return (
                     <li 
                       key={task.id}
-                      className="flex items-center gap-3 p-3 bg-dark-800/50 rounded-xl border border-dark-600/30 hover:bg-dark-800 hover:border-dark-500 transition-all group"
+                      className="flex items-center gap-3 p-3.5 bg-dark-800/50 rounded-xl border border-dark-600/30 hover:bg-dark-700/60 hover:border-dark-500/40 transition-all group"
                     >
                       <button 
                         onClick={() => toggleTask(task.id)}
                         className="task-checkbox"
                       />
-                      <span className="flex-1 text-sm truncate">{task.title}</span>
+                      <span className="flex-1 text-sm font-semibold text-white truncate">{task.title}</span>
                       
                       {dueLabel && (
-                        <span className={`text-2xs flex items-center gap-1 ${
-                          isOverdue ? 'text-red-400' : 'text-zinc-500'
+                        <span className={`inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded-full font-medium border ${
+                          isOverdue 
+                            ? 'bg-red-500/10 border-red-500/30 text-red-400' 
+                            : 'bg-zinc-500/10 border-zinc-500/30 text-zinc-400'
                         }`}>
-                          <Calendar size={10} />
+                          <span className={`w-1.5 h-1.5 rounded-full ${isOverdue ? 'bg-red-400' : 'bg-zinc-400'}`} />
                           {dueLabel}
                         </span>
                       )}
                       
                       {project && (
                         <span 
-                          className="text-2xs px-1.5 py-0.5 rounded flex items-center gap-1"
-                          style={{ backgroundColor: `${project.color}15`, color: project.color }}
+                          className="inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded-full font-medium border"
+                          style={{ 
+                            backgroundColor: `${project.color}15`, 
+                            borderColor: `${project.color}30`,
+                            color: project.color 
+                          }}
                         >
-                          <DynamicIcon name={project.icon} size={10} />
+                          <span 
+                            className="w-1.5 h-1.5 rounded-full"
+                            style={{ backgroundColor: project.color }}
+                          />
                           {project.name}
                         </span>
                       )}

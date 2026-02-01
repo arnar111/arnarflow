@@ -1,5 +1,5 @@
 import React from 'react'
-import useStore from '../store/useStore'
+import useStore, { APP_VERSION } from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
 import { TimeTrackerWidget } from './TimeTracker'
@@ -20,7 +20,6 @@ import {
   GitBranch,
   Timer,
   Bell,
-  CalendarSync
 } from 'lucide-react'
 
 function Sidebar({ onOpenCalendarSync }) {
@@ -228,7 +227,7 @@ function Sidebar({ onOpenCalendarSync }) {
       {/* Version */}
       <div className="px-4 py-2 text-center">
         <span className="text-2xs text-[var(--text-muted)] font-mono">
-          v{useStore.getState().appVersion}
+          v{APP_VERSION}
         </span>
       </div>
     </aside>

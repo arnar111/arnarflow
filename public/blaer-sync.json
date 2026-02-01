@@ -1,0 +1,58 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-02-01T12:30:00Z",
+  "source": "Blær AI",
+  "tasks": [
+    {
+      "title": "Deploy Stripe Cloud Functions",
+      "description": "Run firebase deploy --only functions to enable payments",
+      "projectId": "eignamat",
+      "priority": "high",
+      "dueDate": "2026-02-02",
+      "tags": ["deployment"]
+    },
+    {
+      "title": "Set up Stripe webhook in dashboard",
+      "description": "Add webhook endpoint URL and select checkout.session.completed event",
+      "projectId": "eignamat",
+      "priority": "high",
+      "dueDate": "2026-02-02",
+      "tags": ["deployment"]
+    },
+    {
+      "title": "Test TV Mode on real display",
+      "description": "Open TakkArena on office TV and test fullscreen mode",
+      "projectId": "takkarena",
+      "priority": "medium",
+      "dueDate": "2026-02-03",
+      "tags": ["testing"]
+    },
+    {
+      "title": "Add PersonalBestsWidget to Dashboard",
+      "description": "Import and add the new widget component to the main dashboard",
+      "projectId": "takkarena",
+      "priority": "low",
+      "tags": ["feature"]
+    },
+    {
+      "title": "Fix ArnarFlow build issues",
+      "description": "Run npm install from PowerShell to fix rollup binary mismatch",
+      "projectId": "arnar",
+      "priority": "medium",
+      "tags": ["bug"]
+    }
+  ],
+  "ideas": [
+    {
+      "title": "AI Bookkeeping SaaS for Icelandic SMBs",
+      "content": "Auto-reconcile with DK/Navision. Target: small businesses. Price: 4.900-14.900 kr/mán",
+      "category": "product"
+    },
+    {
+      "title": "Wearable Health Coach App",
+      "content": "Connect Apple Watch/Fitbit data with AI for personalized health advice",
+      "category": "product"
+    }
+  ],
+  "notes": []
+}
