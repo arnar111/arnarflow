@@ -559,6 +559,15 @@ function ProjectView() {
                 <List size={18} />
               </button>
             </div>
+            
+            {/* Keyboard Nav Hint */}
+            {focusedTaskIndex >= 0 && (
+              <div className="flex items-center gap-2 text-2xs text-zinc-500 bg-dark-800/50 px-2 py-1 rounded-lg border border-dark-600/30 animate-fade-in">
+                <span><kbd className="kbd text-2xs">J</kbd>/<kbd className="kbd text-2xs">K</kbd> {language === 'is' ? 'færa' : 'move'}</span>
+                <span><kbd className="kbd text-2xs">Enter</kbd> {language === 'is' ? 'opna' : 'open'}</span>
+                <span><kbd className="kbd text-2xs">X</kbd> {language === 'is' ? 'klára' : 'done'}</span>
+              </div>
+            )}
           </div>
         </div>
         
