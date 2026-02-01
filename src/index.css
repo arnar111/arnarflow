@@ -244,6 +244,7 @@ h1, h2, h3, h4, h5, h6 {
 .animate-fade-in { animation: fadeIn 150ms var(--ease-out); }
 .animate-fade-in-scale { animation: fadeInScale 150ms var(--ease-out); }
 .animate-slide-in { animation: slideInRight 150ms var(--ease-out); }
+.animate-slide-in-right { animation: slideInRight 200ms var(--ease-out); }
 .animate-slide-up { animation: slideInUp 200ms var(--ease-out); }
 .animate-slide-down { animation: slideInDown 200ms var(--ease-out); }
 .animate-scale-in { animation: scaleIn 150ms var(--ease-spring); }

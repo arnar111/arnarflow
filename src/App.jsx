@@ -28,6 +28,7 @@ import TimeTracker from './components/TimeTracker'
 import NotificationSystem, { useNotificationChecker } from './components/NotificationSystem'
 import RoadmapView from './components/RoadmapView'
 import CalendarSync from './components/CalendarSync'
+import TaskDetailPanel from './components/TaskDetailPanel'
 import { ACCENT_COLORS } from './store/useStore'
 import { requestNotificationPermission } from './utils/notifications'
 
@@ -69,7 +70,10 @@ function App() {
     setTimeTrackerOpen,
     notificationsPanelOpen,
     setNotificationsPanelOpen,
-    activeTimeSession
+    activeTimeSession,
+    // v5.1.2 state
+    selectedTaskId,
+    setSelectedTaskId
   } = useStore()
 
   // v5.0.0 - Calendar Sync modal
@@ -290,6 +294,14 @@ function App() {
         
         {/* Blær AI Sync */}
         <BlaerSync />
+        
+        {/* Task Detail Panel (v5.1.2) */}
+        {selectedTaskId && (
+          <TaskDetailPanel 
+            taskId={selectedTaskId} 
+            onClose={() => setSelectedTaskId(null)} 
+          />
+        )}
       </div>
     </div>
   )

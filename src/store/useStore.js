@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const APP_VERSION = '5.2.0'
+const APP_VERSION = '5.2.1'
 
 const PROJECTS = [
   { id: 'eignamat', name: 'Eignamat', icon: 'Home', color: '#10b981', description: 'AI Property Valuation SaaS' },
@@ -786,6 +786,10 @@ const useStore = create(
       setRoadmapViewOpen: (open) => set({ roadmapViewOpen: open }),
       roadmapZoom: 'month', // 'week' | 'month' | 'quarter'
       setRoadmapZoom: (zoom) => set({ roadmapZoom: zoom }),
+      
+      // v5.1.2 - Task Detail Panel
+      selectedTaskId: null,
+      setSelectedTaskId: (id) => set({ selectedTaskId: id }),
       
       // Onboarding
       onboardingComplete: false,

@@ -136,7 +136,8 @@ function ProjectView() {
     updateTask,
     setFocusProject,
     setFocusTask,
-    focusProject
+    focusProject,
+    setSelectedTaskId
   } = useStore()
   
   const [viewMode, setViewMode] = useState('kanban')
@@ -146,7 +147,7 @@ function ProjectView() {
   const [draggedTask, setDraggedTask] = useState(null)
   const [dragOverColumn, setDragOverColumn] = useState(null)
   const [dragOverTaskId, setDragOverTaskId] = useState(null)
-  const [expandedCard, setExpandedCard] = useState(null)
+  // expandedCard state removed - now using TaskDetailPanel via setSelectedTaskId
   const [blaerCopied, setBlaerCopied] = useState(false)
   
   const project = projects.find(p => p.id === selectedProject)
@@ -569,8 +570,7 @@ function ProjectView() {
                             formatTime={formatTime}
                             isFocusing={focusProject === project.id}
                             isDragging={draggedTask?.id === task.id}
-                            isExpanded={expandedCard === task.id}
-                            onExpand={() => setExpandedCard(expandedCard === task.id ? null : task.id)}
+                            onExpand={() => setSelectedTaskId(task.id)}
                             t={t}
                             language={language}
                           />
@@ -615,7 +615,6 @@ function TaskCard({
   formatTime, 
   isFocusing, 
   isDragging,
-  isExpanded,
   onExpand,
   t,
   language
@@ -673,7 +672,6 @@ function TaskCard({
             ? 'bg-dark-800/50 border-red-500/20 task-blocked'
             : 'bg-dark-800/50 border-dark-600/30 hover:bg-dark-700/60 hover:border-dark-500/40 hover:shadow-lg hover:shadow-black/20 hover:-translate-y-0.5'
         }
-        ${isExpanded ? 'ring-1 ring-accent/20' : ''}
       `}
     >
       {/* Blocked indicator overlay */}

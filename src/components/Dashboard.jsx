@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import useStore from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
@@ -20,7 +20,15 @@ import {
   Sparkles,
   Trophy,
   BarChart3,
-  Square
+  Square,
+  Plus,
+  Rocket,
+  PartyPopper,
+  RefreshCw,
+  ExternalLink,
+  MoreHorizontal,
+  Flag,
+  Timer
 } from 'lucide-react'
 import { checkTaskReminders, checkHabitReminders } from '../utils/notifications'
 
@@ -41,12 +49,15 @@ function Dashboard() {
     focusTask,
     setActiveView,
     setSelectedProject,
+    setQuickAddOpen,
     notificationsEnabled,
     taskRemindersEnabled,
     habitRemindersEnabled,
     lastNotificationCheck,
     setLastNotificationCheck
   } = useStore()
+
+  const [completedTaskId, setCompletedTaskId] = useState(null)
 
   const today = format(new Date(), 'yyyy-MM-dd')
   const openTasks = tasks.filter(t => !t.completed)
@@ -153,10 +164,28 @@ function Dashboard() {
     return 'Good evening'
   }
 
+  const handleToggleTask = (taskId) => {
+    setCompletedTaskId(taskId)
+    toggleTask(taskId)
+    // Clear animation state after animation
+    setTimeout(() => setCompletedTaskId(null), 600)
+  }
+
+  // Priority colors
+  const getPriorityColor = (priority) => {
+    const colors = {
+      urgent: '#ef4444',
+      high: '#f97316',
+      medium: '#eab308',
+      low: '#22c55e'
+    }
+    return colors[priority] || '#64748b'
+  }
+
   return (
     <div className="p-8 max-w-6xl animate-fade-in">
       {/* Header */}
-      <header className="mb-8">
+      <header className="mb-6">
         <p className="text-zinc-500 text-sm mb-1">
           {format(new Date(), 'EEEE, MMMM d')}
         </p>
@@ -164,6 +193,43 @@ function Dashboard() {
           {getTimeOfDayGreeting()}, <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Arnar</span>
         </h1>
       </header>
+
+      {/* Quick Actions Bar */}
+      <div className="flex items-center gap-2 mb-6">
+        <button
+          onClick={() => setQuickAddOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-light rounded-xl text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98]"
+        >
+          <Plus size={16} />
+          {language === 'is' ? 'Nýtt verkefni' : 'New Task'}
+        </button>
+        <button
+          onClick={() => setActiveView('habits')}
+          className="flex items-center gap-2 px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-xl text-sm text-zinc-400 hover:text-white transition-all"
+        >
+          <Target size={16} />
+          {language === 'is' ? 'Venjur' : 'Habits'}
+          {getHabitsDoneToday() < habits.length && (
+            <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+          )}
+        </button>
+        <button
+          onClick={() => setActiveView('ideas')}
+          className="flex items-center gap-2 px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-xl text-sm text-zinc-400 hover:text-white transition-all"
+        >
+          <Lightbulb size={16} />
+          {language === 'is' ? 'Hugmyndir' : 'Ideas'}
+          {inboxIdeas > 0 && (
+            <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 text-2xs rounded-full">
+              {inboxIdeas}
+            </span>
+          )}
+        </button>
+        <div className="flex-1" />
+        <span className="text-2xs text-zinc-600">
+          <kbd className="kbd">⌘K</kbd> {language === 'is' ? 'flýtilisti' : 'quick add'}
+        </span>
+      </div>
 
       {/* Overdue Alert */}
       {overdueTasks.length > 0 && (
@@ -179,9 +245,9 @@ function Dashboard() {
           </div>
           <button 
             onClick={() => setActiveView('calendar')}
-            className="text-xs text-red-400 hover:text-red-300 transition-colors"
+            className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs rounded-lg transition-colors"
           >
-            {language === 'is' ? 'Sjá allt →' : 'View all →'}
+            {language === 'is' ? 'Sjá allt' : 'View all'} →
           </button>
         </div>
       )}
@@ -194,6 +260,7 @@ function Dashboard() {
           value={completedToday}
           color="#22c55e"
           gradient="from-green-500/20 to-emerald-500/10"
+          subtext={language === 'is' ? 'í dag' : 'today'}
         />
         <StatCard 
           icon={Circle}
@@ -201,6 +268,7 @@ function Dashboard() {
           value={openTasks.length}
           color="#3b82f6"
           gradient="from-blue-500/20 to-cyan-500/10"
+          subtext={language === 'is' ? 'eftir' : 'remaining'}
         />
         <StatCard 
           icon={Lightbulb}
@@ -209,6 +277,7 @@ function Dashboard() {
           color="#f59e0b"
           gradient="from-amber-500/20 to-yellow-500/10"
           onClick={() => setActiveView('ideas')}
+          subtext={language === 'is' ? 'í innhólfi' : 'in inbox'}
         />
         <StatCard 
           icon={Target}
@@ -217,13 +286,16 @@ function Dashboard() {
           color="#a855f7"
           gradient="from-purple-500/20 to-pink-500/10"
           onClick={() => setActiveView('habits')}
+          subtext={language === 'is' ? 'lokið' : 'completed'}
         />
         <StatCard 
           icon={Flame}
           label={t('habits.streak')}
-          value={`${currentStreak}${language === 'is' ? 'd' : 'd'}`}
+          value={currentStreak}
+          valueSuffix={language === 'is' ? ' d' : 'd'}
           color="#f97316"
           gradient="from-orange-500/20 to-red-500/10"
+          subtext={language === 'is' ? 'dagar' : 'days'}
         />
       </div>
 
@@ -246,10 +318,16 @@ function Dashboard() {
             
             <div className="flex items-end justify-between gap-2 h-24">
               {weeklyActivity.map((day, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                  <div className="w-full flex flex-col items-center justify-end h-16">
+                <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
+                  <div className="w-full flex flex-col items-center justify-end h-16 relative">
+                    {/* Tooltip */}
+                    <div className="absolute -top-8 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                      <div className="bg-dark-700 px-2 py-1 rounded text-2xs text-white whitespace-nowrap">
+                        {day.completed} {language === 'is' ? 'verkefni' : 'tasks'}
+                      </div>
+                    </div>
                     <div 
-                      className={`w-full rounded-t-lg transition-all duration-500 ${
+                      className={`w-full rounded-t-lg transition-all duration-500 cursor-pointer hover:opacity-80 ${
                         day.isToday ? 'bg-accent' : 'bg-dark-600 hover:bg-dark-500'
                       }`}
                       style={{ 
@@ -282,32 +360,47 @@ function Dashboard() {
             </div>
             
             {todaysTasks.length === 0 ? (
-              <div className="text-center py-8">
-                <div className="w-12 h-12 rounded-2xl bg-dark-700 flex items-center justify-center mx-auto mb-3">
-                  <Sparkles size={24} className="text-zinc-600" />
-                </div>
-                <p className="text-zinc-500 text-sm">{t('dashboard.noTasksToday')}</p>
-                <p className="text-zinc-600 text-xs mt-1">
-                  {language === 'is' ? 'Ýttu á' : 'Press'} <kbd className="kbd">⌘K</kbd> {language === 'is' ? 'til að bæta við verkefni' : 'to add a task'}
-                </p>
-              </div>
+              <EmptyTasksState 
+                language={language} 
+                onAddTask={() => setQuickAddOpen(true)}
+                completedToday={completedToday}
+              />
             ) : (
-              <ul className="space-y-2 stagger-children">
+              <ul className="space-y-2">
                 {todaysTasks.map(task => {
                   const project = getProjectById(task.projectId)
                   const dueLabel = formatDueDate(task.dueDate)
                   const isOverdue = task.dueDate && isPast(parseISO(task.dueDate)) && !isToday(parseISO(task.dueDate))
+                  const isCompleting = completedTaskId === task.id
                   
                   return (
                     <li 
                       key={task.id}
-                      className="flex items-center gap-3 p-3.5 bg-dark-800/50 rounded-xl border border-dark-600/30 hover:bg-dark-700/60 hover:border-dark-500/40 transition-all group"
+                      className={`flex items-center gap-3 p-3.5 bg-dark-800/50 rounded-xl border border-dark-600/30 hover:bg-dark-700/60 hover:border-dark-500/40 transition-all group ${
+                        isCompleting ? 'animate-task-complete' : ''
+                      }`}
                     >
                       <button 
-                        onClick={() => toggleTask(task.id)}
-                        className="task-checkbox"
-                      />
-                      <span className="flex-1 text-sm font-semibold text-white truncate">{task.title}</span>
+                        onClick={() => handleToggleTask(task.id)}
+                        className="task-checkbox relative"
+                      >
+                        {isCompleting && (
+                          <span className="absolute inset-0 flex items-center justify-center animate-ping">
+                            <CheckCircle2 size={18} className="text-green-400" />
+                          </span>
+                        )}
+                      </button>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm font-medium text-white truncate block">{task.title}</span>
+                        {task.description && (
+                          <span className="text-2xs text-zinc-500 truncate block mt-0.5">{task.description}</span>
+                        )}
+                      </div>
+                      
+                      {/* Priority indicator */}
+                      {task.priority && task.priority !== 'medium' && (
+                        <Flag size={12} style={{ color: getPriorityColor(task.priority) }} />
+                      )}
                       
                       {dueLabel && (
                         <span className={`inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded-full font-medium border ${
@@ -354,6 +447,17 @@ function Dashboard() {
                 })}
               </ul>
             )}
+
+            {/* Add Task Inline */}
+            {todaysTasks.length > 0 && todaysTasks.length < 5 && (
+              <button
+                onClick={() => setQuickAddOpen(true)}
+                className="w-full mt-3 p-2.5 border border-dashed border-dark-500 hover:border-accent/50 rounded-xl text-zinc-500 hover:text-accent text-sm flex items-center justify-center gap-2 transition-all"
+              >
+                <Plus size={14} />
+                {language === 'is' ? 'Bæta við verkefni' : 'Add task'}
+              </button>
+            )}
           </div>
         </div>
 
@@ -367,7 +471,7 @@ function Dashboard() {
               <Zap size={16} className={focusedProject ? 'text-yellow-400 animate-pulse-subtle' : 'text-yellow-400'} />
               {t('dashboard.focusMode')}
               {focusedProject && (
-                <span className="ml-auto text-2xs px-2 py-0.5 bg-accent/20 text-accent rounded-full">
+                <span className="ml-auto text-2xs px-2 py-0.5 bg-accent/20 text-accent rounded-full animate-pulse">
                   {t('dashboard.focusActive')}
                 </span>
               )}
@@ -401,7 +505,7 @@ function Dashboard() {
                     onClick={() => useStore.getState().setPomodoroOpen(true)}
                     className="px-4 py-2 bg-accent hover:bg-accent/90 rounded-lg text-sm transition-colors flex items-center gap-2"
                   >
-                    <Clock size={14} />
+                    <Timer size={14} />
                     Pomodoro
                   </button>
                   <button
@@ -417,21 +521,27 @@ function Dashboard() {
               <div>
                 <p className="text-zinc-500 text-xs mb-3">{t('dashboard.selectTask')}:</p>
                 <div className="space-y-1.5">
-                  {projects.slice(0, 4).map(project => (
-                    <button
-                      key={project.id}
-                      onClick={() => setFocusProject(project.id)}
-                      className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-dark-700 transition-colors text-left group"
-                    >
-                      <div 
-                        className="w-8 h-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
-                        style={{ backgroundColor: `${project.color}15` }}
+                  {projects.slice(0, 4).map(project => {
+                    const openCount = tasks.filter(t => t.projectId === project.id && !t.completed).length
+                    return (
+                      <button
+                        key={project.id}
+                        onClick={() => setFocusProject(project.id)}
+                        className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-dark-700 transition-colors text-left group"
                       >
-                        <DynamicIcon name={project.icon} size={16} style={{ color: project.color }} />
-                      </div>
-                      <span className="text-sm text-zinc-400 group-hover:text-zinc-200 transition-colors">{project.name}</span>
-                    </button>
-                  ))}
+                        <div 
+                          className="w-8 h-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
+                          style={{ backgroundColor: `${project.color}15` }}
+                        >
+                          <DynamicIcon name={project.icon} size={16} style={{ color: project.color }} />
+                        </div>
+                        <span className="flex-1 text-sm text-zinc-400 group-hover:text-zinc-200 transition-colors">{project.name}</span>
+                        {openCount > 0 && (
+                          <span className="text-2xs text-zinc-600 font-mono">{openCount}</span>
+                        )}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
             )}
@@ -476,7 +586,7 @@ function Dashboard() {
                     </div>
                     <div className="h-1.5 bg-dark-600 rounded-full overflow-hidden">
                       <div 
-                        className="h-full rounded-full transition-all duration-500"
+                        className="h-full rounded-full transition-all duration-500 group-hover:opacity-90"
                         style={{ width: `${progress}%`, backgroundColor: project.color }}
                       />
                     </div>
@@ -491,16 +601,77 @@ function Dashboard() {
   )
 }
 
-function StatCard({ icon: Icon, label, value, color, gradient, onClick }) {
+// Empty state component with contextual messaging
+function EmptyTasksState({ language, onAddTask, completedToday }) {
+  if (completedToday > 0) {
+    // User has completed tasks today - celebrate!
+    return (
+      <div className="text-center py-8">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-500/10 flex items-center justify-center mx-auto mb-3">
+          <PartyPopper size={28} className="text-green-400" />
+        </div>
+        <p className="text-zinc-300 text-sm font-medium">
+          {language === 'is' ? 'Vel gert!' : 'Great work!'}
+        </p>
+        <p className="text-zinc-500 text-xs mt-1">
+          {language === 'is' 
+            ? `Þú hefur lokið ${completedToday} verkefn${completedToday > 1 ? 'um' : 'i'} í dag`
+            : `You've completed ${completedToday} task${completedToday > 1 ? 's' : ''} today`
+          }
+        </p>
+        <button
+          onClick={onAddTask}
+          className="mt-4 px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-xl text-sm text-zinc-400 hover:text-white transition-all inline-flex items-center gap-2"
+        >
+          <Plus size={14} />
+          {language === 'is' ? 'Bæta við fleiri' : 'Add more'}
+        </button>
+      </div>
+    )
+  }
+
+  // No tasks at all
+  return (
+    <div className="text-center py-8">
+      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-blue-500/10 flex items-center justify-center mx-auto mb-3">
+        <Rocket size={28} className="text-accent" />
+      </div>
+      <p className="text-zinc-300 text-sm font-medium">
+        {language === 'is' ? 'Ekkert á dagskrá' : 'No tasks yet'}
+      </p>
+      <p className="text-zinc-500 text-xs mt-1">
+        {language === 'is' ? 'Bættu við verkefni til að byrja daginn' : 'Add a task to start your day'}
+      </p>
+      <button
+        onClick={onAddTask}
+        className="mt-4 px-4 py-2 bg-accent hover:bg-accent-light rounded-xl text-sm font-medium transition-all inline-flex items-center gap-2"
+      >
+        <Plus size={14} />
+        {language === 'is' ? 'Bæta við verkefni' : 'Add task'}
+      </button>
+      <p className="text-zinc-600 text-2xs mt-3">
+        {language === 'is' ? 'eða ýttu á' : 'or press'} <kbd className="kbd">⌘K</kbd>
+      </p>
+    </div>
+  )
+}
+
+function StatCard({ icon: Icon, label, value, valueSuffix = '', color, gradient, onClick, subtext }) {
   return (
     <button
       onClick={onClick}
       disabled={!onClick}
-      className={`relative overflow-hidden rounded-2xl p-4 border border-dark-600/30 text-left transition-all hover:scale-[1.02] hover:border-dark-500 disabled:hover:scale-100 disabled:cursor-default bg-gradient-to-br ${gradient || 'from-dark-800/50 to-dark-800/30'}`}
+      className={`relative overflow-hidden rounded-2xl p-4 border border-dark-600/30 text-left transition-all hover:scale-[1.02] hover:border-dark-500 disabled:hover:scale-100 disabled:cursor-default bg-gradient-to-br ${gradient || 'from-dark-800/50 to-dark-800/30'} group`}
     >
-      <Icon size={18} style={{ color }} className="mb-2 opacity-80" />
-      <p className="text-2xl font-bold font-mono">{value}</p>
+      <Icon size={18} style={{ color }} className="mb-2 opacity-80 group-hover:opacity-100 transition-opacity" />
+      <p className="text-2xl font-bold font-mono">
+        {value}{valueSuffix}
+      </p>
       <p className="text-xs text-zinc-500 mt-0.5">{label}</p>
+      {subtext && <p className="text-2xs text-zinc-600">{subtext}</p>}
+      {onClick && (
+        <ExternalLink size={12} className="absolute top-3 right-3 text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+      )}
     </button>
   )
 }
