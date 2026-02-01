@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import useStore from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
-import TagBadge from './TagBadge'
-import { format, addDays, addWeeks, nextMonday, nextFriday } from 'date-fns'
+import { format, addDays } from 'date-fns'
 import { 
   X, 
   Plus, 
@@ -16,13 +15,12 @@ import {
   Calendar,
   Clock,
   Flag,
+  Tag,
   ChevronDown,
   ChevronUp,
-  Tag,
   AlignLeft,
-  Folder,
-  Zap,
-  Hash
+  ListTodo,
+  Check
 } from 'lucide-react'
 
 const IDEA_TYPES = [
@@ -34,20 +32,32 @@ const IDEA_TYPES = [
 ]
 
 const PRIORITIES = [
-  { id: 'urgent', label: 'Urgent', labelIs: 'Áríðandi', color: '#ef4444', key: '1' },
-  { id: 'high', label: 'High', labelIs: 'Hár', color: '#f97316', key: '2' },
-  { id: 'medium', label: 'Medium', labelIs: 'Meðal', color: '#eab308', key: '3' },
-  { id: 'low', label: 'Low', labelIs: 'Lágur', color: '#22c55e', key: '4' },
+  { id: 'urgent', label: 'Urgent', labelIs: 'Áríðandi', color: '#ef4444', bgColor: 'bg-red-500/10', icon: '!!' },
+  { id: 'high', label: 'High', labelIs: 'Hár', color: '#f97316', bgColor: 'bg-orange-500/10', icon: '!' },
+  { id: 'medium', label: 'Medium', labelIs: 'Meðal', color: '#eab308', bgColor: 'bg-yellow-500/10', icon: '-' },
+  { id: 'low', label: 'Low', labelIs: 'Lágur', color: '#22c55e', bgColor: 'bg-green-500/10', icon: '~' },
 ]
 
-// Quick date options
-const getQuickDates = (t, language) => [
-  { label: t('time.today'), labelShort: language === 'is' ? 'Í dag' : 'Today', value: format(new Date(), 'yyyy-MM-dd'), key: 't' },
-  { label: t('time.tomorrow'), labelShort: language === 'is' ? 'Á morgun' : 'Tmrw', value: format(addDays(new Date(), 1), 'yyyy-MM-dd'), key: 'o' },
-  { label: language === 'is' ? 'Mánudagur' : 'Monday', labelShort: language === 'is' ? 'Mán' : 'Mon', value: format(nextMonday(new Date()), 'yyyy-MM-dd'), key: 'm' },
-  { label: language === 'is' ? 'Föstudagur' : 'Friday', labelShort: language === 'is' ? 'Fös' : 'Fri', value: format(nextFriday(new Date()), 'yyyy-MM-dd'), key: 'f' },
-  { label: language === 'is' ? 'Eftir viku' : 'Next Week', labelShort: language === 'is' ? '+1v' : '+1w', value: format(addWeeks(new Date(), 1), 'yyyy-MM-dd'), key: 'w' },
-]
+const TAG_COLORS = {
+  red: '#ef4444',
+  orange: '#f97316',
+  amber: '#f59e0b',
+  yellow: '#eab308',
+  lime: '#84cc16',
+  green: '#22c55e',
+  emerald: '#10b981',
+  teal: '#14b8a6',
+  cyan: '#06b6d4',
+  sky: '#0ea5e9',
+  blue: '#3b82f6',
+  indigo: '#6366f1',
+  violet: '#8b5cf6',
+  purple: '#a855f7',
+  fuchsia: '#d946ef',
+  pink: '#ec4899',
+  rose: '#f43f5e',
+  slate: '#64748b',
+}
 
 function QuickAddModal() {
   const { t, language } = useTranslation()
@@ -61,31 +71,36 @@ function QuickAddModal() {
     setQuickIdeaMode
   } = useStore()
 
-  const QUICK_DATES = getQuickDates(t, language)
+  const QUICK_DATES = [
+    { label: t('time.today'), labelIs: 'Í dag', value: format(new Date(), 'yyyy-MM-dd') },
+    { label: t('time.tomorrow'), labelIs: 'Á morgun', value: format(addDays(new Date(), 1), 'yyyy-MM-dd') },
+    { label: language === 'is' ? 'Næsta viku' : 'Next Week', value: format(addDays(new Date(), 7), 'yyyy-MM-dd') },
+  ]
   
   const [mode, setMode] = useState(quickIdeaMode ? 'idea' : 'task')
-  const [title, setTitle] = useState('')
+  const [text, setText] = useState('')
   const [description, setDescription] = useState('')
-  const [showDescription, setShowDescription] = useState(false)
   const [projectId, setProjectId] = useState(projects[0]?.id || '')
   const [priority, setPriority] = useState('medium')
   const [dueDate, setDueDate] = useState(null)
   const [customDate, setCustomDate] = useState('')
   const [estimate, setEstimate] = useState('')
-  const [selectedTags, setSelectedTags] = useState([])
-  const [showTagPicker, setShowTagPicker] = useState(false)
   const [ideaType, setIdeaType] = useState('app')
+  const [selectedTags, setSelectedTags] = useState([])
+  const [subtasks, setSubtasks] = useState([])
+  const [newSubtask, setNewSubtask] = useState('')
   
-  // Dropdown states
+  // Expanded sections
+  const [showDescription, setShowDescription] = useState(false)
+  const [showMoreOptions, setShowMoreOptions] = useState(false)
   const [showProjectDropdown, setShowProjectDropdown] = useState(false)
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false)
-  const [showDateDropdown, setShowDateDropdown] = useState(false)
+  const [showTagsDropdown, setShowTagsDropdown] = useState(false)
   
   const inputRef = useRef(null)
-  const descriptionRef = useRef(null)
   const projectDropdownRef = useRef(null)
   const priorityDropdownRef = useRef(null)
-  const dateDropdownRef = useRef(null)
+  const tagsDropdownRef = useRef(null)
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -105,40 +120,46 @@ function QuickAddModal() {
       if (priorityDropdownRef.current && !priorityDropdownRef.current.contains(e.target)) {
         setShowPriorityDropdown(false)
       }
-      if (dateDropdownRef.current && !dateDropdownRef.current.contains(e.target)) {
-        setShowDateDropdown(false)
+      if (tagsDropdownRef.current && !tagsDropdownRef.current.contains(e.target)) {
+        setShowTagsDropdown(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const handleSubmit = useCallback((e) => {
-    e?.preventDefault()
-    if (!title.trim()) return
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (!text.trim()) return
 
     if (mode === 'task') {
+      const finalDueDate = dueDate || (customDate ? customDate : null)
       addTask({
-        title: title.trim(),
+        title: text.trim(),
         description: description.trim() || null,
         projectId,
         priority,
-        dueDate: dueDate || (customDate || null),
+        dueDate: finalDueDate,
         estimate: estimate ? parseInt(estimate) : null,
-        tags: selectedTags
+        tags: selectedTags,
+        subtasks: subtasks.length > 0 ? subtasks.map(s => ({
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          title: s,
+          completed: false,
+          createdAt: new Date().toISOString()
+        })) : undefined
       })
     } else {
       addIdea({
-        title: title.trim(),
+        title: text.trim(),
         type: ideaType
       })
     }
 
-    setTitle('')
+    setText('')
     setDescription('')
-    setSelectedTags([])
     setQuickAddOpen(false)
-  }, [title, description, mode, projectId, priority, dueDate, customDate, estimate, selectedTags, ideaType])
+  }
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -146,122 +167,66 @@ function QuickAddModal() {
     }
   }
 
-  const handleKeyDown = useCallback((e) => {
-    // Submit on Enter (without shift)
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey && !showDescription) {
-      e.preventDefault()
       handleSubmit(e)
-      return
     }
-    
-    // Ctrl+Enter to submit from anywhere
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault()
-      handleSubmit(e)
-      return
-    }
-
-    // Tab to switch mode
-    if (e.key === 'Tab' && !e.shiftKey && !showProjectDropdown && !showPriorityDropdown && !showDateDropdown && !showTagPicker) {
+    if (e.key === 'Tab' && !e.shiftKey && e.target === inputRef.current) {
       e.preventDefault()
       setMode(mode === 'task' ? 'idea' : 'task')
-      return
     }
+    if (e.key === 'Escape') {
+      setQuickAddOpen(false)
+    }
+  }
 
-    // Only handle shortcuts when input is focused
-    if (document.activeElement !== inputRef.current) return
+  const handleAddSubtask = () => {
+    if (newSubtask.trim()) {
+      setSubtasks([...subtasks, newSubtask.trim()])
+      setNewSubtask('')
+    }
+  }
 
-    // Alt + number for priority (1-4)
-    if (e.altKey && ['1', '2', '3', '4'].includes(e.key)) {
+  const handleSubtaskKeyDown = (e) => {
+    if (e.key === 'Enter') {
       e.preventDefault()
-      const priorityMap = { '1': 'urgent', '2': 'high', '3': 'medium', '4': 'low' }
-      setPriority(priorityMap[e.key])
-      return
+      handleAddSubtask()
     }
+  }
 
-    // Alt + letter for quick dates
-    if (e.altKey) {
-      const quickDate = QUICK_DATES.find(d => d.key === e.key.toLowerCase())
-      if (quickDate) {
-        e.preventDefault()
-        setDueDate(dueDate === quickDate.value ? null : quickDate.value)
-        return
-      }
-    }
-
-    // Alt + D for description toggle
-    if (e.altKey && e.key.toLowerCase() === 'd') {
-      e.preventDefault()
-      setShowDescription(!showDescription)
-      setTimeout(() => descriptionRef.current?.focus(), 50)
-      return
-    }
-
-    // Alt + P for project dropdown
-    if (e.altKey && e.key.toLowerCase() === 'p') {
-      e.preventDefault()
-      setShowProjectDropdown(true)
-      return
-    }
-
-    // Alt + G for tags
-    if (e.altKey && e.key.toLowerCase() === 'g') {
-      e.preventDefault()
-      setShowTagPicker(!showTagPicker)
-      return
-    }
-
-    // Arrow keys for project when dropdown is open
-    if (showProjectDropdown && ['ArrowUp', 'ArrowDown'].includes(e.key)) {
-      e.preventDefault()
-      const currentIdx = projects.findIndex(p => p.id === projectId)
-      if (e.key === 'ArrowUp') {
-        setProjectId(projects[(currentIdx - 1 + projects.length) % projects.length].id)
-      } else {
-        setProjectId(projects[(currentIdx + 1) % projects.length].id)
-      }
-    }
-  }, [mode, handleSubmit, showDescription, showProjectDropdown, showPriorityDropdown, showDateDropdown, showTagPicker, dueDate, projectId, projects, QUICK_DATES])
+  const removeSubtask = (index) => {
+    setSubtasks(subtasks.filter((_, i) => i !== index))
+  }
 
   const toggleTag = (tagId) => {
-    setSelectedTags(prev => 
-      prev.includes(tagId) 
-        ? prev.filter(t => t !== tagId)
-        : [...prev, tagId]
-    )
+    if (selectedTags.includes(tagId)) {
+      setSelectedTags(selectedTags.filter(id => id !== tagId))
+    } else {
+      setSelectedTags([...selectedTags, tagId])
+    }
   }
 
   const selectedProject = projects.find(p => p.id === projectId)
   const selectedPriority = PRIORITIES.find(p => p.id === priority)
 
   const getPriorityLabel = (p) => language === 'is' ? p.labelIs : p.label
-
-  const formatDateLabel = () => {
-    if (dueDate) {
-      const qd = QUICK_DATES.find(d => d.value === dueDate)
-      if (qd) return qd.labelShort
-      return format(new Date(dueDate), 'MMM d')
-    }
-    if (customDate) return format(new Date(customDate), 'MMM d')
-    return language === 'is' ? 'Dagsetning' : 'Due date'
-  }
+  const getTagLabel = (tag) => language === 'is' ? (tag.nameIs || tag.name) : tag.name
 
   return (
     <div 
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-start justify-center pt-20 z-50 animate-fade-in"
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-start justify-center pt-16 z-50 animate-fade-in"
       onClick={handleBackdropClick}
-      onKeyDown={handleKeyDown}
     >
       <div className="w-full max-w-xl bg-dark-900 rounded-2xl border border-dark-500 shadow-2xl shadow-black/50 overflow-hidden animate-fade-in-scale">
-        {/* Header with mode toggle */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-dark-600">
-          <div className="flex gap-1 bg-dark-800 p-1 rounded-lg">
+        {/* Header */}
+        <div className="flex items-center justify-between p-3 border-b border-dark-600">
+          <div className="flex gap-1">
             <button
               onClick={() => setMode('task')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 mode === 'task' 
-                  ? 'bg-accent text-white shadow-sm' 
-                  : 'text-zinc-400 hover:text-white'
+                  ? 'bg-accent text-white' 
+                  : 'text-zinc-400 hover:bg-dark-700 hover:text-white'
               }`}
             >
               <CheckSquare size={14} />
@@ -269,10 +234,10 @@ function QuickAddModal() {
             </button>
             <button
               onClick={() => setMode('idea')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 mode === 'idea' 
-                  ? 'bg-amber-500 text-white shadow-sm' 
-                  : 'text-zinc-400 hover:text-white'
+                  ? 'bg-amber-500 text-white' 
+                  : 'text-zinc-400 hover:bg-dark-700 hover:text-white'
               }`}
             >
               <Lightbulb size={14} />
@@ -281,261 +246,308 @@ function QuickAddModal() {
           </div>
           <button
             onClick={() => setQuickAddOpen(false)}
-            className="p-2 text-zinc-500 hover:text-white hover:bg-dark-700 rounded-lg transition-all"
+            className="p-1.5 text-zinc-500 hover:text-white hover:bg-dark-700 rounded-lg transition-all"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-4">
-          {/* Main Title Input */}
-          <div className="relative mb-3">
-            <input
-              ref={inputRef}
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder={mode === 'task' 
-                ? (language === 'is' ? 'Hvað þarf að gera?' : 'What needs to be done?')
-                : (language === 'is' ? 'Fanga hugmynd...' : 'Capture your idea...')
-              }
-              className="w-full bg-transparent text-lg font-medium outline-none placeholder:text-zinc-600"
-              autoFocus
-            />
-          </div>
+          {/* Main Input */}
+          <input
+            ref={inputRef}
+            type="text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={mode === 'task' 
+              ? (language === 'is' ? 'Hvað þarf að gera?' : 'What needs to be done?')
+              : (language === 'is' ? 'Fanga hugmynd...' : 'Capture your idea...')
+            }
+            className="w-full bg-transparent text-lg font-medium outline-none placeholder:text-zinc-600 mb-3"
+            autoFocus
+          />
 
           {mode === 'task' ? (
             <>
-              {/* Description toggle & input */}
-              <div className="mb-4">
+              {/* Description Toggle & Input */}
+              <div className="mb-3">
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowDescription(!showDescription)
-                    setTimeout(() => descriptionRef.current?.focus(), 50)
-                  }}
+                  onClick={() => setShowDescription(!showDescription)}
                   className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors mb-2"
                 >
                   <AlignLeft size={12} />
-                  {showDescription ? (language === 'is' ? 'Fela lýsingu' : 'Hide description') : (language === 'is' ? 'Bæta við lýsingu' : 'Add description')}
+                  {showDescription 
+                    ? (language === 'is' ? 'Fela lýsingu' : 'Hide description')
+                    : (language === 'is' ? 'Bæta við lýsingu' : 'Add description')
+                  }
                   {showDescription ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
                 </button>
                 {showDescription && (
                   <textarea
-                    ref={descriptionRef}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder={language === 'is' ? 'Bættu við nánari upplýsingum...' : 'Add more details...'}
-                    className="w-full bg-dark-800 border border-dark-600 rounded-lg px-3 py-2 text-sm outline-none focus:border-accent resize-none transition-colors"
-                    rows={3}
+                    placeholder={language === 'is' ? 'Bæta við nánari lýsingu...' : 'Add more details...'}
+                    className="w-full bg-dark-700 rounded-lg px-3 py-2 text-sm outline-none placeholder:text-zinc-600 resize-none min-h-[60px] border border-dark-500 focus:border-accent transition-colors"
+                    rows={2}
                   />
                 )}
               </div>
 
-              {/* Quick Properties Row */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {/* Project Selector Dropdown */}
-                <div ref={projectDropdownRef} className="relative">
+              {/* Primary Options Row */}
+              <div className="flex flex-wrap gap-2 mb-3">
+                {/* Project Dropdown */}
+                <div className="relative" ref={projectDropdownRef}>
                   <button
                     type="button"
                     onClick={() => setShowProjectDropdown(!showProjectDropdown)}
                     className="flex items-center gap-1.5 px-2.5 py-1.5 bg-dark-700 hover:bg-dark-600 rounded-lg text-sm transition-colors border border-transparent hover:border-dark-500"
-                    style={{ color: selectedProject?.color }}
                   >
-                    <DynamicIcon name={selectedProject?.icon} size={12} />
-                    <span className="max-w-[100px] truncate">{selectedProject?.name}</span>
+                    <DynamicIcon name={selectedProject?.icon} size={12} style={{ color: selectedProject?.color }} />
+                    <span style={{ color: selectedProject?.color }}>{selectedProject?.name}</span>
                     <ChevronDown size={12} className="text-zinc-500" />
                   </button>
                   {showProjectDropdown && (
-                    <div className="absolute top-full left-0 mt-1 bg-dark-800 border border-dark-500 rounded-lg shadow-xl py-1 z-10 min-w-[180px]">
-                      {projects.map((project) => (
-                        <button
-                          key={project.id}
-                          type="button"
-                          onClick={() => {
-                            setProjectId(project.id)
-                            setShowProjectDropdown(false)
-                          }}
-                          className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-dark-700 transition-colors ${
-                            projectId === project.id ? 'bg-dark-700' : ''
-                          }`}
-                        >
-                          <DynamicIcon name={project.icon} size={14} style={{ color: project.color }} />
-                          <span style={{ color: project.color }}>{project.name}</span>
-                          {projectId === project.id && <span className="ml-auto text-accent">✓</span>}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Priority Selector Dropdown */}
-                <div ref={priorityDropdownRef} className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-dark-700 hover:bg-dark-600 rounded-lg text-sm transition-colors border border-transparent hover:border-dark-500"
-                  >
-                    <Flag size={12} style={{ color: selectedPriority?.color }} />
-                    <span style={{ color: selectedPriority?.color }}>{getPriorityLabel(selectedPriority)}</span>
-                    <ChevronDown size={12} className="text-zinc-500" />
-                  </button>
-                  {showPriorityDropdown && (
-                    <div className="absolute top-full left-0 mt-1 bg-dark-800 border border-dark-500 rounded-lg shadow-xl py-1 z-10 min-w-[140px]">
-                      {PRIORITIES.map((p) => (
+                    <div className="absolute top-full left-0 mt-1 bg-dark-800 border border-dark-500 rounded-lg shadow-xl z-10 min-w-[180px] py-1 max-h-[200px] overflow-y-auto">
+                      {projects.map(p => (
                         <button
                           key={p.id}
                           type="button"
-                          onClick={() => {
-                            setPriority(p.id)
-                            setShowPriorityDropdown(false)
-                          }}
-                          className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-dark-700 transition-colors ${
+                          onClick={() => { setProjectId(p.id); setShowProjectDropdown(false) }}
+                          className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-dark-700 transition-colors ${
+                            projectId === p.id ? 'bg-dark-700' : ''
+                          }`}
+                        >
+                          <DynamicIcon name={p.icon} size={14} style={{ color: p.color }} />
+                          <span style={{ color: p.color }}>{p.name}</span>
+                          {projectId === p.id && <Check size={12} className="ml-auto text-accent" />}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Priority Dropdown */}
+                <div className="relative" ref={priorityDropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm transition-colors border border-transparent hover:border-dark-500 ${selectedPriority?.bgColor} hover:opacity-90`}
+                  >
+                    <Flag size={12} style={{ color: selectedPriority?.color }} />
+                    <span style={{ color: selectedPriority?.color }}>
+                      {getPriorityLabel(selectedPriority)}
+                    </span>
+                    <ChevronDown size={12} className="text-zinc-500" />
+                  </button>
+                  {showPriorityDropdown && (
+                    <div className="absolute top-full left-0 mt-1 bg-dark-800 border border-dark-500 rounded-lg shadow-xl z-10 min-w-[140px] py-1">
+                      {PRIORITIES.map(p => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => { setPriority(p.id); setShowPriorityDropdown(false) }}
+                          className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-dark-700 transition-colors ${
                             priority === p.id ? 'bg-dark-700' : ''
                           }`}
                         >
-                          <Flag size={14} style={{ color: p.color }} />
+                          <Flag size={12} style={{ color: p.color }} />
                           <span style={{ color: p.color }}>{getPriorityLabel(p)}</span>
-                          <span className="ml-auto text-2xs text-zinc-500">Alt+{p.key}</span>
+                          {priority === p.id && <Check size={12} className="ml-auto text-accent" />}
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
 
-                {/* Due Date Dropdown */}
-                <div ref={dateDropdownRef} className="relative">
+                {/* Tags Dropdown */}
+                <div className="relative" ref={tagsDropdownRef}>
                   <button
                     type="button"
-                    onClick={() => setShowDateDropdown(!showDateDropdown)}
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm transition-colors border border-transparent hover:border-dark-500 ${
-                      dueDate ? 'bg-accent/20 text-accent' : 'bg-dark-700 text-zinc-400 hover:bg-dark-600'
+                    onClick={() => setShowTagsDropdown(!showTagsDropdown)}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 bg-dark-700 hover:bg-dark-600 rounded-lg text-sm transition-colors border border-transparent hover:border-dark-500 ${
+                      selectedTags.length > 0 ? 'ring-1 ring-accent/30' : ''
                     }`}
                   >
-                    <Calendar size={12} />
-                    <span>{formatDateLabel()}</span>
-                    <ChevronDown size={12} className="opacity-60" />
+                    <Tag size={12} className="text-zinc-400" />
+                    <span className="text-zinc-400">
+                      {selectedTags.length > 0 
+                        ? `${selectedTags.length} ${language === 'is' ? 'merki' : 'tag'}${selectedTags.length > 1 ? 's' : ''}`
+                        : (language === 'is' ? 'Merki' : 'Tags')
+                      }
+                    </span>
+                    <ChevronDown size={12} className="text-zinc-500" />
                   </button>
-                  {showDateDropdown && (
-                    <div className="absolute top-full left-0 mt-1 bg-dark-800 border border-dark-500 rounded-lg shadow-xl py-1 z-10 min-w-[180px]">
-                      {QUICK_DATES.map((qd) => (
+                  {showTagsDropdown && (
+                    <div className="absolute top-full left-0 mt-1 bg-dark-800 border border-dark-500 rounded-lg shadow-xl z-10 min-w-[160px] py-1 max-h-[200px] overflow-y-auto">
+                      {tags.map(tag => (
                         <button
-                          key={qd.value}
+                          key={tag.id}
                           type="button"
-                          onClick={() => {
-                            setDueDate(dueDate === qd.value ? null : qd.value)
-                            setCustomDate('')
-                            setShowDateDropdown(false)
-                          }}
-                          className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-dark-700 transition-colors ${
-                            dueDate === qd.value ? 'bg-accent/20 text-accent' : 'text-zinc-300'
+                          onClick={() => toggleTag(tag.id)}
+                          className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-dark-700 transition-colors ${
+                            selectedTags.includes(tag.id) ? 'bg-dark-700' : ''
                           }`}
                         >
-                          <Calendar size={14} className="opacity-60" />
-                          <span>{qd.label}</span>
-                          <span className="ml-auto text-2xs text-zinc-500">Alt+{qd.key.toUpperCase()}</span>
+                          <span 
+                            className="w-2.5 h-2.5 rounded-full" 
+                            style={{ backgroundColor: TAG_COLORS[tag.color] || '#64748b' }}
+                          />
+                          <span className="text-zinc-300">{getTagLabel(tag)}</span>
+                          {selectedTags.includes(tag.id) && <Check size={12} className="ml-auto text-accent" />}
                         </button>
                       ))}
-                      <div className="border-t border-dark-600 mt-1 pt-1 px-2 pb-2">
-                        <input
-                          type="date"
-                          value={customDate}
-                          onChange={(e) => {
-                            setCustomDate(e.target.value)
-                            setDueDate(null)
-                          }}
-                          className="w-full bg-dark-700 border border-dark-500 rounded px-2 py-1.5 text-sm outline-none focus:border-accent"
-                        />
-                      </div>
                     </div>
                   )}
                 </div>
-
-                {/* Time Estimate */}
-                <div className="flex items-center gap-1 px-2.5 py-1.5 bg-dark-700 hover:bg-dark-600 rounded-lg border border-transparent hover:border-dark-500 transition-colors">
-                  <Clock size={12} className="text-zinc-500" />
-                  <input
-                    type="number"
-                    value={estimate}
-                    onChange={(e) => setEstimate(e.target.value)}
-                    placeholder={language === 'is' ? 'mín' : 'min'}
-                    className="w-10 bg-transparent text-sm outline-none text-center placeholder:text-zinc-600"
-                    min="0"
-                    max="999"
-                  />
-                </div>
-
-                {/* Tags Button */}
-                <button
-                  type="button"
-                  onClick={() => setShowTagPicker(!showTagPicker)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm transition-colors border border-transparent hover:border-dark-500 ${
-                    selectedTags.length > 0 ? 'bg-accent/20 text-accent' : 'bg-dark-700 text-zinc-400 hover:bg-dark-600'
-                  }`}
-                >
-                  <Tag size={12} />
-                  {selectedTags.length > 0 ? `${selectedTags.length}` : (language === 'is' ? 'Merki' : 'Tags')}
-                </button>
               </div>
 
-              {/* Tags Picker */}
-              {showTagPicker && (
-                <div className="mb-4 p-3 bg-dark-800 rounded-lg border border-dark-600">
-                  <div className="text-xs text-zinc-500 mb-2">{language === 'is' ? 'Velja merki' : 'Select tags'}</div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {tags.map((tag) => (
+              {/* Due Date Options */}
+              <div className="flex flex-wrap items-center gap-2 mb-3">
+                <Calendar size={12} className="text-zinc-500" />
+                {QUICK_DATES.map(qd => (
+                  <button
+                    key={qd.label}
+                    type="button"
+                    onClick={() => { setDueDate(dueDate === qd.value ? null : qd.value); setCustomDate('') }}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+                      dueDate === qd.value
+                        ? 'bg-accent text-white'
+                        : 'bg-dark-700 text-zinc-400 hover:bg-dark-600 hover:text-zinc-300'
+                    }`}
+                  >
+                    {language === 'is' ? qd.labelIs : qd.label}
+                  </button>
+                ))}
+                <input
+                  type="date"
+                  value={customDate}
+                  onChange={(e) => { setCustomDate(e.target.value); setDueDate(null) }}
+                  className="px-2 py-1 bg-dark-700 rounded-lg text-xs text-zinc-400 outline-none border border-transparent focus:border-accent transition-colors cursor-pointer"
+                  style={{ colorScheme: 'dark' }}
+                />
+              </div>
+
+              {/* More Options Toggle */}
+              <button
+                type="button"
+                onClick={() => setShowMoreOptions(!showMoreOptions)}
+                className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors mb-3"
+              >
+                {showMoreOptions ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                {showMoreOptions 
+                  ? (language === 'is' ? 'Færri valkostir' : 'Fewer options')
+                  : (language === 'is' ? 'Fleiri valkostir' : 'More options')
+                }
+              </button>
+
+              {showMoreOptions && (
+                <div className="space-y-3 mb-3 p-3 bg-dark-800/50 rounded-lg border border-dark-600">
+                  {/* Time Estimate */}
+                  <div className="flex items-center gap-2">
+                    <Clock size={14} className="text-zinc-500" />
+                    <span className="text-xs text-zinc-500 w-20">{language === 'is' ? 'Tímaáætlun' : 'Estimate'}</span>
+                    <input
+                      type="number"
+                      value={estimate}
+                      onChange={(e) => setEstimate(e.target.value)}
+                      placeholder={language === 'is' ? 'mínútur' : 'minutes'}
+                      className="flex-1 px-2 py-1 bg-dark-700 rounded text-sm outline-none border border-transparent focus:border-accent transition-colors"
+                      min="1"
+                    />
+                  </div>
+
+                  {/* Subtasks */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <ListTodo size={14} className="text-zinc-500" />
+                      <span className="text-xs text-zinc-500">{language === 'is' ? 'Undirverkefni' : 'Subtasks'}</span>
+                    </div>
+                    {subtasks.length > 0 && (
+                      <div className="space-y-1 mb-2">
+                        {subtasks.map((st, idx) => (
+                          <div key={idx} className="flex items-center gap-2 pl-5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
+                            <span className="flex-1 text-sm text-zinc-300">{st}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeSubtask(idx)}
+                              className="p-0.5 text-zinc-600 hover:text-red-400 transition-colors"
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 pl-5">
+                      <input
+                        type="text"
+                        value={newSubtask}
+                        onChange={(e) => setNewSubtask(e.target.value)}
+                        onKeyDown={handleSubtaskKeyDown}
+                        placeholder={language === 'is' ? 'Bæta við undirverkefni...' : 'Add subtask...'}
+                        className="flex-1 px-2 py-1 bg-dark-700 rounded text-sm outline-none placeholder:text-zinc-600 border border-transparent focus:border-accent transition-colors"
+                      />
                       <button
-                        key={tag.id}
                         type="button"
-                        onClick={() => toggleTag(tag.id)}
-                        className={`transition-all ${selectedTags.includes(tag.id) ? 'ring-2 ring-white/30' : 'opacity-70 hover:opacity-100'}`}
+                        onClick={handleAddSubtask}
+                        disabled={!newSubtask.trim()}
+                        className="p-1 text-zinc-500 hover:text-accent disabled:opacity-30 disabled:hover:text-zinc-500 transition-colors"
                       >
-                        <TagBadge tag={tag} size="sm" />
+                        <Plus size={14} />
                       </button>
-                    ))}
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* Selected Tags Display */}
-              {selectedTags.length > 0 && !showTagPicker && (
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  {selectedTags.map((tagId) => {
+              {/* Selected Tags Preview */}
+              {selectedTags.length > 0 && (
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {selectedTags.map(tagId => {
                     const tag = tags.find(t => t.id === tagId)
                     if (!tag) return null
                     return (
-                      <button
+                      <span 
                         key={tagId}
-                        type="button"
-                        onClick={() => toggleTag(tagId)}
-                        className="flex items-center gap-1 group"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs"
+                        style={{ 
+                          backgroundColor: `${TAG_COLORS[tag.color] || '#64748b'}20`,
+                          color: TAG_COLORS[tag.color] || '#64748b'
+                        }}
                       >
-                        <TagBadge tag={tag} size="sm" />
-                        <X size={12} className="text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </button>
+                        {getTagLabel(tag)}
+                        <button
+                          type="button"
+                          onClick={() => toggleTag(tagId)}
+                          className="hover:opacity-70"
+                        >
+                          <X size={10} />
+                        </button>
+                      </span>
                     )
                   })}
                 </div>
               )}
             </>
           ) : (
-            /* Idea Type Selector */
             <div className="mb-4">
-              <div className="text-xs text-zinc-500 mb-2">{language === 'is' ? 'Tegund hugmyndar' : 'Idea type'}</div>
               <div className="flex gap-1.5 flex-wrap">
                 {IDEA_TYPES.map(type => (
                   <button
                     key={type.id}
                     type="button"
                     onClick={() => setIdeaType(type.id)}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm transition-all ${
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm transition-all ${
                       ideaType === type.id
-                        ? 'bg-amber-500 text-white shadow-sm'
-                        : 'bg-dark-700 text-zinc-400 hover:bg-dark-600 hover:text-zinc-200'
+                        ? 'bg-amber-500 text-white'
+                        : 'bg-dark-700 text-zinc-400 hover:bg-dark-600'
                     }`}
                   >
-                    <type.icon size={14} />
+                    <type.icon size={12} />
                     {language === 'is' ? type.labelIs : type.label}
                   </button>
                 ))}
@@ -543,17 +555,17 @@ function QuickAddModal() {
             </div>
           )}
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             type="submit"
-            disabled={!title.trim()}
-            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+            disabled={!text.trim()}
+            className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
               mode === 'task'
                 ? 'bg-accent hover:bg-accent-light active:scale-[0.99]'
                 : 'bg-amber-500 hover:bg-amber-400 active:scale-[0.99]'
             }`}
           >
-            <Plus size={18} />
+            <Plus size={16} />
             {mode === 'task' 
               ? (language === 'is' ? 'Bæta við verkefni' : 'Add Task')
               : (language === 'is' ? 'Fanga hugmynd' : 'Capture Idea')
@@ -561,12 +573,11 @@ function QuickAddModal() {
           </button>
         </form>
 
-        {/* Keyboard Shortcuts Footer */}
-        <div className="px-4 pb-3 pt-1 border-t border-dark-700 flex items-center justify-center gap-4 text-2xs text-zinc-600">
-          <span className="flex items-center gap-1"><kbd className="kbd">↵</kbd> {language === 'is' ? 'Vista' : 'Save'}</span>
-          <span className="flex items-center gap-1"><kbd className="kbd">Esc</kbd> {language === 'is' ? 'Loka' : 'Close'}</span>
-          <span className="flex items-center gap-1"><kbd className="kbd">Tab</kbd> {language === 'is' ? 'Skipta' : 'Switch'}</span>
-          <span className="flex items-center gap-1"><kbd className="kbd">Alt</kbd>+<kbd className="kbd">1-4</kbd> {language === 'is' ? 'Forgangur' : 'Priority'}</span>
+        {/* Footer - Keyboard Shortcuts */}
+        <div className="px-4 pb-3 flex items-center justify-center gap-4 text-2xs text-zinc-600">
+          <span><kbd className="kbd">↵</kbd> {language === 'is' ? 'Vista' : 'Save'}</span>
+          <span><kbd className="kbd">Esc</kbd> {language === 'is' ? 'Loka' : 'Close'}</span>
+          <span><kbd className="kbd">Tab</kbd> {language === 'is' ? 'Skipta' : 'Switch'}</span>
         </div>
       </div>
     </div>
