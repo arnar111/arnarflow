@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react'
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import useStore from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
@@ -161,6 +161,10 @@ function ProjectView() {
     hasBlocked: false,   // Only show blocked tasks
   })
   
+  // v5.4.2 - Keyboard Navigation
+  const [focusedTaskIndex, setFocusedTaskIndex] = useState(-1)
+  const [keyboardNavEnabled, setKeyboardNavEnabled] = useState(true)
+  
   const project = projects.find(p => p.id === selectedProject)
   
   const projectTasks = useMemo(() => {
@@ -252,6 +256,79 @@ function ProjectView() {
   const completedCount = projectTasks.filter(t => t.completed).length
   const progress = projectTasks.length > 0 ? (completedCount / projectTasks.length) * 100 : 0
   const totalTimeSpent = projectTasks.reduce((sum, t) => sum + (t.timeSpent || 0), 0)
+
+  // v5.4.2 - Get all navigable tasks in order (To-do, In Progress)
+  const navigableTasks = useMemo(() => {
+    const todoTasks = getTasksByStatus('todo')
+    const inProgressTasks = getTasksByStatus('in-progress')
+    return [...todoTasks, ...inProgressTasks]
+  }, [projectTasks, activeFilters])
+
+  // v5.4.2 - Keyboard Navigation Handler
+  useEffect(() => {
+    if (!project || !keyboardNavEnabled) return
+
+    const handleKeyDown = (e) => {
+      // Don't handle if typing in an input
+      const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)
+      if (isTyping) return
+
+      // J - Move down
+      if (e.key === 'j' || e.key === 'ArrowDown') {
+        if (navigableTasks.length === 0) return
+        e.preventDefault()
+        setFocusedTaskIndex(prev => {
+          const next = prev + 1
+          return next >= navigableTasks.length ? 0 : next
+        })
+      }
+
+      // K - Move up
+      if (e.key === 'k' || e.key === 'ArrowUp') {
+        if (navigableTasks.length === 0) return
+        e.preventDefault()
+        setFocusedTaskIndex(prev => {
+          const next = prev - 1
+          return next < 0 ? navigableTasks.length - 1 : next
+        })
+      }
+
+      // Enter or O - Open task detail
+      if ((e.key === 'Enter' || e.key === 'o') && focusedTaskIndex >= 0) {
+        e.preventDefault()
+        const task = navigableTasks[focusedTaskIndex]
+        if (task) {
+          setSelectedTaskId(task.id)
+        }
+      }
+
+      // X or Space - Toggle task completion
+      if ((e.key === 'x' || e.key === ' ') && focusedTaskIndex >= 0) {
+        e.preventDefault()
+        const task = navigableTasks[focusedTaskIndex]
+        if (task) {
+          toggleTask(task.id)
+        }
+      }
+
+      // Escape - Clear focus
+      if (e.key === 'Escape') {
+        setFocusedTaskIndex(-1)
+      }
+
+      // G then H - Go home (first task)
+      // G then E - Go end (last task)
+      // These are vim-style navigation shortcuts
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [project, keyboardNavEnabled, navigableTasks, focusedTaskIndex, toggleTask, setSelectedTaskId])
+
+  // Reset focus when project changes
+  useEffect(() => {
+    setFocusedTaskIndex(-1)
+  }, [selectedProject])
 
   if (!project) {
     return (
@@ -782,6 +859,7 @@ function ProjectView() {
                             formatTime={formatTime}
                             isFocusing={focusProject === project.id}
                             isDragging={draggedTask?.id === task.id}
+                            isKeyboardFocused={navigableTasks[focusedTaskIndex]?.id === task.id}
                             onExpand={() => setSelectedTaskId(task.id)}
                             t={t}
                             language={language}
@@ -827,6 +905,7 @@ function TaskCard({
   formatTime, 
   isFocusing, 
   isDragging,
+  isKeyboardFocused,
   onExpand,
   t,
   language
@@ -878,6 +957,7 @@ function TaskCard({
       className={`
         group relative rounded-xl border transition-all duration-200
         ${isDragging ? 'opacity-50 scale-95 rotate-1' : ''}
+        ${isKeyboardFocused ? 'ring-2 ring-accent ring-offset-1 ring-offset-dark-900 shadow-lg shadow-accent/20' : ''}
         ${task.completed 
           ? 'bg-dark-800/40 border-dark-700/40' 
           : isBlocked
