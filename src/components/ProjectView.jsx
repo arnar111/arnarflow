@@ -506,6 +506,136 @@ function ProjectView() {
             </div>
           </div>
         </div>
+        
+        {/* Quick Filters (v5.2.2) */}
+        <div className="mt-4 flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 text-xs text-zinc-500 mr-2">
+            <Filter size={12} />
+            <span>{language === 'is' ? 'Sía' : 'Filter'}:</span>
+          </div>
+          
+          {/* Priority Filters */}
+          {filterCounts.urgent > 0 && (
+            <button
+              onClick={() => setActiveFilters(prev => ({ 
+                ...prev, 
+                priority: prev.priority === 'urgent' ? null : 'urgent' 
+              }))}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                activeFilters.priority === 'urgent'
+                  ? 'bg-red-500/20 text-red-400 ring-1 ring-red-500/30'
+                  : 'bg-dark-700/50 text-zinc-400 hover:bg-dark-600/50 hover:text-red-400'
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-red-500" />
+              {language === 'is' ? 'Áríðandi' : 'Urgent'}
+              <span className="text-2xs opacity-70">({filterCounts.urgent})</span>
+            </button>
+          )}
+          
+          {filterCounts.high > 0 && (
+            <button
+              onClick={() => setActiveFilters(prev => ({ 
+                ...prev, 
+                priority: prev.priority === 'high' ? null : 'high' 
+              }))}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                activeFilters.priority === 'high'
+                  ? 'bg-orange-500/20 text-orange-400 ring-1 ring-orange-500/30'
+                  : 'bg-dark-700/50 text-zinc-400 hover:bg-dark-600/50 hover:text-orange-400'
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-orange-500" />
+              {language === 'is' ? 'Hár' : 'High'}
+              <span className="text-2xs opacity-70">({filterCounts.high})</span>
+            </button>
+          )}
+          
+          {/* Due Date Filters */}
+          {filterCounts.overdue > 0 && (
+            <button
+              onClick={() => setActiveFilters(prev => ({ 
+                ...prev, 
+                dueStatus: prev.dueStatus === 'overdue' ? null : 'overdue' 
+              }))}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                activeFilters.dueStatus === 'overdue'
+                  ? 'bg-red-500/20 text-red-400 ring-1 ring-red-500/30'
+                  : 'bg-dark-700/50 text-zinc-400 hover:bg-dark-600/50 hover:text-red-400'
+              }`}
+            >
+              <AlertTriangle size={12} />
+              {language === 'is' ? 'Seint' : 'Overdue'}
+              <span className="text-2xs opacity-70">({filterCounts.overdue})</span>
+            </button>
+          )}
+          
+          {filterCounts.today > 0 && (
+            <button
+              onClick={() => setActiveFilters(prev => ({ 
+                ...prev, 
+                dueStatus: prev.dueStatus === 'today' ? null : 'today' 
+              }))}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                activeFilters.dueStatus === 'today'
+                  ? 'bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/30'
+                  : 'bg-dark-700/50 text-zinc-400 hover:bg-dark-600/50 hover:text-blue-400'
+              }`}
+            >
+              <Calendar size={12} />
+              {language === 'is' ? 'Í dag' : 'Today'}
+              <span className="text-2xs opacity-70">({filterCounts.today})</span>
+            </button>
+          )}
+          
+          {filterCounts.thisWeek > 0 && (
+            <button
+              onClick={() => setActiveFilters(prev => ({ 
+                ...prev, 
+                dueStatus: prev.dueStatus === 'week' ? null : 'week' 
+              }))}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                activeFilters.dueStatus === 'week'
+                  ? 'bg-purple-500/20 text-purple-400 ring-1 ring-purple-500/30'
+                  : 'bg-dark-700/50 text-zinc-400 hover:bg-dark-600/50 hover:text-purple-400'
+              }`}
+            >
+              <CalendarClock size={12} />
+              {language === 'is' ? 'Þessa viku' : 'This week'}
+              <span className="text-2xs opacity-70">({filterCounts.thisWeek})</span>
+            </button>
+          )}
+          
+          {/* Blocked Filter */}
+          {filterCounts.blocked > 0 && (
+            <button
+              onClick={() => setActiveFilters(prev => ({ 
+                ...prev, 
+                hasBlocked: !prev.hasBlocked 
+              }))}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                activeFilters.hasBlocked
+                  ? 'bg-amber-500/20 text-amber-400 ring-1 ring-amber-500/30'
+                  : 'bg-dark-700/50 text-zinc-400 hover:bg-dark-600/50 hover:text-amber-400'
+              }`}
+            >
+              <Lock size={12} />
+              {language === 'is' ? 'Blokkuð' : 'Blocked'}
+              <span className="text-2xs opacity-70">({filterCounts.blocked})</span>
+            </button>
+          )}
+          
+          {/* Clear Filters */}
+          {hasActiveFilters && (
+            <button
+              onClick={() => setActiveFilters({ priority: null, dueStatus: null, hasBlocked: false })}
+              className="flex items-center gap-1 px-2 py-1 rounded-full text-xs text-zinc-500 hover:text-white hover:bg-dark-600/50 transition-all ml-2"
+            >
+              <X size={12} />
+              {language === 'is' ? 'Hreinsa' : 'Clear'}
+            </button>
+          )}
+        </div>
       </header>
 
       {/* Kanban Board */}
