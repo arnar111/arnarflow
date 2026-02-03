@@ -269,6 +269,16 @@ export const translations = {
       hoursAgo: 'klst síðan',
       daysAgo: 'dögum síðan',
     },
+
+    // Timeline (used in Timeline component)
+    timeline: {
+      overdue: 'Seinkað',
+      today: 'Í dag',
+      tomorrow: 'Á morgun',
+      thisWeek: 'Þessi vika',
+      later: 'Síðar',
+      noDue: 'Enginn skiladagur',
+    },
     
     // Notifications
     notifications: {
@@ -648,6 +658,16 @@ export const translations = {
       minutesAgo: 'min ago',
       hoursAgo: 'hrs ago',
       daysAgo: 'days ago',
+    },
+
+    // Timeline (used in Timeline component)
+    timeline: {
+      overdue: 'Overdue',
+      today: 'Today',
+      tomorrow: 'Tomorrow',
+      thisWeek: 'This week',
+      later: 'Later',
+      noDue: 'No due date',
     },
     
     // Notifications

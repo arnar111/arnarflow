@@ -86,7 +86,7 @@ function ProjectMenu({ project, onOpen, onQuickTask, onDelete, onRename, onEditA
 }
 
 export default function ProjectsBoard() {
-  const { language } = useTranslation()
+  const { t, language } = useTranslation()
   const {
     projects,
     tasks,
@@ -292,13 +292,15 @@ export default function ProjectsBoard() {
                 className="min-w-[260px] bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border)] p-3 flex-shrink-0"
                 onDragOver={onDragOver}
                 onDrop={(e) => onDrop(e, col.key)}
+                role="region"
+                aria-label={col.title}
               >
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-[var(--text-primary)]">{col.title}</h3>
                   <span className="text-xs text-[var(--text-muted)]">{projects.filter(p => p.status === col.key).length}</span>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-3" role="list">
                   {projects.filter(p => p.status === col.key).map((p, idx, arr) => {
                     const s = statsByProject.get(p.id) || { open: 0, total: 0, completed: 0, progress: 0, overdue: 0 }
                     return (
@@ -307,6 +309,7 @@ export default function ProjectsBoard() {
                         onClick={() => openProject(p.id)}
                         tabIndex={0}
                         onFocus={() => setFocusedProjectId(p.id)}
+                        role="listitem"
                         className="project-card cursor-pointer border rounded-xl p-3 transition-shadow hover:shadow-md flex flex-col focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                         style={{ backgroundColor: `${p.color}10`, borderColor: `${p.color}30` }}
                       >
@@ -406,7 +409,7 @@ export default function ProjectsBoard() {
                   )}
                 </div>
 
-                <div className="mt-3 text-center text-xs text-[var(--text-muted)]">{language === 'is' ? 'Dragðu spjald hingað' : 'Drop card here'}</div>
+                <div className="mt-3 text-center text-xs text-[var(--text-muted)]">{t('projectView.dropHere')}</div>
               </div>
             ))}
           </div>

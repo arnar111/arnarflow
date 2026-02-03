@@ -20,19 +20,21 @@ import {
   Inbox,
   CalendarDays
 } from 'lucide-react'
+import { useTranslation } from '../i18n/useTranslation'
 
 function Timeline({ tasks, compact = false }) {
   const { projects, toggleTask } = useStore()
+  const { t } = useTranslation()
 
   // Group tasks by time period
   const groupedTasks = useMemo(() => {
     const groups = {
-      overdue: { label: 'Overdue', icon: AlertTriangle, color: 'text-red-400', tasks: [] },
-      today: { label: 'Today', icon: Clock, color: 'text-green-400', tasks: [] },
-      tomorrow: { label: 'Tomorrow', icon: Calendar, color: 'text-blue-400', tasks: [] },
-      thisWeek: { label: 'This Week', icon: CalendarDays, color: 'text-purple-400', tasks: [] },
-      later: { label: 'Later', icon: Calendar, color: 'text-zinc-400', tasks: [] },
-      noDue: { label: 'No Due Date', icon: Inbox, color: 'text-zinc-500', tasks: [] },
+      overdue: { label: t('timeline.overdue'), icon: AlertTriangle, color: 'text-red-400', tasks: [] },
+      today: { label: t('timeline.today'), icon: Clock, color: 'text-green-400', tasks: [] },
+      tomorrow: { label: t('timeline.tomorrow'), icon: Calendar, color: 'text-blue-400', tasks: [] },
+      thisWeek: { label: t('timeline.thisWeek'), icon: CalendarDays, color: 'text-purple-400', tasks: [] },
+      later: { label: t('timeline.later'), icon: Calendar, color: 'text-zinc-400', tasks: [] },
+      noDue: { label: t('timeline.noDue'), icon: Inbox, color: 'text-zinc-500', tasks: [] },
     }
 
     const openTasks = tasks.filter(t => !t.completed)
@@ -70,7 +72,7 @@ function Timeline({ tasks, compact = false }) {
     })
 
     return groups
-  }, [tasks])
+  }, [tasks, t])
 
   const getProject = (projectId) => projects.find(p => p.id === projectId)
 
@@ -96,6 +98,7 @@ function Timeline({ tasks, compact = false }) {
               <button
                 onClick={() => toggleTask(task.id)}
                 className="task-checkbox"
+                aria-label={task.completed ? t('tasks.completed') : t('tasks.markComplete')}
               />
               <span className="flex-1 text-sm truncate">{task.title}</span>
               {project && (
@@ -104,7 +107,7 @@ function Timeline({ tasks, compact = false }) {
                   style={{ backgroundColor: project.color }}
                 />
               )}
-              {isOverdue && <AlertTriangle size={12} className="text-red-400" />}
+              {isOverdue && <AlertTriangle size={12} className="text-red-400" aria-hidden />}
             </div>
           )
         })}
@@ -123,29 +126,32 @@ function Timeline({ tasks, compact = false }) {
         return (
           <div key={key}>
             <div className={`flex items-center gap-2 mb-3 ${group.color}`}>
-              <Icon size={16} />
+              <Icon size={16} aria-hidden />
               <h3 className="text-sm font-medium">{group.label}</h3>
               <span className="text-xs opacity-60">({group.tasks.length})</span>
             </div>
             
-            <div className="space-y-2 pl-6 border-l-2 border-dark-600 ml-2">
+            <div className="space-y-2 pl-6 border-l-2 border-dark-600 ml-2" role="list" aria-label={group.label}>
               {group.tasks.map(task => {
                 const project = getProject(task.projectId)
                 
                 return (
                   <div 
                     key={task.id}
+                    role="listitem"
                     className="relative flex items-start gap-3 p-3 bg-dark-800/30 rounded-xl hover:bg-dark-700/50 transition-colors group -ml-[25px]"
                   >
                     {/* Timeline dot */}
                     <div 
                       className="absolute -left-[9px] top-4 w-4 h-4 rounded-full border-2 border-dark-600 bg-dark-900"
                       style={{ borderColor: project?.color || '#52525b' }}
+                      aria-hidden
                     />
                     
                     <button
                       onClick={() => toggleTask(task.id)}
                       className="task-checkbox ml-4"
+                      aria-label={task.completed ? t('tasks.completed') : t('tasks.markComplete')}
                     />
                     
                     <div className="flex-1 min-w-0">
