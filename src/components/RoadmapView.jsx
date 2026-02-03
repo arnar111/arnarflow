@@ -196,7 +196,7 @@ function RoadmapView() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-3">
             <Target size={28} className="text-[var(--accent)]" />
-            {language === 'is' ? 'Tímalína' : 'Roadmap'}
+            {t('roadmap.title')}
           </h1>
           <p className="text-sm text-[var(--text-secondary)] mt-1">
             {format(viewRange.start, 'MMM d', { locale })} — {format(viewRange.end, 'MMM d, yyyy', { locale })}
@@ -216,7 +216,7 @@ function RoadmapView() {
               onClick={navigateToday}
               className="px-3 py-1.5 text-sm font-medium hover:bg-[var(--bg-hover)] rounded-lg transition-colors"
             >
-              {language === 'is' ? 'Í dag' : 'Today'}
+              {t('time.today')}
             </button>
             <button
               onClick={navigateNext}
@@ -229,9 +229,9 @@ function RoadmapView() {
           {/* Zoom Controls */}
           <div className="flex items-center gap-1 bg-[var(--bg-tertiary)] rounded-xl p-1">
             {[
-              { id: 'week', label: language === 'is' ? 'Vika' : 'Week' },
-              { id: 'month', label: language === 'is' ? 'Mánuður' : 'Month' },
-              { id: 'quarter', label: language === 'is' ? 'Ársfjórðungur' : 'Quarter' }
+              { id: 'week', label: t('roadmap.zoom.week') },
+              { id: 'month', label: t('roadmap.zoom.month') },
+              { id: 'quarter', label: t('roadmap.zoom.quarter') }
             ].map(zoom => (
               <button
                 key={zoom.id}
@@ -302,16 +302,8 @@ function RoadmapView() {
               <div className="flex items-center justify-center h-64">
                 <div className="text-center">
                   <Calendar size={48} className="mx-auto mb-4 text-[var(--text-muted)] opacity-30" />
-                  <p className="text-[var(--text-secondary)]">
-                    {language === 'is' 
-                      ? 'Engin verkefni með skiladaga'
-                      : 'No tasks with due dates'}
-                  </p>
-                  <p className="text-xs text-[var(--text-muted)] mt-1">
-                    {language === 'is'
-                      ? 'Bættu skiladögum við verkefni til að sjá þau hér'
-                      : 'Add due dates to tasks to see them here'}
-                  </p>
+                        <p className="text-[var(--text-secondary)]">{t('roadmap.emptyTitle')}</p>
+                        <p className="text-xs text-[var(--text-muted)] mt-1">{t('roadmap.emptySubtitle')}</p>
                 </div>
               </div>
             ) : (
@@ -338,7 +330,7 @@ function RoadmapView() {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{project.name}</p>
                         <p className="text-xs text-[var(--text-muted)]">
-                          {project.tasks.length} {language === 'is' ? 'verkefni' : 'tasks'}
+                          {project.tasks.length} {t('projectView.tasks')}
                         </p>
                       </div>
                     </div>
@@ -417,19 +409,19 @@ function RoadmapView() {
       <div className="flex items-center justify-center gap-6 mt-4 text-xs text-[var(--text-muted)]">
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded bg-[var(--accent)]" />
-          <span>{language === 'is' ? 'Í vinnslu' : 'In Progress'}</span>
+          <span>{t('projectView.columns.inProgress')}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded bg-[var(--bg-tertiary)] border border-[var(--border)]" />
-          <span>{language === 'is' ? 'Lokið' : 'Completed'}</span>
+          <span>{t('projectView.columns.done')}</span>
         </div>
         <div className="flex items-center gap-2">
           <Lock size={14} />
-          <span>{language === 'is' ? 'Blokkað' : 'Blocked'}</span>
+          <span>{t('roadmap.blocked')}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-0.5 h-4 bg-[var(--accent)]" />
-          <span>{language === 'is' ? 'Í dag' : 'Today'}</span>
+          <span>{t('time.today')}</span>
         </div>
       </div>
     </div>

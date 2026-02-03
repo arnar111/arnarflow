@@ -279,6 +279,19 @@ export const translations = {
       later: 'Síðar',
       noDue: 'Enginn skiladagur',
     },
+
+    // Roadmap / Timeline view
+    roadmap: {
+      title: 'Tímalína',
+      emptyTitle: 'Engin verkefni með skiladaga',
+      emptySubtitle: 'Bættu skiladögum við verkefni til að sjá þau hér',
+      zoom: {
+        week: 'Vika',
+        month: 'Mánuður',
+        quarter: 'Ársfjórðungur'
+      },
+      blocked: 'Blokkað'
+    },
     
     // Notifications
     notifications: {
@@ -668,6 +681,19 @@ export const translations = {
       thisWeek: 'This week',
       later: 'Later',
       noDue: 'No due date',
+    },
+
+    // Roadmap / Timeline view
+    roadmap: {
+      title: 'Roadmap',
+      emptyTitle: 'No tasks with due dates',
+      emptySubtitle: 'Add due dates to tasks to see them here',
+      zoom: {
+        week: 'Week',
+        month: 'Month',
+        quarter: 'Quarter'
+      },
+      blocked: 'Blocked'
     },
     
     // Notifications
