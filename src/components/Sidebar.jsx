@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import useStore, { APP_VERSION } from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
@@ -7,10 +7,7 @@ import {
   LayoutDashboard, 
   Lightbulb, 
   Target, 
-  Plus, 
   Settings,
-  ChevronRight,
-  ChevronDown,
   Calendar,
   Clock,
   BarChart3,
@@ -21,8 +18,6 @@ import {
   Bell,
   Keyboard,
   FolderKanban,
-  CheckCircle2,
-  AlertTriangle,
   PiggyBank,
 } from 'lucide-react'
 
@@ -33,13 +28,11 @@ function Sidebar({ onOpenCalendarSync }) {
     setActiveView, 
     selectedProject, 
     setSelectedProject,
-    projects,
     tasks,
     ideas,
     habits,
     habitLogs,
     setSettingsOpen,
-    setAddProjectOpen,
     setRecurringOpen,
     setTimeTrackerOpen,
     setNotificationsPanelOpen,
@@ -47,14 +40,13 @@ function Sidebar({ onOpenCalendarSync }) {
     unreadNotificationCount,
   } = useStore()
 
-  const [projectsExpanded, setProjectsExpanded] = useState(true)
-
   const today = new Date().toISOString().split('T')[0]
   const inboxIdeas = ideas.filter(i => i.status === 'inbox').length
   const habitsDoneToday = habits.filter(h => habitLogs[`${h.id}-${today}`]).length
 
   const navItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
+    { id: 'projects', icon: FolderKanban, label: language === 'is' ? 'Verkefni' : 'Projects', badge: 'new' },
     { id: 'calendar', icon: Calendar, label: t('nav.calendar') },
     { id: 'roadmap', icon: GitBranch, label: language === 'is' ? 'Tímalína' : 'Roadmap', badge: 'new' },
     { id: 'ideas', icon: Lightbulb, label: t('nav.ideas'), count: inboxIdeas > 0 ? inboxIdeas : null, countColor: 'amber' },
@@ -65,31 +57,7 @@ function Sidebar({ onOpenCalendarSync }) {
     { id: 'budget', icon: PiggyBank, label: language === 'is' ? 'Sparnaður' : 'Budget Saver', badge: 'new' },
   ]
 
-  const getProjectStats = (projectId) => {
-    const projectTasks = tasks.filter(t => t.projectId === projectId)
-    const open = projectTasks.filter(t => !t.completed).length
-    const total = projectTasks.length
-    const completed = total - open
-    const progress = total > 0 ? (completed / total) * 100 : 0
-    const blocked = projectTasks.filter(t => 
-      !t.completed && 
-      t.blockedBy && 
-      t.blockedBy.length > 0 &&
-      t.blockedBy.some(bid => {
-        const blockingTask = tasks.find(bt => bt.id === bid)
-        return blockingTask && !blockingTask.completed
-      })
-    ).length
-    const overdue = projectTasks.filter(t => {
-      if (t.completed || !t.dueDate) return false
-      const dueDate = new Date(t.dueDate)
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      return dueDate < today
-    }).length
-    
-    return { open, total, completed, progress, blocked, overdue }
-  }
+// project stats moved to Projects Board
 
   const countColor = {
     amber: 'bg-amber-500/15 text-amber-400',
@@ -139,114 +107,8 @@ function Sidebar({ onOpenCalendarSync }) {
         })}
       </nav>
 
-      {/* Divider */}
-      <div className="mx-4 border-t border-[var(--border)] my-2" />
-
-      {/* Projects Section */}
-      <div className="flex-1 overflow-y-auto">
-        {/* Projects Header */}
-        <button
-          onClick={() => setProjectsExpanded(!projectsExpanded)}
-          className="w-full flex items-center justify-between px-4 py-2 text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider hover:text-[var(--text-secondary)] transition-colors"
-        >
-          <div className="flex items-center gap-2">
-            <FolderKanban size={12} />
-            <span>{t('nav.projects')}</span>
-            <span className="text-[var(--text-disabled)] font-mono normal-case">({projects.length})</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={(e) => { e.stopPropagation(); setAddProjectOpen(true) }}
-              className="p-1 hover:bg-[var(--bg-hover)] rounded-md transition-colors"
-              title={t('projects.addNew')}
-            >
-              <Plus size={12} />
-            </button>
-            {projectsExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-          </div>
-        </button>
-        
-        {/* Projects List */}
-        {projectsExpanded && (
-          <ul className="px-3 pb-3 space-y-0.5">
-            {projects.map(project => {
-              const isActive = activeView === 'project' && selectedProject === project.id
-              const stats = getProjectStats(project.id)
-              
-              return (
-                <li key={project.id}>
-                  <button
-                    onClick={() => {
-                      setActiveView('project')
-                      setSelectedProject(project.id)
-                    }}
-                    className={`w-full px-3 py-2.5 rounded-lg text-sm transition-all group ${
-                      isActive
-                        ? 'bg-[var(--bg-tertiary)]'
-                        : 'hover:bg-[var(--bg-hover)]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div 
-                        className="w-6 h-6 rounded-md flex items-center justify-center transition-transform group-hover:scale-110 flex-shrink-0"
-                        style={{ backgroundColor: `${project.color}20` }}
-                      >
-                        <DynamicIcon name={project.icon} size={14} style={{ color: project.color }} />
-                      </div>
-                      <span className={`flex-1 text-left truncate ${isActive ? 'text-[var(--text-primary)] font-medium' : 'text-[var(--text-secondary)]'}`}>
-                        {project.name}
-                      </span>
-                      <div className="flex items-center gap-1.5">
-                        {stats.overdue > 0 && (
-                          <span 
-                            className="flex items-center gap-0.5 text-[10px] font-medium text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded" 
-                            title={language === 'is' ? 'Seinkuð verkefni' : 'Overdue tasks'}
-                          >
-                            <AlertTriangle size={10} />
-                            {stats.overdue}
-                          </span>
-                        )}
-                        {stats.open > 0 && (
-                          <span className="text-[11px] font-mono text-[var(--text-muted)] bg-[var(--bg-tertiary)] px-1.5 py-0.5 rounded">
-                            {stats.open}
-                          </span>
-                        )}
-                        {stats.total > 0 && stats.open === 0 && (
-                          <CheckCircle2 size={14} className="text-green-400" />
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Progress bar */}
-                    {stats.total > 0 && (
-                      <div className="mt-2 h-1 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
-                        <div 
-                          className="h-full rounded-full transition-all duration-500"
-                          style={{ 
-                            width: `${stats.progress}%`, 
-                            backgroundColor: stats.progress === 100 ? '#22c55e' : project.color 
-                          }}
-                        />
-                      </div>
-                    )}
-                  </button>
-                </li>
-              )
-            })}
-            
-            {/* Add Project Button */}
-            <li>
-              <button
-                onClick={() => setAddProjectOpen(true)}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-all border border-dashed border-[var(--border)] hover:border-[var(--accent)]/30"
-              >
-                <Plus size={14} />
-                <span>{language === 'is' ? 'Nýtt verkefni' : 'New project'}</span>
-              </button>
-            </li>
-          </ul>
-        )}
-      </div>
+      {/* Spacer */}
+      <div className="flex-1 overflow-y-auto" />
 
       {/* Bottom Actions */}
       <div className="p-3 border-t border-[var(--border)] space-y-1">

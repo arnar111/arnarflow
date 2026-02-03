@@ -18,13 +18,22 @@ const COLORS = [
 
 function AddProjectModal({ onClose }) {
   const { t, language } = useTranslation()
-  const { addProject } = useStore()
+  const { addProject, addProjectDefaultStatus, setAddProjectDefaultStatus } = useStore()
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [icon, setIcon] = useState('Folder')
   const [color, setColor] = useState('#3b82f6')
   const [iconQuery, setIconQuery] = useState('')
   const [status, setStatus] = useState('ideas')
+
+  // When opened via a column CTA, prefill the status
+  React.useEffect(() => {
+    if (addProjectDefaultStatus) {
+      setStatus(addProjectDefaultStatus)
+      // clear default to avoid reusing
+      setAddProjectDefaultStatus(null)
+    }
+  }, [addProjectDefaultStatus, setAddProjectDefaultStatus])
 
   const handleSubmit = (e) => {
     e.preventDefault()

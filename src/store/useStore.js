@@ -795,7 +795,9 @@ const useStore = create(
 
       // Add Project modal
       addProjectOpen: false,
+      addProjectDefaultStatus: null,
       setAddProjectOpen: (open) => set({ addProjectOpen: open }),
+      setAddProjectDefaultStatus: (status) => set({ addProjectDefaultStatus: status }),
 
       // Keyboard shortcuts modal
       keyboardShortcutsOpen: false,

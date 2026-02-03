@@ -1,8 +1,8 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect, useRef } from 'react'
 import useStore from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
-import { FolderKanban, MoreVertical, Plus, Trash2 } from 'lucide-react'
+import { FolderKanban, MoreVertical, Plus, Trash2, GripVertical } from 'lucide-react'
 
 function ProjectMenu({ project, onOpen, onQuickTask, onDelete, onRename, onEditAppearance }) {
   const { language } = useTranslation()
@@ -132,9 +132,43 @@ export default function ProjectsBoard() {
     { key: 'cancelled', title: language === 'is' ? 'Hætt við' : 'Cancelled' },
   ]
 
+  const dragPreviewRef = useRef()
+
   const onDragStart = (e, projectId) => {
+    // attach id
     e.dataTransfer.setData('text/plain', projectId)
     e.dataTransfer.effectAllowed = 'move'
+
+    // Create nicer drag preview: clone the card node
+    try {
+      const handleEl = e.currentTarget
+      const card = handleEl.closest('.project-card')
+      if (card) {
+        const clone = card.cloneNode(true)
+        clone.style.boxShadow = '0 8px 30px rgba(0,0,0,0.3)'
+        clone.style.transform = 'scale(0.98)'
+        clone.style.opacity = '0.95'
+        clone.style.position = 'absolute'
+        clone.style.top = '-9999px'
+        clone.style.left = '-9999px'
+        clone.style.pointerEvents = 'none'
+        document.body.appendChild(clone)
+        // store ref to remove later
+        dragPreviewRef.current = clone
+        // set drag image with offset
+        e.dataTransfer.setDragImage(clone, clone.offsetWidth / 2, 20)
+
+        // Clean up after short delay (some browsers need it to stay until dragend)
+        setTimeout(() => {
+          if (dragPreviewRef.current) {
+            document.body.removeChild(dragPreviewRef.current)
+            dragPreviewRef.current = null
+          }
+        }, 0)
+      }
+    } catch (err) {
+      // ignore
+    }
   }
 
   const onDrop = (e, columnKey) => {
@@ -149,6 +183,58 @@ export default function ProjectsBoard() {
     e.preventDefault()
     e.dataTransfer.dropEffect = 'move'
   }
+
+  // Keyboard / focus state for this board
+  const [focusedProjectId, setFocusedProjectId] = useState(null)
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const activeTag = document.activeElement?.tagName
+      const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)
+      if (isTyping) return
+
+      // N = new project (default to ideas)
+      if (e.key === 'n' || e.key === 'N') {
+        e.preventDefault()
+        const { setAddProjectDefaultStatus } = useStore.getState()
+        setAddProjectDefaultStatus('ideas')
+        setAddProjectOpen(true)
+        return
+      }
+
+      // Enter = open focused project
+      if (e.key === 'Enter') {
+        if (focusedProjectId) {
+          openProject(focusedProjectId)
+        }
+        return
+      }
+
+      // Arrow navigation: move focused project between columns
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        if (!focusedProjectId) return
+        const colKeys = columns.map(c => c.key)
+        const project = projects.find(p => p.id === focusedProjectId)
+        if (!project) return
+        const curIndex = colKeys.indexOf(project.status)
+        if (curIndex === -1) return
+        const nextIndex = e.key === 'ArrowLeft' ? Math.max(0, curIndex - 1) : Math.min(colKeys.length - 1, curIndex + 1)
+        const { updateProject } = useStore.getState()
+        updateProject(project.id, { status: colKeys[nextIndex] })
+        return
+      }
+
+      // ? = show shortcuts overlay
+      if (e.key === '?') {
+        const { setKeyboardShortcutsOpen } = useStore.getState()
+        setKeyboardShortcutsOpen(true)
+        return
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [focusedProjectId, setAddProjectOpen, columns, projects])
 
   return (
     <div className="p-6">
@@ -169,7 +255,11 @@ export default function ProjectsBoard() {
           </div>
 
           <button
-            onClick={() => setAddProjectOpen(true)}
+            onClick={() => {
+              const { setAddProjectDefaultStatus } = useStore.getState()
+              setAddProjectDefaultStatus('ideas')
+              setAddProjectOpen(true)
+            }}
             className="px-4 py-2 rounded-lg bg-[var(--accent)] text-white hover:opacity-90 transition-all flex items-center gap-2"
           >
             <Plus size={16} />
@@ -183,11 +273,15 @@ export default function ProjectsBoard() {
               {language === 'is' ? 'Engin verkefni ennþá.' : 'No projects yet.'}
             </p>
             <button
-              onClick={() => setAddProjectOpen(true)}
+              onClick={() => {
+                const { setAddProjectDefaultStatus } = useStore.getState()
+                setAddProjectDefaultStatus('ideas')
+                setAddProjectOpen(true)
+              }}
               className="mt-4 px-4 py-2 rounded-lg bg-[var(--accent)] text-white hover:opacity-90 transition-all inline-flex items-center gap-2"
             >
               <Plus size={16} />
-              {language === 'is' ? 'Búa til fyrsta verkefnið' : 'Create your first project'}
+              {language === 'is' ? 'Nýtt verkefni' : 'New project'}
             </button>
           </div>
         ) : (
@@ -205,15 +299,15 @@ export default function ProjectsBoard() {
                 </div>
 
                 <div className="space-y-3">
-                  {projects.filter(p => p.status === col.key).map((p) => {
+                  {projects.filter(p => p.status === col.key).map((p, idx, arr) => {
                     const s = statsByProject.get(p.id) || { open: 0, total: 0, completed: 0, progress: 0, overdue: 0 }
                     return (
                       <div
                         key={p.id}
-                        draggable
-                        onDragStart={(e) => onDragStart(e, p.id)}
                         onClick={() => openProject(p.id)}
-                        className="cursor-pointer border rounded-xl p-3 transition-shadow hover:shadow-md flex flex-col"
+                        tabIndex={0}
+                        onFocus={() => setFocusedProjectId(p.id)}
+                        className="project-card cursor-pointer border rounded-xl p-3 transition-shadow hover:shadow-md flex flex-col focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
                         style={{ backgroundColor: `${p.color}10`, borderColor: `${p.color}30` }}
                       >
                         <div className="flex items-start justify-between gap-3">
@@ -239,33 +333,45 @@ export default function ProjectsBoard() {
                             </div>
                           </div>
 
-                          <ProjectMenu
-                            project={p}
-                            onOpen={() => openProject(p.id)}
-                            onQuickTask={() => {
-                              const { setSelectedProject, setActiveView, setQuickIdeaMode, setQuickAddOpen } = useStore.getState()
-                              setSelectedProject(p.id)
-                              setActiveView('project')
-                              setQuickIdeaMode(false)
-                              setQuickAddOpen(true)
-                            }}
-                            onDelete={() => {
-                              const ok = window.confirm(
-                                language === 'is'
-                                  ? `Eyða verkefni "${p.name}"? Þetta eyðir líka öllum tasks í því verkefni.`
-                                  : `Delete project "${p.name}"? This also deletes its tasks.`
-                              )
-                              if (ok) deleteProject(p.id)
-                            }}
-                            onRename={(newName) => {
-                              const { updateProject } = useStore.getState()
-                              updateProject(p.id, { name: newName })
-                            }}
-                            onEditAppearance={({ color, icon }) => {
-                              const { updateProject } = useStore.getState()
-                              updateProject(p.id, { color, icon })
-                            }}
-                          />
+                          <div className="flex items-center gap-2">
+                            <button
+                              draggable
+                              onDragStart={(e) => onDragStart(e, p.id)}
+                              className="p-2 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-all cursor-grab"
+                              title={language === 'is' ? 'Drag' : 'Drag'}
+                              aria-label="drag"
+                            >
+                              <GripVertical size={16} />
+                            </button>
+
+                            <ProjectMenu
+                              project={p}
+                              onOpen={() => openProject(p.id)}
+                              onQuickTask={() => {
+                                const { setSelectedProject, setActiveView, setQuickIdeaMode, setQuickAddOpen } = useStore.getState()
+                                setSelectedProject(p.id)
+                                setActiveView('project')
+                                setQuickIdeaMode(false)
+                                setQuickAddOpen(true)
+                              }}
+                              onDelete={() => {
+                                const ok = window.confirm(
+                                  language === 'is'
+                                    ? `Eyða verkefni "${p.name}"? Þetta eyðir líka öllum tasks í því verkefni.`
+                                    : `Delete project "${p.name}"? This also deletes its tasks.`
+                                )
+                                if (ok) deleteProject(p.id)
+                              }}
+                              onRename={(newName) => {
+                                const { updateProject } = useStore.getState()
+                                updateProject(p.id, { name: newName })
+                              }}
+                              onEditAppearance={({ color, icon }) => {
+                                const { updateProject } = useStore.getState()
+                                updateProject(p.id, { color, icon })
+                              }}
+                            />
+                          </div>
                         </div>
 
                         <div className="mt-3 flex items-center justify-between text-xs text-[var(--text-muted)]">
@@ -282,6 +388,22 @@ export default function ProjectsBoard() {
                       </div>
                     )
                   })}
+
+                  {projects.filter(p => p.status === col.key).length === 0 && (
+                    <div className="p-4 rounded-lg border border-dashed border-[var(--border)] text-center text-[var(--text-muted)]">
+                      <p className="mb-2">{language === 'is' ? 'Engin verkefni í þessum dálk.' : 'No projects in this column.'}</p>
+                      <button
+                        onClick={() => {
+                          const { setAddProjectDefaultStatus } = useStore.getState()
+                          setAddProjectDefaultStatus(col.key)
+                          setAddProjectOpen(true)
+                        }}
+                        className="mt-2 px-3 py-1.5 rounded-lg bg-[var(--accent)] text-white text-sm hover:opacity-90 transition-all"
+                      >
+                        {language === 'is' ? 'Nýtt verkefni' : 'New project'}
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-3 text-center text-xs text-[var(--text-muted)]">{language === 'is' ? 'Dragðu spjald hingað' : 'Drop card here'}</div>

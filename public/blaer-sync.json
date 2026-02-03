@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-02-01T12:30:00Z",
+  "lastUpdated": "2026-02-03T12:00:00Z",
   "source": "Blær AI",
   "tasks": [
     {
@@ -40,6 +40,115 @@
       "projectId": "arnar",
       "priority": "medium",
       "tags": ["bug"]
+    },
+    {
+      "title": "Test Eignamat valuation on sample properties",
+      "description": "Run valuation v2.1 tests for Hlíðargerði 17, Mjóahlíð 12 and Skúlagata 46; compare results to previous runs and log differences.",
+      "projectId": "eignamat",
+      "priority": "high",
+      "tags": ["testing", "valuation"]
+    },
+    {
+      "title": "Configure Stripe billing portal and test subscription flows",
+      "description": "Enable billing portal in Stripe dashboard, configure customer portal, and test subscription upgrades/downgrades and cancellations.",
+      "projectId": "eignamat",
+      "priority": "high",
+      "dueDate": "2026-02-05",
+      "tags": ["deployment", "billing"]
+    },
+    {
+      "title": "Publish Eignamat blog post: 'Hvernig virkar gervigreind í fasteignamati?'",
+      "description": "Review blog-post-1.md, add images, schedule publish and share social posts.",
+      "projectId": "eignamat",
+      "priority": "medium",
+      "tags": ["marketing", "content"]
+    },
+    {
+      "title": "Review & deploy Eignamat email onboarding sequence",
+      "description": "Validate content in email-sequence.md, set up in transactional email service and schedule the onboarding sequence.",
+      "projectId": "eignamat",
+      "priority": "medium",
+      "tags": ["marketing", "email"]
+    },
+    {
+      "title": "Verify TV Mode kiosk password & celebration overlays",
+      "description": "Test kiosk exit password 'takk2026', celebration overlays and auto-rotate behavior; fix any UI issues.",
+      "projectId": "takkarena",
+      "priority": "medium",
+      "tags": ["testing", "tv"]
+    },
+    {
+      "title": "Review and merge betrithu firebase-refactor PR",
+      "description": "Review PR blaer/firebase-refactor on GitHub, run tests locally and merge when ready.",
+      "projectId": "betrithu",
+      "priority": "high",
+      "dueDate": "2026-02-05",
+      "tags": ["review", "pr"]
+    },
+    {
+      "title": "Deploy Betrithu to staging and smoke-test recording streaming API",
+      "description": "Deploy the firebase refactor branch to staging and test recording playback, checkout and orders flow.",
+      "projectId": "betrithu",
+      "priority": "high",
+      "dueDate": "2026-02-07",
+      "tags": ["deployment", "testing"]
+    },
+    {
+      "title": "Verify Stripe/Swipe payment integration on Betrithu",
+      "description": "Run end-to-end checkout tests, verify webhook handling and order fulfillment flows.",
+      "projectId": "betrithu",
+      "priority": "medium",
+      "tags": ["payments", "testing"]
+    },
+    {
+      "title": "Archive Kosningagátt & write postmortem",
+      "description": "Create an archive bundle of the Kosningagátt codebase and write a short postmortem summarizing outcomes, metrics and learnings.",
+      "projectId": "kosningagatt",
+      "priority": "medium",
+      "tags": ["archive", "doc"]
+    },
+    {
+      "title": "Store voter-compare outputs and Zenter scrape data in archive",
+      "description": "Save kjosendur.json, kjosendur.txt and voter-compare exports into the project archive folder for future reference.",
+      "projectId": "kosningagatt",
+      "priority": "medium",
+      "tags": ["archive", "data"]
+    },
+    {
+      "title": "Review and merge ArnarFlow v4.3 PR",
+      "description": "Open PR blær/v4.3-features, run a local build (PowerShell if needed), review the changes and merge; publish release notes.",
+      "projectId": "arnar",
+      "priority": "high",
+      "dueDate": "2026-02-05",
+      "tags": ["review", "release"]
+    },
+    {
+      "title": "Test DataExportImport backup & onboarding flow in ArnarFlow",
+      "description": "Export current data to JSON, import back, and run the onboarding modal flow to verify onboardingComplete flags and data integrity.",
+      "projectId": "arnar",
+      "priority": "medium",
+      "tags": ["testing", "backup"]
+    },
+    {
+      "title": "Create Gleðinefnd budget & savings plan",
+      "description": "Draft event committee budget including a target savings goal (300,000 ISK) and a weekly contribution plan (10,000 ISK/week).",
+      "projectId": "gleðinefnd",
+      "priority": "high",
+      "tags": ["planning", "budget"]
+    },
+    {
+      "title": "Build weekly savings tracker and recurring check",
+      "description": "Add a simple weekly tracker (sheet or ArnarFlow task) to record 10,000 ISK contributions and set up automated weekly reminders.",
+      "projectId": "gleðinefnd",
+      "priority": "medium",
+      "tags": ["finance", "habit"]
+    },
+    {
+      "title": "Plan meal-prep alternative to Wolt and estimate monthly savings",
+      "description": "Create a 4-week meal-prep plan, grocery list, and compare costs to recent Wolt orders to estimate monthly savings.",
+      "projectId": "gleðinefnd",
+      "priority": "medium",
+      "tags": ["savings", "food"]
     }
   ],
   "ideas": [

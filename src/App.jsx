@@ -4,6 +4,7 @@ import TitleBar from './components/TitleBar'
 import Sidebar from './components/Sidebar'
 import Dashboard from './components/Dashboard'
 import ProjectView from './components/ProjectView'
+import ProjectsBoard from './components/ProjectsBoard'
 import IdeasInbox from './components/IdeasInbox'
 import HabitsView from './components/HabitsView'
 import CalendarView from './components/CalendarView'
@@ -229,6 +230,8 @@ function App() {
     switch (activeView) {
       case 'dashboard':
         return <Dashboard />
+      case 'projects':
+        return <ProjectsBoard />
       case 'project':
         return <ProjectView />
       case 'ideas':
