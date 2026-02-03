@@ -1,14 +1,20 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const APP_VERSION = '5.4.3'
+const APP_VERSION = '5.4.4'
 
+// Project statuses for Projects Kanban
+// - ideas: Hugmyndir
+// - active: Í vinnslu
+// - done: Búið
+// - on_hold: Í bið
+// - cancelled: Hætt við
 const PROJECTS = [
-  { id: 'eignamat', name: 'Eignamat', icon: 'Home', color: '#10b981', description: 'AI Property Valuation SaaS' },
-  { id: 'takkarena', name: 'Takk Arena', icon: 'Trophy', color: '#f59e0b', description: 'Gamified Sales Tracking' },
-  { id: 'betrithu', name: 'Betri Þú', icon: 'Headphones', color: '#a855f7', description: 'Hypnosis Recordings Store' },
-  { id: 'kosningagatt', name: 'Kosningagátt', icon: 'Vote', color: '#ef4444', description: 'SMS Campaign Tool' },
-  { id: 'arnar', name: 'Portfolio', icon: 'Globe', color: '#06b6d4', description: 'Personal Website' },
+  { id: 'eignamat', name: 'Eignamat', icon: 'Home', color: '#10b981', description: 'AI Property Valuation SaaS', status: 'active' },
+  { id: 'takkarena', name: 'Takk Arena', icon: 'Trophy', color: '#f59e0b', description: 'Gamified Sales Tracking', status: 'active' },
+  { id: 'betrithu', name: 'Betri Þú', icon: 'Headphones', color: '#a855f7', description: 'Hypnosis Recordings Store', status: 'active' },
+  { id: 'kosningagatt', name: 'Kosningagátt', icon: 'Vote', color: '#ef4444', description: 'SMS Campaign Tool', status: 'done' },
+  { id: 'arnar', name: 'Portfolio', icon: 'Globe', color: '#06b6d4', description: 'Personal Website', status: 'on_hold' },
 ]
 
 const HABITS = [
@@ -921,6 +927,35 @@ const useStore = create(
     }),
     {
       name: 'arnarflow-storage',
+      version: 2,
+      migrate: (persistedState, fromVersion) => {
+        const state = persistedState || {}
+
+        // Ensure projects exist
+        const projects = Array.isArray(state.projects) ? state.projects : PROJECTS
+
+        // Add default project.status for older stored data
+        const statusById = {
+          eignamat: 'active',
+          takkarena: 'active',
+          betrithu: 'active',
+          kosningagatt: 'done',
+          arnar: 'on_hold',
+        }
+
+        const migratedProjects = projects.map((p) => {
+          if (!p) return p
+          return {
+            ...p,
+            status: p.status || statusById[p.id] || 'ideas',
+          }
+        })
+
+        return {
+          ...state,
+          projects: migratedProjects,
+        }
+      },
     }
   )
 )
