@@ -43,9 +43,17 @@ export default function BudgetSaver() {
   const importNow = async () => {
     try {
       setImportStatus({ state: 'loading' })
-      const res = await fetch('/budget-sync.json?t=' + Date.now())
-      if (!res.ok) throw new Error('budget-sync.json fannst ekki')
-      const json = await res.json()
+
+      // In Electron, prefer IPC to avoid file:// fetch issues
+      let json = null
+      if (typeof window !== 'undefined' && window.electronAPI?.readBudgetSyncFile) {
+        json = await window.electronAPI.readBudgetSyncFile()
+      } else {
+        const res = await fetch('/budget-sync.json?t=' + Date.now())
+        if (!res.ok) throw new Error('budget-sync.json fannst ekki')
+        json = await res.json()
+      }
+
       importBudgetSync(json)
       setImportStatus({ state: 'done', receipts: json?.counts?.woltReceipts ?? (json?.receipts?.length || 0), tx: json?.counts?.indo ?? (json?.transactions?.length || 0) })
       setTimeout(() => setImportStatus(null), 4000)

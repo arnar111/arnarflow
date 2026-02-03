@@ -17,5 +17,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getAppVersion: () => ipcRenderer.invoke('get-app-version'),
   
   // Blær Sync
-  readSyncFile: () => ipcRenderer.invoke('read-sync-file')
+  readSyncFile: () => ipcRenderer.invoke('read-sync-file'),
+
+  // Budget Sync
+  readBudgetSyncFile: () => ipcRenderer.invoke('read-budget-sync-file')
 })

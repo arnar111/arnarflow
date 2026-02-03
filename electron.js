@@ -110,6 +110,7 @@ ipcMain.handle('read-sync-file', async () => {
     // Try multiple locations
     const locations = [
       path.join(__dirname, 'public', 'blaer-sync.json'),
+      path.join(__dirname, 'dist', 'blaer-sync.json'),
       path.join(__dirname, 'blaer-sync.json'),
       path.join(app.getPath('userData'), 'blaer-sync.json'),
       'C:\\Users\\Administrator\\arnarflow\\public\\blaer-sync.json'
@@ -131,6 +132,35 @@ ipcMain.handle('read-sync-file', async () => {
   } catch (error) {
     console.error('Failed to read sync file:', error)
     return { tasks: [], ideas: [], notes: [] }
+  }
+})
+
+// Budget Sync - read budget sync file
+ipcMain.handle('read-budget-sync-file', async () => {
+  try {
+    const locations = [
+      path.join(__dirname, 'public', 'budget-sync.json'),
+      path.join(__dirname, 'dist', 'budget-sync.json'),
+      path.join(__dirname, 'budget-sync.json'),
+      path.join(app.getPath('userData'), 'budget-sync.json'),
+      'C:\\Users\\Administrator\\arnarflow\\public\\budget-sync.json'
+    ]
+
+    for (const filePath of locations) {
+      try {
+        if (fs.existsSync(filePath)) {
+          const data = fs.readFileSync(filePath, 'utf8')
+          return JSON.parse(data)
+        }
+      } catch (e) {
+        continue
+      }
+    }
+
+    return { receipts: [], transactions: [], counts: { indo: 0, woltReceipts: 0 } }
+  } catch (error) {
+    console.error('Failed to read budget sync file:', error)
+    return { receipts: [], transactions: [], counts: { indo: 0, woltReceipts: 0 } }
   }
 })
 
