@@ -20,7 +20,8 @@ import {
   Languages,
   BellRing,
   Clock,
-  HardDrive
+  HardDrive,
+  Sparkles
 } from 'lucide-react'
 import DataExportImport from './DataExportImport'
 
@@ -380,6 +381,20 @@ function SettingsModal() {
           <section>
             <h3 className="text-sm font-medium mb-3">{t('settings.more')}</h3>
             <div className="space-y-1">
+              <button
+                onClick={() => {
+                  // Re-open the onboarding wizard
+                  setSettingsOpen(false)
+                  // Ensure onboarding can be shown again
+                  useStore.getState().setOnboardingComplete(false)
+                  useStore.getState().setOnboardingOpen(true)
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-dark-800 transition-colors text-left"
+              >
+                <Sparkles size={16} className="text-zinc-500" />
+                <span className="text-sm">{language === 'is' ? 'Kynning / Uppsetning' : 'Run Onboarding'}</span>
+              </button>
+
               <button
                 onClick={() => {
                   setSettingsOpen(false)

@@ -89,14 +89,14 @@ function App() {
   // Weekly Review modal state
   const [weeklyReviewOpen, setWeeklyReviewOpen] = useState(false)
 
-  // Seed initial tasks on first run
+  // Seed initial tasks on first run (moved into onboarding flow)
   const seedProjectTasks = useStore(state => state.seedProjectTasks)
   const recalculateAllStreaks = useStore(state => state.recalculateAllStreaks)
   
   useEffect(() => {
-    seedProjectTasks()
+    // Recalculate streaks on mount; seeding is handled via the onboarding wizard when user opts in.
     recalculateAllStreaks()
-  }, [seedProjectTasks, recalculateAllStreaks])
+  }, [recalculateAllStreaks])
 
   // v5.0.0 - Use notification checker hook
   useNotificationChecker()

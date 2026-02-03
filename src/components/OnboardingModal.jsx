@@ -1,333 +1,230 @@
 import React, { useState } from 'react'
 import useStore from '../store/useStore'
 import { 
-  X, 
-  ChevronLeft, 
-  ChevronRight, 
+  X,
+  ChevronLeft,
+  ChevronRight,
   CheckCircle,
   LayoutDashboard,
   ListTodo,
-  Target,
-  Timer,
+  Clock,
   Sparkles,
   Keyboard,
-  ArrowRight
+  Palette,
+  Languages,
+  Database
 } from 'lucide-react'
-
-const steps = [
-  {
-    id: 'welcome',
-    icon: Sparkles,
-    title: 'Velkomin í ArnarFlow!',
-    titleEn: 'Welcome to ArnarFlow!',
-    description: 'Þetta er persónulega framleiðni appið þitt. Við leiðum þig í gegnum helstu eiginleikana.',
-    descriptionEn: 'This is your personal productivity app. Let us show you around.',
-    image: '🎯'
-  },
-  {
-    id: 'dashboard',
-    icon: LayoutDashboard,
-    title: 'Yfirlitið þitt',
-    titleEn: 'Your Dashboard',
-    description: 'Sjáðu allt á einum stað: verkefni dagsins, venjur, og framvindu. Þetta er heimaskjárinn þinn.',
-    descriptionEn: 'See everything in one place: today\'s tasks, habits, and progress. This is your home screen.',
-    image: '📊'
-  },
-  {
-    id: 'tasks',
-    icon: ListTodo,
-    title: 'Verkefni og Projects',
-    titleEn: 'Tasks and Projects',
-    description: 'Búðu til verkefni og skipulagðu þau í projects. Notaðu ⌘+N til að bæta við fljótt.',
-    descriptionEn: 'Create tasks and organize them into projects. Use ⌘+N to add quickly.',
-    image: '✅'
-  },
-  {
-    id: 'habits',
-    icon: Target,
-    title: 'Venjur',
-    titleEn: 'Habits',
-    description: 'Fylgstu með daglegum venjum og byggðu upp streaks. Smelltu á venju til að merkja hana lokna.',
-    descriptionEn: 'Track daily habits and build streaks. Click a habit to mark it done.',
-    image: '🔥'
-  },
-  {
-    id: 'pomodoro',
-    icon: Timer,
-    title: 'Pomodoro Timer',
-    titleEn: 'Pomodoro Timer',
-    description: 'Notaðu Pomodoro tækni til að einbeita þér. 25 mín vinnu, 5 mín hvíld. Fáðu tilkynningu þegar tími rennur út.',
-    descriptionEn: 'Use Pomodoro technique to focus. 25 min work, 5 min break. Get notified when time is up.',
-    image: '🍅'
-  },
-  {
-    id: 'shortcuts',
-    icon: Keyboard,
-    title: 'Flýtilyklar',
-    titleEn: 'Keyboard Shortcuts',
-    description: 'Vertu fljótari með flýtilyklum:\n⌘+N = Nýtt verkefni\n⌘+K = Command Palette\n⌘+, = Stillingar\n? = Flýtilyklahjálp',
-    descriptionEn: 'Be faster with shortcuts:\n⌘+N = New task\n⌘+K = Command Palette\n⌘+, = Settings\n? = Shortcut help',
-    image: '⚡'
-  },
-  {
-    id: 'done',
-    icon: CheckCircle,
-    title: 'Þú ert tilbúin/n!',
-    titleEn: 'You\'re all set!',
-    description: 'Byrjaðu að nota ArnarFlow og náðu markmiðunum þínum. Gangi þér vel!',
-    descriptionEn: 'Start using ArnarFlow and achieve your goals. Good luck!',
-    image: '🚀'
-  }
-]
+import { useTranslation } from '../i18n/useTranslation'
 
 export default function OnboardingModal() {
+  const { t, language } = useTranslation()
   const [currentStep, setCurrentStep] = useState(0)
-  const { language, setOnboardingComplete, setOnboardingOpen } = useStore()
+  const [selectedLanguage, setSelectedLanguage] = useState(language || 'is')
+  const [selectedTheme, setSelectedTheme] = useState(useStore.getState().theme || 'dark')
+  const [selectedAccent, setSelectedAccent] = useState(useStore.getState().accentColor || 'indigo')
+  const [seedSamples, setSeedSamples] = useState(true)
+  const [enableNotifications, setEnableNotifications] = useState(useStore.getState().notificationsEnabled)
+
+  const setLanguage = useStore(state => state.setLanguage)
+  const setTheme = useStore(state => state.setTheme)
+  const setAccentColor = useStore(state => state.setAccentColor)
+  const seedProjectTasks = useStore(state => state.seedProjectTasks)
+  const recalculateAllStreaks = useStore(state => state.recalculateAllStreaks)
+  const setOnboardingComplete = useStore(state => state.setOnboardingComplete)
+  const setOnboardingOpen = useStore(state => state.setOnboardingOpen)
+  const setNotificationsEnabled = useStore(state => state.setNotificationsEnabled)
   const accentColor = useStore(state => state.accentColor)
-  
+
+  const steps = [
+    { id: 'welcome', title: language === 'is' ? 'Velkomin í ArnarFlow!' : 'Welcome to ArnarFlow!', description: language === 'is' ? 'Þetta er persónulega framleiðni appið þitt. Við leiðum þig í gegnum helstu eiginleikana.' : 'This is your personal productivity app. We will guide you through the main features.' , icon: Sparkles },
+    { id: 'language', title: language === 'is' ? 'Veldu Tungumál' : 'Choose Language', description: language === 'is' ? 'Veldu íslensku eða ensku fyrir UI-ið.' : 'Pick Icelandic or English for the UI.', icon: Languages },
+    { id: 'appearance', title: language === 'is' ? 'Útlit & Þema' : 'Appearance & Theme', description: language === 'is' ? 'Veldu dökkt þema og áherslulit til að passa stílnum þínum.' : 'Choose dark theme and an accent color to match your style.', icon: Palette },
+    { id: 'samples', title: language === 'is' ? 'Sýnisverkefni' : 'Sample Projects', description: language === 'is' ? 'Sæktu sýnisverkefni og verkefni til að koma þér af stað (valfrjálst).' : 'Seed sample projects and tasks to get started quickly (optional).', icon: Database },
+    { id: 'shortcuts', title: language === 'is' ? 'Flýtilyklar & Staðsetning' : 'Shortcuts & Where to Find Things', description: language === 'is' ? 'Notaðu flýtilykla til að bæta við og flakka. Verkefni eru undir "Projects" og tímalínan undir "Roadmap".' : 'Use shortcuts to add and navigate. Projects live in "Projects" (Kanban) and the Timeline is "Roadmap".', icon: ListTodo },
+    { id: 'done', title: language === 'is' ? 'Allt tilbúið!' : "You're all set!", description: language === 'is' ? 'Byrjaðu að nota ArnarFlow. Opnaðu stillingar seinna til að keyra uppsetningarleiðbeininguna aftur.' : 'Start using ArnarFlow. You can reopen the onboarding from Settings anytime.', icon: CheckCircle }
+  ]
+
   const step = steps[currentStep]
   const isFirst = currentStep === 0
   const isLast = currentStep === steps.length - 1
-  
-  const handleNext = () => {
+
+  const goNext = () => {
+    if (currentStep === 1) {
+      // language step: apply selection immediately for live preview
+      setLanguage(selectedLanguage)
+    }
+
+    if (currentStep === 2) {
+      setTheme(selectedTheme)
+      setAccentColor(selectedAccent)
+    }
+
+    if (currentStep === 3) {
+      // preferences step: notifications
+      setNotificationsEnabled(enableNotifications)
+    }
+
     if (isLast) {
+      // finalize
+      if (seedSamples) {
+        seedProjectTasks()
+        // ensure streaks are calculated
+        recalculateAllStreaks()
+      }
       setOnboardingComplete(true)
       setOnboardingOpen(false)
-    } else {
-      setCurrentStep(prev => prev + 1)
+      return
     }
+    setCurrentStep(s => s + 1)
   }
-  
-  const handlePrev = () => {
-    if (!isFirst) {
-      setCurrentStep(prev => prev - 1)
-    }
+
+  const goPrev = () => {
+    if (!isFirst) setCurrentStep(s => s - 1)
   }
-  
+
   const handleSkip = () => {
     setOnboardingComplete(true)
     setOnboardingOpen(false)
   }
 
-  return (
-    <div className="modal-overlay" onClick={handleSkip}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
-        {/* Skip button */}
-        <button onClick={handleSkip} className="skip-btn">
-          Sleppa
-        </button>
-
-        {/* Progress dots */}
-        <div className="progress-dots">
-          {steps.map((_, i) => (
-            <div 
-              key={i} 
-              className={`dot ${i === currentStep ? 'active' : ''} ${i < currentStep ? 'completed' : ''}`}
-            />
-          ))}
-        </div>
-
-        {/* Content */}
-        <div className="content">
-          <div className="icon-wrapper">
-            <span className="icon-emoji">{step.image}</span>
+  const renderStepContent = () => {
+    switch (step.id) {
+      case 'welcome':
+        return (
+          <div className="text-center space-y-3">
+            <div className="badge-graphic">🎯</div>
+            <h3 className="text-lg font-semibold">{step.title}</h3>
+            <p className="text-zinc-400">{step.description}</p>
           </div>
-          
-          <h2>{language === 'is' ? step.title : step.titleEn}</h2>
-          
-          <p className="description">
-            {(language === 'is' ? step.description : step.descriptionEn).split('\n').map((line, i) => (
-              <span key={i}>{line}<br/></span>
+        )
+
+      case 'language':
+        return (
+          <div className="space-y-3">
+            <p className="text-zinc-400">{step.description}</p>
+            <div className="flex gap-2 mt-3">
+              <button onClick={() => setSelectedLanguage('is')} className={`flex-1 py-3 rounded-lg border ${selectedLanguage==='is'?'border-accent bg-accent/6':''}`}>🇮🇸 Íslenksa</button>
+              <button onClick={() => setSelectedLanguage('en')} className={`flex-1 py-3 rounded-lg border ${selectedLanguage==='en'?'border-accent bg-accent/6':''}`}>🇬🇧 English</button>
+            </div>
+          </div>
+        )
+
+      case 'appearance':
+        return (
+          <div className="space-y-3">
+            <p className="text-zinc-400">{step.description}</p>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <button onClick={() => setSelectedTheme('dark')} className={`py-3 rounded-lg border ${selectedTheme==='dark'?'border-accent bg-accent/6':''}`}>{language==='is'?'Dökkt':'Dark'}</button>
+              <button onClick={() => setSelectedTheme('light')} className={`py-3 rounded-lg border ${selectedTheme==='light'?'border-accent bg-accent/6':''}`}>{language==='is'?'Ljóst':'Light'}</button>
+            </div>
+
+            <div className="mt-4">
+              <label className="text-sm text-zinc-400">{language==='is'?'Áherslulitur':'Accent color'}</label>
+              <div className="flex gap-2 mt-2">
+                {['blue','purple','indigo','cyan','green','orange','pink'].map(c => (
+                  <button key={c} onClick={() => setSelectedAccent(c)} className={`w-10 h-10 rounded-lg ring-offset-2 ${selectedAccent===c? 'ring-2 ring-offset-dark-900':''}`} style={{backgroundColor: {blue:'#3b82f6', purple:'#a855f7', indigo:'#6366f1', cyan:'#06b6d4', green:'#22c55e', orange:'#f97316', pink:'#ec4899'}[c]}} />
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+
+      case 'samples':
+        return (
+          <div className="space-y-3">
+            <p className="text-zinc-400">{step.description}</p>
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <div>
+                <div className="font-medium">{language==='is'?'Sæktu sýnisverkefni':'Seed sample projects'}</div>
+                <div className="text-sm text-zinc-500">{language==='is'?'Bæta við nokkrum verkefnum og verkefna punktum til að prófa appið.':'Add a few projects and tasks to try the app.'}</div>
+              </div>
+              <div>
+                <button onClick={() => setSeedSamples(s => !s)} className={`w-16 h-8 rounded-full ${seedSamples? 'bg-accent':'bg-dark-700'}`}>
+                  <div className={`w-6 h-6 bg-white rounded-full m-0.5 transition-transform ${seedSamples? 'translate-x-8':''}`} />
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-2 text-sm text-zinc-500">{language==='is'?'Þú getur líka bætt við eigin verkefnum síðar.':'You can add your own projects later as well.'}</div>
+          </div>
+        )
+
+      case 'shortcuts':
+        return (
+          <div className="space-y-3">
+            <p className="text-zinc-400">{step.description}</p>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <div className="p-3 rounded-lg bg-dark-800 border border-dark-600">
+                <div className="text-sm text-zinc-300 font-medium">⌘+N</div>
+                <div className="text-xs text-zinc-500">{language==='is'?'Nýtt verkefni':'New task'}</div>
+              </div>
+              <div className="p-3 rounded-lg bg-dark-800 border border-dark-600">
+                <div className="text-sm text-zinc-300 font-medium">⌘+K</div>
+                <div className="text-xs text-zinc-500">{language==='is'?'Leita / Command Palette':'Search / Command Palette'}</div>
+              </div>
+              <div className="p-3 rounded-lg bg-dark-800 border border-dark-600">
+                <div className="text-sm text-zinc-300 font-medium">⌘+,</div>
+                <div className="text-xs text-zinc-500">{language==='is'?'Opna stillingar':'Open settings'}</div>
+              </div>
+              <div className="p-3 rounded-lg bg-dark-800 border border-dark-600">
+                <div className="text-sm text-zinc-300 font-medium">?</div>
+                <div className="text-xs text-zinc-500">{language==='is'?'Flýtilyklahjálp':'Shortcut help'}</div>
+              </div>
+            </div>
+            <div className="mt-3 text-sm text-zinc-400">{language==='is'?'Verkefni: Sidebar → Projects. Tímalína: Sidebar → Roadmap.':'Projects: Sidebar → Projects. Timeline: Sidebar → Roadmap.'}</div>
+          </div>
+        )
+
+      case 'done':
+        return (
+          <div className="text-center space-y-3">
+            <div className="badge-graphic">🚀</div>
+            <h3 className="text-lg font-semibold">{step.title}</h3>
+            <p className="text-zinc-400">{step.description}</p>
+          </div>
+        )
+
+      default:
+        return null
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" onClick={handleSkip}>
+      <div className="w-full max-w-2xl mx-4 bg-gradient-to-br from-dark-900/90 via-dark-800/80 to-[rgba(70,48,125,0.6)] border border-dark-700 rounded-2xl p-6" onClick={e => e.stopPropagation()}>
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-accent/40 to-[var(--accent-glow)] flex items-center justify-center text-2xl">{step.icon && <step.icon size={20} className="text-white" />}</div>
+              <div>
+                <h2 className="text-xl font-semibold">{step.title}</h2>
+                <div className="text-xs text-zinc-400">{`${currentStep+1}/${steps.length}`}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button onClick={handleSkip} className="text-sm text-zinc-400 hover:text-zinc-200">{language==='is'?'Sleppa':'Skip'}</button>
+            <button onClick={() => { setOnboardingOpen(false); setOnboardingComplete(true) }} className="p-2 rounded-lg hover:bg-dark-800"><X size={16} className="text-zinc-400" /></button>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          {renderStepContent()}
+        </div>
+
+        <div className="mt-6 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            {Array.from({length: steps.length}).map((_, i) => (
+              <div key={i} className={`h-2 rounded-full ${i===currentStep? 'w-8 bg-accent':'w-3 bg-dark-700'}`} />
             ))}
-          </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button onClick={goPrev} disabled={isFirst} className="px-4 py-2 rounded-lg bg-dark-800 text-sm text-zinc-300 disabled:opacity-50">{language==='is'?'Til baka':'Back'}</button>
+            <button onClick={goNext} className="px-4 py-2 rounded-lg bg-accent text-sm text-white flex items-center gap-2">{isLast ? (language==='is'?'Byrja':'Get started') : (language==='is'?'Áfram':'Next')} {isLast ? <CheckCircle size={16} /> : <ChevronRight size={16} />}</button>
+          </div>
         </div>
-
-        {/* Navigation */}
-        <div className="navigation">
-          <button 
-            onClick={handlePrev} 
-            className="nav-btn prev"
-            disabled={isFirst}
-          >
-            <ChevronLeft size={20} />
-            Til baka
-          </button>
-          
-          <button onClick={handleNext} className="nav-btn next">
-            {isLast ? (
-              <>
-                Byrja
-                <CheckCircle size={18} />
-              </>
-            ) : (
-              <>
-                Áfram
-                <ChevronRight size={20} />
-              </>
-            )}
-          </button>
-        </div>
-
-        <style jsx>{`
-          .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            animation: fadeIn 0.2s ease;
-          }
-
-          .modal {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 40px;
-            width: 90%;
-            max-width: 480px;
-            position: relative;
-            animation: slideUp 0.3s ease;
-          }
-
-          @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
-
-          @keyframes slideUp {
-            from { 
-              opacity: 0;
-              transform: translateY(20px);
-            }
-            to { 
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-
-          .skip-btn {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            padding: 6px 12px;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 13px;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s;
-          }
-
-          .skip-btn:hover {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-          }
-
-          .progress-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 32px;
-          }
-
-          .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--bg-tertiary);
-            transition: all 0.3s ease;
-          }
-
-          .dot.active {
-            width: 24px;
-            border-radius: 4px;
-            background: var(--accent-${accentColor});
-          }
-
-          .dot.completed {
-            background: var(--accent-${accentColor});
-            opacity: 0.5;
-          }
-
-          .content {
-            text-align: center;
-            margin-bottom: 32px;
-          }
-
-          .icon-wrapper {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 24px;
-            border-radius: 24px;
-            background: var(--bg-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-
-          .icon-emoji {
-            font-size: 48px;
-          }
-
-          h2 {
-            font-size: 24px;
-            margin: 0 0 16px 0;
-          }
-
-          .description {
-            color: var(--text-secondary);
-            font-size: 15px;
-            line-height: 1.6;
-            margin: 0;
-          }
-
-          .navigation {
-            display: flex;
-            gap: 12px;
-          }
-
-          .nav-btn {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-          }
-
-          .nav-btn.prev {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-          }
-
-          .nav-btn.prev:hover:not(:disabled) {
-            background: var(--bg-tertiary);
-          }
-
-          .nav-btn.prev:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-          }
-
-          .nav-btn.next {
-            background: var(--accent-${accentColor});
-            border: none;
-            color: white;
-          }
-
-          .nav-btn.next:hover {
-            opacity: 0.9;
-          }
-        `}</style>
       </div>
     </div>
   )
