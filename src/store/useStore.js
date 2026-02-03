@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const APP_VERSION = '5.4.4'
+const APP_VERSION = '5.4.5'
 
 // Project statuses for Projects Kanban
 // - ideas: Hugmyndir
@@ -929,7 +929,7 @@ const useStore = create(
     }),
     {
       name: 'arnarflow-storage',
-      version: 2,
+      version: 3,
       migrate: (persistedState, fromVersion) => {
         const state = persistedState || {}
 
@@ -953,9 +953,121 @@ const useStore = create(
           }
         })
 
+        // If upgrading from older versions, auto-assign missing due dates so Timeline view works out of the box.
+        // This is a *best-effort* heuristic schedule and only fills missing values.
+        const addBusinessDays = (date, days) => {
+          const d = new Date(date)
+          let remaining = Number(days || 0)
+          while (remaining > 0) {
+            d.setDate(d.getDate() + 1)
+            const day = d.getDay() // 0 Sun .. 6 Sat
+            if (day !== 0 && day !== 6) remaining--
+          }
+          d.setHours(12, 0, 0, 0)
+          return d
+        }
+
+        const toISODate = (d) => {
+          const dd = new Date(d)
+          dd.setHours(12, 0, 0, 0)
+          return dd.toISOString().split('T')[0]
+        }
+
+        const tasks = Array.isArray(state.tasks) ? state.tasks : []
+
+        const priorityRank = (p) => (p === 'high' ? 0 : p === 'medium' ? 1 : 2)
+        const durationByPriority = (p) => (p === 'high' ? 3 : p === 'medium' ? 7 : 14)
+
+        const projectDelayDays = (status) => {
+          if (status === 'active') return 1
+          if (status === 'ideas') return 14
+          if (status === 'on_hold') return 30
+          if (status === 'done' || status === 'cancelled') return 90
+          return 14
+        }
+
+        const now = new Date()
+        now.setHours(12, 0, 0, 0)
+
+        // Map tasks by id for dependency lookups
+        const taskById = new Map(tasks.filter(Boolean).map(t => [t.id, t]))
+
+        // Group tasks without due dates by project
+        const tasksByProject = new Map()
+        for (const t of tasks) {
+          if (!t) continue
+          if (t.dueDate) continue
+          const pid = t.projectId || 'unknown'
+          if (!tasksByProject.has(pid)) tasksByProject.set(pid, [])
+          tasksByProject.get(pid).push(t)
+        }
+
+        const statusByProjectId = new Map(migratedProjects.filter(Boolean).map(p => [p.id, p.status]))
+
+        const plannedTasks = tasks.map((t) => {
+          if (!t || t.dueDate) return t
+
+          const projectStatus = statusByProjectId.get(t.projectId) || 'ideas'
+          let start = addBusinessDays(now, projectDelayDays(projectStatus))
+
+          // If other tasks in the same project were planned, push start after the latest planned start.
+          const bucket = tasksByProject.get(t.projectId) || []
+          // Find tasks already assigned in this pass
+          const latestPlannedDue = bucket
+            .filter(x => x && x.dueDate)
+            .map(x => new Date(x.dueDate))
+            .sort((a,b)=>b-a)[0]
+          if (latestPlannedDue) start = addBusinessDays(latestPlannedDue, 1)
+
+          // Respect dependencies: start after all blockers' due dates if any
+          const blockers = Array.isArray(t.blockedBy) ? t.blockedBy : []
+          let depDue = null
+          for (const bid of blockers) {
+            const bt = taskById.get(bid)
+            const bd = bt?.dueDate ? new Date(bt.dueDate) : null
+            if (bd && (!depDue || bd > depDue)) depDue = bd
+          }
+          if (depDue) start = addBusinessDays(depDue, 1)
+
+          const duration = durationByPriority(t.priority)
+          const due = addBusinessDays(start, duration)
+
+          const updates = {
+            startDate: t.startDate || toISODate(start),
+            dueDate: toISODate(due),
+          }
+
+          const updated = { ...t, ...updates }
+
+          // store back for subsequent dependency calculations
+          taskById.set(updated.id, updated)
+
+          // update bucket so later tasks in project are staggered
+          const b = tasksByProject.get(updated.projectId)
+          if (b) {
+            const idx = b.findIndex(x => x && x.id === updated.id)
+            if (idx >= 0) b[idx] = updated
+          }
+
+          return updated
+        })
+
+        // Sort only applies when assigning; ensure stable schedule by project+priority ordering for remaining gaps
+        // (We don't reorder tasks array itself; just fill dates.)
+
+        // Second pass: if still missing due dates (e.g., because tasksByProject didn't include completed), fill deterministically.
+        const filledTasks = plannedTasks.map((t) => {
+          if (!t || t.dueDate) return t
+          const projectStatus = statusByProjectId.get(t.projectId) || 'ideas'
+          const start = addBusinessDays(now, projectDelayDays(projectStatus) + priorityRank(t.priority) * 7)
+          const due = addBusinessDays(start, durationByPriority(t.priority))
+          return { ...t, startDate: t.startDate || toISODate(start), dueDate: toISODate(due) }
+        })
+
         return {
           ...state,
           projects: migratedProjects,
+          tasks: filledTasks,
         }
       },
     }
