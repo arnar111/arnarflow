@@ -123,9 +123,36 @@ export default function ProjectsBoard() {
     setSelectedProject(projectId)
   }
 
+  // Kanban columns
+  const columns = [
+    { key: 'ideas', title: language === 'is' ? 'Hugmyndir' : 'Ideas' },
+    { key: 'active', title: language === 'is' ? 'Í vinnslu' : 'Active' },
+    { key: 'done', title: language === 'is' ? 'Búið' : 'Done' },
+    { key: 'on_hold', title: language === 'is' ? 'Í bið' : 'On hold' },
+    { key: 'cancelled', title: language === 'is' ? 'Hætt við' : 'Cancelled' },
+  ]
+
+  const onDragStart = (e, projectId) => {
+    e.dataTransfer.setData('text/plain', projectId)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  const onDrop = (e, columnKey) => {
+    e.preventDefault()
+    const projectId = e.dataTransfer.getData('text/plain')
+    if (!projectId) return
+    const { updateProject } = useStore.getState()
+    updateProject(projectId, { status: columnKey })
+  }
+
+  const onDragOver = (e) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+  }
+
   return (
     <div className="p-6">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold text-[var(--text-primary)] flex items-center gap-3">
@@ -136,8 +163,8 @@ export default function ProjectsBoard() {
             </h1>
             <p className="text-sm text-[var(--text-secondary)] mt-2">
               {language === 'is'
-                ? 'Öll verkefni á einum stað. Smelltu á spjald til að opna kanban verkefnaborðið.'
-                : 'All projects in one place. Click a card to open the project kanban.'}
+                ? 'Öll verkefni á einum stað. Dragðu spjöld á milli dálka til að breyta stöðu.'
+                : 'All projects in one place. Drag cards between columns to change status.'}
             </p>
           </div>
 
@@ -164,85 +191,102 @@ export default function ProjectsBoard() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-6">
-            {projects.map((p) => {
-              const s = statsByProject.get(p.id) || { open: 0, total: 0, completed: 0, progress: 0, overdue: 0 }
-              return (
-                <button
-                  key={p.id}
-                  onClick={() => openProject(p.id)}
-                  className="text-left bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 hover:bg-[var(--bg-hover)] transition-all group"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
+          <div className="mt-6 flex gap-4 overflow-x-auto pb-4">
+            {columns.map((col) => (
+              <div
+                key={col.key}
+                className="min-w-[260px] bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border)] p-3 flex-shrink-0"
+                onDragOver={onDragOver}
+                onDrop={(e) => onDrop(e, col.key)}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-[var(--text-primary)]">{col.title}</h3>
+                  <span className="text-xs text-[var(--text-muted)]">{projects.filter(p => p.status === col.key).length}</span>
+                </div>
+
+                <div className="space-y-3">
+                  {projects.filter(p => p.status === col.key).map((p) => {
+                    const s = statsByProject.get(p.id) || { open: 0, total: 0, completed: 0, progress: 0, overdue: 0 }
+                    return (
                       <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: `${p.color}20` }}
+                        key={p.id}
+                        draggable
+                        onDragStart={(e) => onDragStart(e, p.id)}
+                        onClick={() => openProject(p.id)}
+                        className="cursor-pointer border rounded-xl p-3 transition-shadow hover:shadow-md flex flex-col"
+                        style={{ backgroundColor: `${p.color}10`, borderColor: `${p.color}30` }}
                       >
-                        <DynamicIcon name={p.icon} size={18} style={{ color: p.color }} />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-[var(--text-primary)] truncate">{p.name}</span>
-                          {s.overdue > 0 && (
-                            <span className="text-[10px] font-medium text-red-400 bg-red-500/10 px-2 py-0.5 rounded-full">
-                              {language === 'is' ? `Seinkað: ${s.overdue}` : `Overdue: ${s.overdue}`}
-                            </span>
-                          )}
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div
+                              className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                              style={{ backgroundColor: `${p.color}20` }}
+                            >
+                              <DynamicIcon name={p.icon} size={16} style={{ color: p.color }} />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-[var(--text-primary)] truncate">{p.name}</span>
+                                {s.overdue > 0 && (
+                                  <span className="text-[10px] font-medium text-red-400 bg-red-500/10 px-2 py-0.5 rounded-full">
+                                    {language === 'is' ? `Seinkað: ${s.overdue}` : `Overdue: ${s.overdue}`}
+                                  </span>
+                                )}
+                              </div>
+                              {p.description && (
+                                <div className="text-xs text-[var(--text-muted)] mt-1 truncate">{p.description}</div>
+                              )}
+                            </div>
+                          </div>
+
+                          <ProjectMenu
+                            project={p}
+                            onOpen={() => openProject(p.id)}
+                            onQuickTask={() => {
+                              const { setSelectedProject, setActiveView, setQuickIdeaMode, setQuickAddOpen } = useStore.getState()
+                              setSelectedProject(p.id)
+                              setActiveView('project')
+                              setQuickIdeaMode(false)
+                              setQuickAddOpen(true)
+                            }}
+                            onDelete={() => {
+                              const ok = window.confirm(
+                                language === 'is'
+                                  ? `Eyða verkefni "${p.name}"? Þetta eyðir líka öllum tasks í því verkefni.`
+                                  : `Delete project "${p.name}"? This also deletes its tasks.`
+                              )
+                              if (ok) deleteProject(p.id)
+                            }}
+                            onRename={(newName) => {
+                              const { updateProject } = useStore.getState()
+                              updateProject(p.id, { name: newName })
+                            }}
+                            onEditAppearance={({ color, icon }) => {
+                              const { updateProject } = useStore.getState()
+                              updateProject(p.id, { color, icon })
+                            }}
+                          />
                         </div>
-                        {p.description && (
-                          <div className="text-xs text-[var(--text-muted)] mt-1 truncate">{p.description}</div>
-                        )}
+
+                        <div className="mt-3 flex items-center justify-between text-xs text-[var(--text-muted)]">
+                          <span>{language === 'is' ? `${s.open} ólokið · ${s.total} alls` : `${s.open} open · ${s.total} total`}</span>
+                          <span className="font-mono">{Math.round(s.progress)}%</span>
+                        </div>
+
+                        <div className="mt-2 h-2 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all"
+                            style={{ width: `${s.progress}%`, backgroundColor: s.progress === 100 ? '#22c55e' : p.color }}
+                          />
+                        </div>
                       </div>
-                    </div>
+                    )
+                  })}
+                </div>
 
-                    <ProjectMenu
-                      project={p}
-                      onOpen={() => openProject(p.id)}
-                      onQuickTask={() => {
-                        setSelectedProject(p.id)
-                        setActiveView('project')
-                        setQuickIdeaMode(false)
-                        setQuickAddOpen(true)
-                      }}
-                      onDelete={() => {
-                        const ok = window.confirm(
-                          language === 'is'
-                            ? `Eyða verkefni "${p.name}"? Þetta eyðir líka öllum tasks í því verkefni.`
-                            : `Delete project "${p.name}"? This also deletes its tasks.`
-                        )
-                        if (ok) deleteProject(p.id)
-                      }}
-                      onRename={(newName) => {
-                        const { updateProject } = useStore.getState()
-                        updateProject(p.id, { name: newName })
-                      }}
-                      onEditAppearance={({ color, icon }) => {
-                        const { updateProject } = useStore.getState()
-                        updateProject(p.id, { color, icon })
-                      }}
-                    />
-                  </div>
-
-                  {/* Stats */}
-                  <div className="mt-4 flex items-center justify-between text-xs text-[var(--text-muted)]">
-                    <span>
-                      {language === 'is'
-                        ? `${s.open} ólokið · ${s.total} alls`
-                        : `${s.open} open · ${s.total} total`}
-                    </span>
-                    <span className="font-mono">{Math.round(s.progress)}%</span>
-                  </div>
-
-                  <div className="mt-2 h-2 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{ width: `${s.progress}%`, backgroundColor: s.progress === 100 ? '#22c55e' : p.color }}
-                    />
-                  </div>
-                </button>
-              )
-            })}
+                <div className="mt-3 text-center text-xs text-[var(--text-muted)]">{language === 'is' ? 'Dragðu spjald hingað' : 'Drop card here'}</div>
+              </div>
+            ))}
           </div>
         )}
       </div>
