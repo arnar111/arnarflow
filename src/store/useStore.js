@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const APP_VERSION = '5.4.2'
+const APP_VERSION = '5.4.3'
 
 const PROJECTS = [
   { id: 'eignamat', name: 'Eignamat', icon: 'Home', color: '#10b981', description: 'AI Property Valuation SaaS' },
@@ -59,6 +59,16 @@ const useStore = create(
       language: 'is',
       setLanguage: (lang) => set({ language: lang }),
       
+      // Budget Saver (v5.4.3)
+      // Simple persisted savings dashboard state.
+      budgetGoal: 300000,
+      budgetWeeklyTarget: 10000,
+      budgetSaved: 0,
+      setBudgetGoal: (n) => set({ budgetGoal: Number(n || 0) }),
+      setBudgetWeeklyTarget: (n) => set({ budgetWeeklyTarget: Number(n || 0) }),
+      addBudgetSaved: (delta) => set((state) => ({ budgetSaved: (state.budgetSaved || 0) + Number(delta || 0) })),
+      resetBudgetSaved: () => set({ budgetSaved: 0 }),
+
       // Projects
       projects: PROJECTS,
       addProject: (project) => set((state) => ({

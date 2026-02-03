@@ -20,6 +20,7 @@ import FocusHistory from './components/FocusHistory'
 import WeeklyReview from './components/WeeklyReview'
 import StatsView from './components/StatsView'
 import NotesView from './components/NotesView'
+import BudgetSaver from './components/BudgetSaver'
 import OnboardingModal from './components/OnboardingModal'
 import RecurringTasksModal from './components/RecurringTasksModal'
 import BlaerSync from './components/BlaerSync'
@@ -244,6 +245,8 @@ function App() {
         return <NotesView />
       case 'roadmap':
         return <RoadmapView />
+      case 'budget':
+        return <BudgetSaver />
       default:
         return <Dashboard />
     }

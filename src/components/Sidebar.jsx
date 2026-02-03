@@ -23,6 +23,7 @@ import {
   FolderKanban,
   CheckCircle2,
   AlertTriangle,
+  PiggyBank,
 } from 'lucide-react'
 
 function Sidebar({ onOpenCalendarSync }) {
@@ -61,6 +62,7 @@ function Sidebar({ onOpenCalendarSync }) {
     { id: 'focus', icon: Clock, label: language === 'is' ? 'Einbeiting' : 'Focus' },
     { id: 'notes', icon: FileText, label: language === 'is' ? 'Glósur' : 'Notes' },
     { id: 'stats', icon: BarChart3, label: language === 'is' ? 'Tölfræði' : 'Stats' },
+    { id: 'budget', icon: PiggyBank, label: language === 'is' ? 'Sparnaður' : 'Budget Saver', badge: 'new' },
   ]
 
   const getProjectStats = (projectId) => {
