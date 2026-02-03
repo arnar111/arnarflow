@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import useStore from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
-import { X, Plus, Folder } from 'lucide-react'
+import { X, Plus } from 'lucide-react'
+import DynamicIcon from './Icons'
 
 const ICONS = [
-  'Folder', 'Home', 'Trophy', 'Headphones', 'Globe', 'Rocket', 
-  'Code', 'Briefcase', 'ShoppingCart', 'Heart', 'Star', 'Zap',
-  'Book', 'Camera', 'Coffee', 'Music', 'Palette', 'Target'
+  'Folder','Home','Trophy','Headphones','Globe','Rocket',
+  'Code','Briefcase','ShoppingCart','Heart','Star','Zap',
+  'Book','Camera','Coffee','Music','Palette','Target',
+  'User','Users','Map','Film','Paperclip','Calendar','Clock','Bell','CheckSquare','FileText','Lightbulb','FolderPlus','FolderMinus'
 ]
 
 const COLORS = [
@@ -21,6 +23,7 @@ function AddProjectModal({ onClose }) {
   const [description, setDescription] = useState('')
   const [icon, setIcon] = useState('Folder')
   const [color, setColor] = useState('#3b82f6')
+  const [iconQuery, setIconQuery] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -39,6 +42,8 @@ function AddProjectModal({ onClose }) {
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) onClose()
   }
+
+  const filteredIcons = ICONS.filter(i => i.toLowerCase().includes(iconQuery.toLowerCase()))
 
   return (
     <div 
@@ -108,8 +113,15 @@ function AddProjectModal({ onClose }) {
           {/* Icon */}
           <div>
             <label className="text-xs text-zinc-500 block mb-1.5">{t('addProject.icon')}</label>
-            <div className="flex gap-2 flex-wrap">
-              {ICONS.map(i => (
+            <input
+              type="text"
+              value={iconQuery}
+              onChange={(e) => setIconQuery(e.target.value)}
+              placeholder={t('addProject.icon')}
+              className="w-full bg-dark-800 border border-dark-600 rounded-xl px-3 py-2 text-sm focus:border-accent transition-colors mb-2"
+            />
+            <div className="flex gap-2 flex-wrap max-h-40 overflow-auto">
+              {filteredIcons.map(i => (
                 <button
                   key={i}
                   type="button"
@@ -120,7 +132,7 @@ function AddProjectModal({ onClose }) {
                       : 'bg-dark-800 text-zinc-500 hover:bg-dark-700'
                   }`}
                 >
-                  {i.slice(0, 2)}
+                  <DynamicIcon name={i} size={16} style={{ color: icon === i ? color : 'inherit' }} />
                 </button>
               ))}
             </div>
@@ -137,7 +149,7 @@ function AddProjectModal({ onClose }) {
                 className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold"
                 style={{ backgroundColor: `${color}20`, color }}
               >
-                {icon.slice(0, 2)}
+                <DynamicIcon name={icon} size={18} style={{ color }} />
               </div>
               <div>
                 <p className="font-medium" style={{ color }}>{name || t('addProject.projectNamePlaceholder')}</p>
