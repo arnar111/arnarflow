@@ -69,6 +69,30 @@ const useStore = create(
       addBudgetSaved: (delta) => set((state) => ({ budgetSaved: (state.budgetSaved || 0) + Number(delta || 0) })),
       resetBudgetSaved: () => set({ budgetSaved: 0 }),
 
+      // Budget data imports
+      budgetReceipts: [],
+      budgetTransactions: [],
+      importBudgetSync: (payload) => set((state) => {
+        const receipts = Array.isArray(payload?.receipts) ? payload.receipts : []
+        const transactions = Array.isArray(payload?.transactions) ? payload.transactions : []
+
+        // de-dupe by id
+        const existingReceiptIds = new Set((state.budgetReceipts || []).map(r => r.id))
+        const existingTxIds = new Set((state.budgetTransactions || []).map(t => t.id))
+
+        const mergedReceipts = [
+          ...(state.budgetReceipts || []),
+          ...receipts.filter(r => r && r.id && !existingReceiptIds.has(r.id))
+        ]
+        const mergedTx = [
+          ...(state.budgetTransactions || []),
+          ...transactions.filter(t => t && t.id && !existingTxIds.has(t.id))
+        ]
+
+        return { budgetReceipts: mergedReceipts, budgetTransactions: mergedTx }
+      }),
+      resetBudgetData: () => set({ budgetReceipts: [], budgetTransactions: [] }),
+
       // Projects
       projects: PROJECTS,
       addProject: (project) => set((state) => ({

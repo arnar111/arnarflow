@@ -17,6 +17,10 @@ export default function BudgetSaver() {
     addBudgetSaved,
     setBudgetGoal,
     setBudgetWeeklyTarget,
+    budgetReceipts,
+    budgetTransactions,
+    importBudgetSync,
+    resetBudgetData,
   } = useStore()
 
   const [addAmount, setAddAmount] = useState('')
@@ -33,6 +37,22 @@ export default function BudgetSaver() {
   const subtitle = language === 'is'
     ? 'Einfalt sparnaðarborð: markmið, staða, og vikuleg áætlun.'
     : 'Simple savings dashboard: goal, progress, and weekly plan.'
+
+  const [importStatus, setImportStatus] = useState(null)
+
+  const importNow = async () => {
+    try {
+      setImportStatus({ state: 'loading' })
+      const res = await fetch('/budget-sync.json?t=' + Date.now())
+      if (!res.ok) throw new Error('budget-sync.json fannst ekki')
+      const json = await res.json()
+      importBudgetSync(json)
+      setImportStatus({ state: 'done', receipts: json?.counts?.woltReceipts ?? (json?.receipts?.length || 0), tx: json?.counts?.indo ?? (json?.transactions?.length || 0) })
+      setTimeout(() => setImportStatus(null), 4000)
+    } catch (e) {
+      setImportStatus({ state: 'error', message: e?.message || 'Villa' })
+    }
+  }
 
   return (
     <div className="p-6">
@@ -139,6 +159,61 @@ export default function BudgetSaver() {
                 <span className="text-sm">{language === 'is' ? 'Markmiði náð!' : 'Goal reached!'}</span>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Import + Data */}
+        <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-4 mt-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="text-sm font-medium text-[var(--text-primary)]">
+              {language === 'is' ? 'Gagnainnlestur (Wolt + indó)' : 'Data import (Wolt + bank)'}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={importNow}
+                className="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-white hover:opacity-90 transition-all text-xs"
+              >
+                {language === 'is' ? 'Sækja & flytja inn' : 'Fetch & import'}
+              </button>
+              <button
+                onClick={resetBudgetData}
+                className="px-3 py-1.5 rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/20 transition-all text-xs"
+                title={language === 'is' ? 'Eyða importuðum gögnum (local)' : 'Clear imported local data'}
+              >
+                {language === 'is' ? 'Hreinsa' : 'Clear'}
+              </button>
+            </div>
+          </div>
+
+          {importStatus?.state === 'loading' && (
+            <div className="mt-3 text-sm text-[var(--text-secondary)]">{language === 'is' ? 'Sæki...' : 'Fetching...'}</div>
+          )}
+          {importStatus?.state === 'done' && (
+            <div className="mt-3 text-sm text-green-400">
+              {language === 'is'
+                ? `Flutti inn: ${importStatus.receipts} Wolt kvittanir + ${importStatus.tx} bankafærslur.`
+                : `Imported: ${importStatus.receipts} Wolt receipts + ${importStatus.tx} bank transactions.`}
+            </div>
+          )}
+          {importStatus?.state === 'error' && (
+            <div className="mt-3 text-sm text-red-400">{importStatus.message}</div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+            <div className="p-3 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)]">
+              <div className="text-xs text-[var(--text-muted)]">{language === 'is' ? 'Wolt kvittanir (importað)' : 'Wolt receipts (imported)'}</div>
+              <div className="text-lg font-semibold text-[var(--text-primary)]">{(budgetReceipts || []).length}</div>
+            </div>
+            <div className="p-3 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)]">
+              <div className="text-xs text-[var(--text-muted)]">{language === 'is' ? 'Bankafærslur (importað)' : 'Bank transactions (imported)'}</div>
+              <div className="text-lg font-semibold text-[var(--text-primary)]">{(budgetTransactions || []).length}</div>
+            </div>
+            <div className="p-3 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)]">
+              <div className="text-xs text-[var(--text-muted)]">{language === 'is' ? 'Næst' : 'Next'} </div>
+              <div className="text-sm text-[var(--text-secondary)]">
+                {language === 'is' ? 'Næst bætum við kvittun-attachment UI og vikulegri samantekt.' : 'Next we add receipt attachments UI and weekly summaries.'}
+              </div>
+            </div>
           </div>
         </div>
 
