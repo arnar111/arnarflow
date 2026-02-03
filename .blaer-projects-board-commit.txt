@@ -1,0 +1,8 @@
+Verified Projects Board UI changes per spec:
+
+- Project cards: left color strip + subtle tinted background + border using project color; hover state implemented.
+- ProjectsBoard acts as dedicated Projects view (clicking a card opens ProjectView kanban for that project).
+- Sidebar contains only views (no project list).
+- Quick actions menu includes Open, New task (quick add), Rename, Change color/icon, Delete.
+
+No code changes required — existing implementation already matched spec. Committed on branch blaer/projects-board.
