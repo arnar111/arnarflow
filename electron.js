@@ -104,6 +104,99 @@ ipcMain.handle('get-app-version', () => {
   return app.getVersion()
 })
 
+// Test Environment feature handlers
+const { dialog: dialogMain } = require('electron')
+const { spawn } = require('child_process')
+const runningProcesses = new Map()
+const trustFile = path.join(app.getPath('userData'), 'trusted-projects.json')
+
+function loadTrusted() {
+  try {
+    if (fs.existsSync(trustFile)) return JSON.parse(fs.readFileSync(trustFile, 'utf8'))
+  } catch (e) {}
+  return {}
+}
+function saveTrusted(obj) {
+  try { fs.writeFileSync(trustFile, JSON.stringify(obj, null, 2)) } catch (e) {}
+}
+
+ipcMain.handle('pick-project-folder', async () => {
+  const res = await dialogMain.showOpenDialog(mainWindow, {
+    title: 'Select project folder',
+    defaultPath: 'C:\\Users\\Administrator',
+    properties: ['openDirectory']
+  })
+  if (res.canceled || !res.filePaths || res.filePaths.length === 0) return null
+  return res.filePaths[0]
+})
+
+ipcMain.handle('read-package-json', async (event, folderPath) => {
+  try {
+    const pkgPath = path.join(folderPath, 'package.json')
+    if (!fs.existsSync(pkgPath)) return { error: 'package.json not found' }
+    const data = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
+    return { pkg: data }
+  } catch (e) {
+    return { error: e.message }
+  }
+})
+
+ipcMain.handle('is-project-trusted', async (event, folderPath) => {
+  const trusted = loadTrusted()
+  return !!trusted[folderPath]
+})
+
+ipcMain.handle('set-project-trusted', async (event, folderPath, trusted) => {
+  const t = loadTrusted()
+  t[folderPath] = !!trusted
+  saveTrusted(t)
+  return true
+})
+
+ipcMain.handle('run-npm-script', async (event, folderPath, scriptName, id) => {
+  // id is client-provided identifier to correlate streams
+  if (!folderPath || !scriptName) return { error: 'missing args' }
+  const pkgPath = path.join(folderPath, 'package.json')
+  if (!fs.existsSync(pkgPath)) return { error: 'package.json not found' }
+
+  // Spawn npm (no shell)
+  const proc = spawn(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', scriptName], {
+    cwd: folderPath,
+    shell: false
+  })
+  runningProcesses.set(id, proc)
+
+  proc.stdout.on('data', (chunk) => {
+    mainWindow?.webContents.send('test-env-log', { id, type: 'stdout', text: chunk.toString() })
+  })
+  proc.stderr.on('data', (chunk) => {
+    mainWindow?.webContents.send('test-env-log', { id, type: 'stderr', text: chunk.toString() })
+  })
+  proc.on('exit', (code, signal) => {
+    runningProcesses.delete(id)
+    mainWindow?.webContents.send('test-env-exit', { id, code, signal })
+  })
+  proc.on('error', (err) => {
+    runningProcesses.delete(id)
+    mainWindow?.webContents.send('test-env-error', { id, message: err.message })
+  })
+
+  return { ok: true }
+})
+
+ipcMain.handle('stop-npm-script', async (event, id) => {
+  const proc = runningProcesses.get(id)
+  if (!proc) return { error: 'not running' }
+  try {
+    proc.kill()
+    runningProcesses.delete(id)
+    return { ok: true }
+  } catch (e) {
+    return { error: e.message }
+  }
+})
+
+
 // Blær Sync - read sync file
 ipcMain.handle('read-sync-file', async () => {
   try {
