@@ -78,13 +78,16 @@ const useStore = create(
       // Budget data imports
       budgetReceipts: [],
       budgetTransactions: [],
+      budgetEmailReceipts: [],
       importBudgetSync: (payload) => set((state) => {
         const receipts = Array.isArray(payload?.receipts) ? payload.receipts : []
         const transactions = Array.isArray(payload?.transactions) ? payload.transactions : []
+        const emailReceipts = Array.isArray(payload?.emailReceipts) ? payload.emailReceipts : []
 
         // de-dupe by id
         const existingReceiptIds = new Set((state.budgetReceipts || []).map(r => r.id))
         const existingTxIds = new Set((state.budgetTransactions || []).map(t => t.id))
+        const existingEmailIds = new Set((state.budgetEmailReceipts || []).map(r => r.id))
 
         const mergedReceipts = [
           ...(state.budgetReceipts || []),
@@ -94,10 +97,14 @@ const useStore = create(
           ...(state.budgetTransactions || []),
           ...transactions.filter(t => t && t.id && !existingTxIds.has(t.id))
         ]
+        const mergedEmail = [
+          ...(state.budgetEmailReceipts || []),
+          ...emailReceipts.filter(r => r && r.id && !existingEmailIds.has(r.id))
+        ]
 
-        return { budgetReceipts: mergedReceipts, budgetTransactions: mergedTx }
+        return { budgetReceipts: mergedReceipts, budgetTransactions: mergedTx, budgetEmailReceipts: mergedEmail }
       }),
-      resetBudgetData: () => set({ budgetReceipts: [], budgetTransactions: [] }),
+      resetBudgetData: () => set({ budgetReceipts: [], budgetTransactions: [], budgetEmailReceipts: [] }),
 
       // Projects
       projects: PROJECTS,

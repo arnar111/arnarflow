@@ -19,6 +19,7 @@ export default function BudgetSaver() {
     setBudgetWeeklyTarget,
     budgetReceipts,
     budgetTransactions,
+    budgetEmailReceipts,
     importBudgetSync,
     resetBudgetData,
   } = useStore()
@@ -55,7 +56,12 @@ export default function BudgetSaver() {
       }
 
       importBudgetSync(json)
-      setImportStatus({ state: 'done', receipts: json?.counts?.woltReceipts ?? (json?.receipts?.length || 0), tx: json?.counts?.indo ?? (json?.transactions?.length || 0) })
+      setImportStatus({
+        state: 'done',
+        receipts: json?.counts?.woltReceipts ?? (json?.receipts?.length || 0),
+        tx: json?.counts?.indo ?? (json?.transactions?.length || 0),
+        email: json?.counts?.emailReceipts ?? (json?.emailReceipts?.length || 0),
+      })
       setTimeout(() => setImportStatus(null), 4000)
     } catch (e) {
       setImportStatus({ state: 'error', message: e?.message || 'Villa' })
@@ -199,8 +205,8 @@ export default function BudgetSaver() {
           {importStatus?.state === 'done' && (
             <div className="mt-3 text-sm text-green-400">
               {language === 'is'
-                ? `Flutti inn: ${importStatus.receipts} Wolt kvittanir + ${importStatus.tx} bankafærslur.`
-                : `Imported: ${importStatus.receipts} Wolt receipts + ${importStatus.tx} bank transactions.`}
+                ? `Flutti inn: ${importStatus.receipts} Wolt kvittanir + ${importStatus.tx} bankafærslur + ${importStatus.email} email-kvittanir.`
+                : `Imported: ${importStatus.receipts} Wolt receipts + ${importStatus.tx} bank transactions + ${importStatus.email} email receipts.`}
             </div>
           )}
           {importStatus?.state === 'error' && (
@@ -217,10 +223,9 @@ export default function BudgetSaver() {
               <div className="text-lg font-semibold text-[var(--text-primary)]">{(budgetTransactions || []).length}</div>
             </div>
             <div className="p-3 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)]">
-              <div className="text-xs text-[var(--text-muted)]">{language === 'is' ? 'Næst' : 'Next'} </div>
-              <div className="text-sm text-[var(--text-secondary)]">
-                {language === 'is' ? 'Næst bætum við kvittun-attachment UI og vikulegri samantekt.' : 'Next we add receipt attachments UI and weekly summaries.'}
-              </div>
+              <div className="text-xs text-[var(--text-muted)]">{language === 'is' ? 'Email kvittanir/reikningar (importað)' : 'Email receipts/invoices (imported)'}</div>
+              <div className="text-lg font-semibold text-[var(--text-primary)]">{(budgetEmailReceipts || []).length}</div>
+              <div className="text-[11px] text-[var(--text-muted)] mt-1">{language === 'is' ? 'Innheimta/Inkasso er falið.' : 'Debt collection is hidden.'}</div>
             </div>
           </div>
         </div>

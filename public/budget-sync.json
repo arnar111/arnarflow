@@ -1,8 +1,9 @@
 {
-  "generatedAt": "2026-02-03T16:40:01.649Z",
+  "generatedAt": "2026-02-04T20:59:16.817Z",
   "counts": {
     "indo": 1404,
-    "woltReceipts": 85
+    "woltReceipts": 85,
+    "emailReceipts": 259
   },
   "receipts": [
     {
@@ -26724,5 +26725,4431 @@
         "merchant_category_code": null
       }
     }
-  ]
+  ],
+  "emailReceipts": [
+    {
+      "id": "email-2026-02-02-google-payments-google-cloud-platform-apis-your-invoice-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google Payments",
+      "date": "2026-02-02T14:19:04.000Z",
+      "title": "Google Cloud Platform & APIs: Your invoice is available for 0121AF-DD0E69-962152",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google Payments <payments-noreply@google.com>",
+        "subject": "Google Cloud Platform & APIs: Your invoice is available for 0121AF-DD0E69-962152",
+        "date": "2026-02-02T14:19:04.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-02-02-google-payments-google-cloud-platform-apis-your-invoice-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google Payments",
+      "date": "2026-02-02T07:42:17.000Z",
+      "title": "Google Cloud Platform & APIs: Your invoice is available for 01B0F8-78890E-75CFE3",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google Payments <payments-noreply@google.com>",
+        "subject": "Google Cloud Platform & APIs: Your invoice is available for 01B0F8-78890E-75CFE3",
+        "date": "2026-02-02T07:42:17.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-01-31-wolt-your-order-s-delivered-kfc-hafnarfir-i-3",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2026-01-31T17:25:23.000Z",
+      "title": "Your order’s delivered: KFC Hafnarfirði 31.01.2026",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Hafnarfirði 31.01.2026",
+        "date": "2026-01-31T17:25:23.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-01-31-anthropic-pbc-your-receipt-from-anthropic-pbc-2298-523",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Anthropic, PBC",
+      "date": "2026-01-31T13:48:51.000Z",
+      "title": "Your receipt from Anthropic, PBC #2298-5234-5835",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Anthropic, PBC\" <invoice+statements@mail.anthropic.com>",
+        "subject": "Your receipt from Anthropic, PBC #2298-5234-5835",
+        "date": "2026-01-31T13:48:51.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-01-29-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2026-01-29T19:01:04.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2026-01-29T19:01:04.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-01-24-wolt-your-order-s-delivered-sb-in-gar-ab-24-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2026-01-24T22:09:58.000Z",
+      "title": "Your order’s delivered: Ísbúðin Garðabæ 24.01.2026",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Ísbúðin Garðabæ 24.01.2026",
+        "date": "2026-01-24T22:09:58.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-01-19-mimo-gmbh-your-receipt-from-mimo-gmbh-2559-1537",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Mimo GmbH",
+      "date": "2026-01-19T17:35:14.000Z",
+      "title": "Your receipt from Mimo GmbH #2559-1537",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Mimo GmbH <invoice+statements+acct_18RHKPKLe0nIIjQK@stripe.com>",
+        "subject": "Your receipt from Mimo GmbH #2559-1537",
+        "date": "2026-01-19T17:35:14.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-01-12-bmt-micro-orders-bmt-micro-order-receipt-51273487",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "BMT Micro Orders",
+      "date": "2026-01-12T08:16:15.000Z",
+      "title": "BMT Micro Order Receipt (51273487)",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "BMT Micro Orders <orders@bmtmicro.com>",
+        "subject": "BMT Micro Order Receipt (51273487)",
+        "date": "2026-01-12T08:16:15.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-01-10-netlify-inc-payment-received-for-netlify-inc-invoice",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Netlify, Inc.",
+      "date": "2026-01-10T15:39:18.000Z",
+      "title": "Payment received for Netlify, Inc. invoice (#HBDYSA-00006)",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Netlify, Inc.\" <noreply@netlify.com>",
+        "subject": "Payment received for Netlify, Inc. invoice (#HBDYSA-00006)",
+        "date": "2026-01-10T15:39:18.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-01-08-replit-your-receipt-from-replit-2863-9402",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Replit",
+      "date": "2026-01-08T13:19:47.000Z",
+      "title": "Your receipt from Replit #2863-9402",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Replit <invoice+statements+acct_15YpNsJAmnYVOvfn@stripe.com>",
+        "subject": "Your receipt from Replit #2863-9402",
+        "date": "2026-01-08T13:19:47.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-01-06-b-khald-alp-hf-b-laleigan-alp-hf-j-nustureikningur-lt23",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Bókhald ALP hf",
+      "date": "2026-01-06T16:45:48.000Z",
+      "title": "Bílaleigan ALP hf - Þjónustureikningur LT23043071",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Bókhald ALP hf <accounting@alp.is>",
+        "subject": "Bílaleigan ALP hf - Þjónustureikningur LT23043071",
+        "date": "2026-01-06T16:45:48.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-01-03-wolt-your-order-s-delivered-d-n-sjoppa-03-01-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2026-01-03T16:23:26.000Z",
+      "title": "Your order’s delivered: Dínó Sjoppa 03.01.2026",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Dínó Sjoppa 03.01.2026",
+        "date": "2026-01-03T16:23:26.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-01-03-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2026-01-03T03:09:23.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2026-01-03T03:09:23.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-01-02-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2026-01-02T10:35:20.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2026-01-02T10:35:20.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-01-02-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2026-01-02T09:09:17.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2026-01-02T09:09:17.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2026-01-02-google-payments-google-cloud-platform-apis-your-invoice-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google Payments",
+      "date": "2026-01-02T00:37:22.000Z",
+      "title": "Google Cloud Platform & APIs: Your invoice is available for 0121AF-DD0E69-962152",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google Payments <payments-noreply@google.com>",
+        "subject": "Google Cloud Platform & APIs: Your invoice is available for 0121AF-DD0E69-962152",
+        "date": "2026-01-02T00:37:22.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-28-wolt-your-order-s-delivered-king-kong-reykjav",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-12-28T17:12:06.000Z",
+      "title": "Your order’s delivered: King Kong Reykjavík 28.12.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: King Kong Reykjavík 28.12.2025",
+        "date": "2025-12-28T17:12:06.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-25-wolt-your-order-s-delivered-king-kong-reykjav",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-12-25T20:46:03.000Z",
+      "title": "Your order’s delivered: King Kong Reykjavík 25.12.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: King Kong Reykjavík 25.12.2025",
+        "date": "2025-12-25T20:46:03.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-22-europesnus-com-your-order-just-got-better",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Europesnus.com",
+      "date": "2025-12-22T08:01:24.000Z",
+      "title": "Your order just got better 🎁",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Europesnus.com\" <customerservice@europesnus.com>",
+        "subject": "Your order just got better 🎁",
+        "date": "2025-12-22T08:01:24.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-20-rosebud-ai-inc-your-receipt-from-rosebud-ai-inc-2557-96",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Rosebud AI, Inc.",
+      "date": "2025-12-20T20:36:46.000Z",
+      "title": "Your receipt from Rosebud AI, Inc. #2557-9649",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Rosebud AI, Inc.\" <invoice+statements+acct_1PvMTfJG33Jw3FQl@stripe.com>",
+        "subject": "Your receipt from Rosebud AI, Inc. #2557-9649",
+        "date": "2025-12-20T20:36:46.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-18-netlify-inc-payment-received-for-netlify-inc-invoice",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Netlify, Inc.",
+      "date": "2025-12-18T04:26:10.000Z",
+      "title": "Payment received for Netlify, Inc. invoice (#HBDYSA-00003)",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Netlify, Inc.\" <noreply@netlify.com>",
+        "subject": "Payment received for Netlify, Inc. invoice (#HBDYSA-00003)",
+        "date": "2025-12-18T04:26:10.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-18-netlify-inc-payment-received-for-netlify-inc-invoice",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Netlify, Inc.",
+      "date": "2025-12-18T04:16:51.000Z",
+      "title": "Payment received for Netlify, Inc. invoice (#HBDYSA-00002)",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Netlify, Inc.\" <noreply@netlify.com>",
+        "subject": "Payment received for Netlify, Inc. invoice (#HBDYSA-00002)",
+        "date": "2025-12-18T04:16:51.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-15-google-play-your-google-play-order-receipt-from-dec-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google Play",
+      "date": "2025-12-15T13:16:42.000Z",
+      "title": "Your Google Play Order Receipt from Dec 15, 2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google Play <googleplay-noreply@google.com>",
+        "subject": "Your Google Play Order Receipt from Dec 15, 2025",
+        "date": "2025-12-15T13:16:42.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-12-bmt-micro-orders-bmt-micro-order-receipt-51221934",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "BMT Micro Orders",
+      "date": "2025-12-12T08:18:18.000Z",
+      "title": "BMT Micro Order Receipt (51221934)",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "BMT Micro Orders <orders@bmtmicro.com>",
+        "subject": "BMT Micro Order Receipt (51221934)",
+        "date": "2025-12-12T08:18:18.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-11-pawaviva-your-order-has-been-shipped",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "pawaviva",
+      "date": "2025-12-11T09:04:59.000Z",
+      "title": "Your order has been shipped",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "pawaviva <pawaviva@vip.pawaviva.com>",
+        "subject": "Your order has been shipped",
+        "date": "2025-12-11T09:04:59.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-09-manchester-united-fc-mutv-ereceipt-from-manchester-united-fc-mutv",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Manchester United FC (MUTV)",
+      "date": "2025-12-09T14:14:01.000Z",
+      "title": "eReceipt from Manchester United FC (MUTV)",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Manchester United FC (MUTV)\" <noreply@manutd.com>",
+        "subject": "eReceipt from Manchester United FC (MUTV)",
+        "date": "2025-12-09T14:14:01.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-08-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-12-08T21:35:04.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-12-08T21:35:04.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-03-google-play-your-google-play-order-receipt-from-dec-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google Play",
+      "date": "2025-12-03T19:09:12.000Z",
+      "title": "Your Google Play Order Receipt from Dec 3, 2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google Play <googleplay-noreply@google.com>",
+        "subject": "Your Google Play Order Receipt from Dec 3, 2025",
+        "date": "2025-12-03T19:09:12.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-03-pawaviva-congrats-you-finished-your-order",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "pawaviva",
+      "date": "2025-12-03T12:48:22.000Z",
+      "title": "Congrats! You finished your order!",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "pawaviva <service@pawaviva.com>",
+        "subject": "Congrats! You finished your order!",
+        "date": "2025-12-03T12:48:22.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-01-amazon-com-payment-declined-update-your-information",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Amazon.com",
+      "date": "2025-12-01T19:52:17.000Z",
+      "title": "Payment declined: Update your information so we can ship your order",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Amazon.com\" <payments-update@amazon.com>",
+        "subject": "Payment declined: Update your information so we can ship your order",
+        "date": "2025-12-01T19:52:17.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-12-01-b-khald-alp-hf-b-laleigan-alp-hf-j-nustureikningur-lt23",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Bókhald ALP hf",
+      "date": "2025-12-01T14:53:13.000Z",
+      "title": "Bílaleigan ALP hf - Þjónustureikningur LT23042089",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Bókhald ALP hf <accounting@alp.is>",
+        "subject": "Bílaleigan ALP hf - Þjónustureikningur LT23042089",
+        "date": "2025-12-01T14:53:13.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-30-wolt-your-order-s-delivered-sb-in-gar-ab-30-1",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-11-30T19:52:42.000Z",
+      "title": "Your order’s delivered: Ísbúðin Garðabæ 30.11.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Ísbúðin Garðabæ 30.11.2025",
+        "date": "2025-11-30T19:52:42.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-30-amazon-com-payment-declined-update-your-information",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Amazon.com",
+      "date": "2025-11-30T19:51:55.000Z",
+      "title": "Payment declined: Update your information so we can ship your order",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Amazon.com\" <payments-update@amazon.com>",
+        "subject": "Payment declined: Update your information so we can ship your order",
+        "date": "2025-11-30T19:51:55.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-30-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-11-30T12:33:11.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-11-30T12:33:11.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-30-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-11-30T12:32:09.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-11-30T12:32:09.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-30-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-11-30T01:04:02.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-11-30T01:04:02.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-30-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-11-30T00:13:46.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-11-30T00:13:46.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-30-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-11-30T00:10:11.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-11-30T00:10:11.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-29-amazon-com-payment-declined-update-your-information",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Amazon.com",
+      "date": "2025-11-29T19:51:35.000Z",
+      "title": "Payment declined: Update your information so we can ship your order",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Amazon.com\" <payments-update@amazon.com>",
+        "subject": "Payment declined: Update your information so we can ship your order",
+        "date": "2025-11-29T19:51:35.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-27-wolt-your-order-s-delivered-sb-in-gar-ab-27-1",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-11-27T22:00:36.000Z",
+      "title": "Your order’s delivered: Ísbúðin Garðabæ 27.11.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Ísbúðin Garðabæ 27.11.2025",
+        "date": "2025-11-27T22:00:36.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-27-wolt-tip-receipt",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-11-27T13:33:04.000Z",
+      "title": "Tip Receipt",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Tip Receipt",
+        "date": "2025-11-27T13:33:04.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-27-wolt-your-order-s-delivered-king-kong-k-pavog",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-11-27T13:13:03.000Z",
+      "title": "Your order’s delivered: King Kong Kópavogur 27.11.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: King Kong Kópavogur 27.11.2025",
+        "date": "2025-11-27T13:13:03.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-24-vanskil-rsk-is-fw-reikningur-heimabanka",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "vanskil@rsk.is",
+      "date": "2025-11-24T15:12:57.000Z",
+      "title": "FW: Reikningur í heimabanka",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"vanskil@rsk.is\" <vanskil@skatturinn.is>",
+        "subject": "FW: Reikningur í heimabanka",
+        "date": "2025-11-24T15:12:57.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-23-arnar-kjartansson-reikningur-heimabanka",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Arnar Kjartansson",
+      "date": "2025-11-23T19:18:03.000Z",
+      "title": "Reikningur í heimabanka",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Arnar Kjartansson <arnar1992@gmail.com>",
+        "subject": "Reikningur í heimabanka",
+        "date": "2025-11-23T19:18:03.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-12-bmt-micro-orders-bmt-micro-order-receipt-51173588",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "BMT Micro Orders",
+      "date": "2025-11-12T08:18:28.000Z",
+      "title": "BMT Micro Order Receipt (51173588)",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "BMT Micro Orders <orders@bmtmicro.com>",
+        "subject": "BMT Micro Order Receipt (51173588)",
+        "date": "2025-11-12T08:18:28.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-09-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-11-09T09:01:05.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-11-09T09:01:05.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-05-b-khald-alp-hf-b-laleigan-alp-hf-j-nustureikningur-lt23",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Bókhald ALP hf",
+      "date": "2025-11-05T10:50:48.000Z",
+      "title": "Bílaleigan ALP hf - Þjónustureikningur LT23041148",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Bókhald ALP hf <accounting@alp.is>",
+        "subject": "Bílaleigan ALP hf - Þjónustureikningur LT23041148",
+        "date": "2025-11-05T10:50:48.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-04-fyrirspurnir-icetransport-re-reikningur-fyrir-sendingu-39483929181",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Fyrirspurnir Icetransport",
+      "date": "2025-11-04T11:50:37.000Z",
+      "title": "RE: Reikningur fyrir sendingu 394839291817",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Fyrirspurnir Icetransport <fyrirspurnir@icetransport.is>",
+        "subject": "RE: Reikningur fyrir sendingu 394839291817",
+        "date": "2025-11-04T11:50:37.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-04-arnar-kjartansson-re-reikningur-fyrir-sendingu-39483929181",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Arnar Kjartansson",
+      "date": "2025-11-04T11:47:54.000Z",
+      "title": "Re: Reikningur fyrir sendingu 394839291817",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Arnar Kjartansson <arnar1992@gmail.com>",
+        "subject": "Re: Reikningur fyrir sendingu 394839291817",
+        "date": "2025-11-04T11:47:54.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-03-google-play-your-google-play-order-receipt-from-nov-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google Play",
+      "date": "2025-11-03T19:09:12.000Z",
+      "title": "Your Google Play Order Receipt from Nov 3, 2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google Play <googleplay-noreply@google.com>",
+        "subject": "Your Google Play Order Receipt from Nov 3, 2025",
+        "date": "2025-11-03T19:09:12.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-03-fyrirspurnir-icetransport-re-reikningur-fyrir-sendingu-39483929181",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Fyrirspurnir Icetransport",
+      "date": "2025-11-03T08:59:31.000Z",
+      "title": "RE: Reikningur fyrir sendingu 394839291817",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Fyrirspurnir Icetransport <fyrirspurnir@icetransport.is>",
+        "subject": "RE: Reikningur fyrir sendingu 394839291817",
+        "date": "2025-11-03T08:59:31.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-11-02-arnar-kjartansson-reikningur-fyrir-sendingu-394839291817",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Arnar Kjartansson",
+      "date": "2025-11-02T12:03:06.000Z",
+      "title": "Reikningur fyrir sendingu 394839291817",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Arnar Kjartansson <arnar1992@gmail.com>",
+        "subject": "Reikningur fyrir sendingu 394839291817",
+        "date": "2025-11-02T12:03:06.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-10-17-chatbot-app-your-receipt-from-chatbot-app",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Chatbot.app",
+      "date": "2025-10-17T15:39:35.000Z",
+      "title": "Your receipt from Chatbot App",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Chatbot.app\" <help@paddle.com>",
+        "subject": "Your receipt from Chatbot App",
+        "date": "2025-10-17T15:39:35.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-10-16-wolt-your-order-s-delivered-kfc-faxafeni-16-1",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-10-16T17:26:34.000Z",
+      "title": "Your order’s delivered: KFC Faxafeni 16.10.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Faxafeni 16.10.2025",
+        "date": "2025-10-16T17:26:34.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-10-15-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-10-15T18:47:07.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-10-15T18:47:07.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-10-15-imou-easy4ipservice-com-order-confirmation",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Imou@easy4ipservice.com",
+      "date": "2025-10-15T15:53:31.000Z",
+      "title": "Order Confirmation",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Imou@easy4ipservice.com\" <Imou@easy4ipservice.com>",
+        "subject": "Order Confirmation",
+        "date": "2025-10-15T15:53:31.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-10-15-arnar-kjartansson-reikningur-sensing-394172596130",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Arnar Kjartansson",
+      "date": "2025-10-15T12:53:31.000Z",
+      "title": "Reikningur sensing 394172596130",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Arnar Kjartansson <arnar1992@gmail.com>",
+        "subject": "Reikningur sensing 394172596130",
+        "date": "2025-10-15T12:53:31.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-10-13-audible-com-thanks-your-order-is-complete",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Audible.com",
+      "date": "2025-10-13T13:14:43.000Z",
+      "title": "Thanks, your order is complete",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Audible.com\" <donotreply@audible.com>",
+        "subject": "Thanks, your order is complete",
+        "date": "2025-10-13T13:14:43.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-10-12-bmt-micro-orders-bmt-micro-order-receipt-51124762",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "BMT Micro Orders",
+      "date": "2025-10-12T07:16:32.000Z",
+      "title": "BMT Micro Order Receipt (51124762)",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "BMT Micro Orders <orders@bmtmicro.com>",
+        "subject": "BMT Micro Order Receipt (51124762)",
+        "date": "2025-10-12T07:16:32.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-10-09-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-10-09T16:52:34.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-10-09T16:52:34.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-10-08-wolt-your-order-s-delivered-kfc-faxafeni-08-1",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-10-08T16:52:19.000Z",
+      "title": "Your order’s delivered: KFC Faxafeni 08.10.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Faxafeni 08.10.2025",
+        "date": "2025-10-08T16:52:19.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-10-07-b-khald-alp-hf-b-laleigan-alp-hf-j-nustureikningur-lt23",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Bókhald ALP hf",
+      "date": "2025-10-07T09:34:53.000Z",
+      "title": "Bílaleigan ALP hf - Þjónustureikningur LT23040222",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Bókhald ALP hf <accounting@alp.is>",
+        "subject": "Bílaleigan ALP hf - Þjónustureikningur LT23040222",
+        "date": "2025-10-07T09:34:53.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-10-07-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-10-07T08:45:33.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-10-07T08:45:33.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-10-03-google-play-your-google-play-order-receipt-from-oct-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google Play",
+      "date": "2025-10-03T19:09:12.000Z",
+      "title": "Your Google Play Order Receipt from Oct 3, 2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google Play <googleplay-noreply@google.com>",
+        "subject": "Your Google Play Order Receipt from Oct 3, 2025",
+        "date": "2025-10-03T19:09:12.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-30-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-09-30T04:16:08.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-09-30T04:16:08.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-29-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-09-29T19:45:59.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-09-29T19:45:59.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-28-wolt-your-order-s-delivered-kfc-k-pavogi-28-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-09-28T19:47:37.000Z",
+      "title": "Your order’s delivered: KFC Kópavogi 28.09.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Kópavogi 28.09.2025",
+        "date": "2025-09-28T19:47:37.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-25-patreon-your-patreon-receipt-is-here",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Patreon",
+      "date": "2025-09-25T18:18:30.000Z",
+      "title": "Your Patreon receipt is here!",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Patreon <no-reply@patreon.com>",
+        "subject": "Your Patreon receipt is here!",
+        "date": "2025-09-25T18:18:30.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-20-kundsupport-re-your-order-status-has-been-updated",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Kundsupport",
+      "date": "2025-09-20T21:22:16.000Z",
+      "title": "Re: Your Order Status Has Been Updated",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Kundsupport <support@scandinaviansmiles.com>",
+        "subject": "Re: Your Order Status Has Been Updated",
+        "date": "2025-09-20T21:22:16.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-20-scandinaviansmiles-your-order-is-on-the-way",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Scandinaviansmiles",
+      "date": "2025-09-20T08:04:44.000Z",
+      "title": "Your order is on the way! 🚚",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Scandinaviansmiles <support@scandinaviansmiles.com>",
+        "subject": "Your order is on the way! 🚚",
+        "date": "2025-09-20T08:04:44.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-19-wolt-your-order-s-delivered-king-kong-k-pavog",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-09-19T20:35:09.000Z",
+      "title": "Your order’s delivered: King Kong Kópavogur 19.09.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: King Kong Kópavogur 19.09.2025",
+        "date": "2025-09-19T20:35:09.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-19-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-09-19T18:58:29.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-09-19T18:58:29.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-19-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-09-19T18:58:25.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-09-19T18:58:25.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-19-arnar-kjartansson-re-your-order-status-has-been-updated",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Arnar Kjartansson",
+      "date": "2025-09-19T13:05:03.000Z",
+      "title": "Re: Your Order Status Has Been Updated",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Arnar Kjartansson <arnar1992@gmail.com>",
+        "subject": "Re: Your Order Status Has Been Updated",
+        "date": "2025-09-19T13:05:03.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-15-wolt-tip-receipt",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-09-15T16:49:22.000Z",
+      "title": "Tip Receipt",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Tip Receipt",
+        "date": "2025-09-15T16:49:22.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-15-wolt-your-order-s-delivered-kfc-faxafeni-15-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-09-15T16:40:48.000Z",
+      "title": "Your order’s delivered: KFC Faxafeni 15.09.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Faxafeni 15.09.2025",
+        "date": "2025-09-15T16:40:48.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-13-wolt-your-order-s-delivered-king-kong-k-pavog",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-09-13T16:59:21.000Z",
+      "title": "Your order’s delivered: King Kong Kópavogur 13.09.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: King Kong Kópavogur 13.09.2025",
+        "date": "2025-09-13T16:59:21.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-13-imou-easy4ipservice-com-order-confirmation",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Imou@easy4ipservice.com",
+      "date": "2025-09-13T13:02:27.000Z",
+      "title": "Order Confirmation",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Imou@easy4ipservice.com\" <Imou@easy4ipservice.com>",
+        "subject": "Order Confirmation",
+        "date": "2025-09-13T13:02:27.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-12-b-khald-alp-hf-b-laleigan-alp-hf-j-nustureikningur-lt23",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Bókhald ALP hf",
+      "date": "2025-09-12T14:43:24.000Z",
+      "title": "Bílaleigan ALP hf - Þjónustureikningur LT23039309",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Bókhald ALP hf <accounting@alp.is>",
+        "subject": "Bílaleigan ALP hf - Þjónustureikningur LT23039309",
+        "date": "2025-09-12T14:43:24.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-12-bmt-micro-orders-bmt-micro-order-receipt-51075111",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "BMT Micro Orders",
+      "date": "2025-09-12T07:16:27.000Z",
+      "title": "BMT Micro Order Receipt (51075111)",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "BMT Micro Orders <orders@bmtmicro.com>",
+        "subject": "BMT Micro Order Receipt (51075111)",
+        "date": "2025-09-12T07:16:27.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-11-scandinaviansmiles-your-order-status-has-been-updated",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Scandinaviansmiles",
+      "date": "2025-09-11T15:39:14.000Z",
+      "title": "Your Order Status Has Been Updated",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Scandinaviansmiles <support@scandinaviansmiles.com>",
+        "subject": "Your Order Status Has Been Updated",
+        "date": "2025-09-11T15:39:14.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-11-icelandair-icelandair-kvittun-fyrir-bgybqv",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Icelandair",
+      "date": "2025-09-11T14:13:42.000Z",
+      "title": "Icelandair |  Kvittun fyrir  BGYBQV",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Icelandair\" <icelandair@email.icelandair.is>",
+        "subject": "Icelandair |  Kvittun fyrir  BGYBQV",
+        "date": "2025-09-11T14:13:42.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-10-booking-com-this-is-your-receipt",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Booking.com",
+      "date": "2025-09-10T17:23:18.000Z",
+      "title": "This is your receipt",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Booking.com\" <noreply-payments@booking.com>",
+        "subject": "This is your receipt",
+        "date": "2025-09-10T17:23:18.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-10-wolt-your-order-s-delivered-hl-llab-tar-b-sta",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-09-10T17:02:20.000Z",
+      "title": "Your order’s delivered: Hlöllabátar Bústaðarvegi 10.09.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Hlöllabátar Bústaðarvegi 10.09.2025",
+        "date": "2025-09-10T17:02:20.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-09-lovefball-your-order-has-been-shipped",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "lovefball",
+      "date": "2025-09-09T03:32:58.000Z",
+      "title": "Your order has been shipped",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "lovefball <store958015@mailer.shopemail.com>",
+        "subject": "Your order has been shipped",
+        "date": "2025-09-09T03:32:58.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-08-wolt-your-order-s-delivered-kfc-faxafeni-08-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-09-08T17:26:25.000Z",
+      "title": "Your order’s delivered: KFC Faxafeni 08.09.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Faxafeni 08.09.2025",
+        "date": "2025-09-08T17:26:25.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-07-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-09-07T18:24:08.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-09-07T18:24:08.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-03-google-play-your-google-play-order-receipt-from-sep-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google Play",
+      "date": "2025-09-03T19:09:13.000Z",
+      "title": "Your Google Play Order Receipt from Sep 3, 2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google Play <googleplay-noreply@google.com>",
+        "subject": "Your Google Play Order Receipt from Sep 3, 2025",
+        "date": "2025-09-03T19:09:13.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-03-virta-kvittunin-n-fr-sorku",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Virta",
+      "date": "2025-09-03T18:00:27.000Z",
+      "title": "Kvittunin þín frá Ísorku.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Virta <noreply@virta.global>",
+        "subject": "Kvittunin þín frá Ísorku.",
+        "date": "2025-09-03T18:00:27.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-02-wolt-your-order-s-delivered-kfc-faxafeni-02-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-09-02T12:57:08.000Z",
+      "title": "Your order’s delivered: KFC Faxafeni 02.09.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Faxafeni 02.09.2025",
+        "date": "2025-09-02T12:57:08.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-09-01-wolt-your-order-s-delivered-kfc-faxafeni-01-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-09-01T12:52:26.000Z",
+      "title": "Your order’s delivered: KFC Faxafeni 01.09.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Faxafeni 01.09.2025",
+        "date": "2025-09-01T12:52:26.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-08-22-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-08-22T07:25:17.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-08-22T07:25:17.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-08-18-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-08-18T20:39:47.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-08-18T20:39:47.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-08-17-wolt-your-order-s-delivered-king-kong-k-pavog",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-08-17T16:51:37.000Z",
+      "title": "Your order’s delivered: King Kong Kópavogur 17.08.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: King Kong Kópavogur 17.08.2025",
+        "date": "2025-08-17T16:51:37.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-08-17-wolt-your-order-s-delivered-kfc-k-pavogi-17-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-08-17T15:19:48.000Z",
+      "title": "Your order’s delivered: KFC Kópavogi 17.08.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Kópavogi 17.08.2025",
+        "date": "2025-08-17T15:19:48.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-08-16-wolt-your-order-s-delivered-kfc-k-pavogi-16-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-08-16T16:08:34.000Z",
+      "title": "Your order’s delivered: KFC Kópavogi 16.08.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Kópavogi 16.08.2025",
+        "date": "2025-08-16T16:08:34.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-08-15-deepstash-srl-your-receipt-from-deepstash-srl-2878-702",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "DEEPSTASH SRL",
+      "date": "2025-08-15T20:26:15.000Z",
+      "title": "Your receipt from DEEPSTASH SRL #2878-7028",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "DEEPSTASH SRL <invoice+statements+acct_1QefRKBA9dbzR13C@stripe.com>",
+        "subject": "Your receipt from DEEPSTASH SRL #2878-7028",
+        "date": "2025-08-15T20:26:15.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-08-13-imou-easy4ipservice-com-order-confirmation",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Imou@easy4ipservice.com",
+      "date": "2025-08-13T13:01:43.000Z",
+      "title": "Order Confirmation",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Imou@easy4ipservice.com\" <Imou@easy4ipservice.com>",
+        "subject": "Order Confirmation",
+        "date": "2025-08-13T13:01:43.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-08-12-bmt-micro-orders-bmt-micro-order-receipt-50991689",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "BMT Micro Orders",
+      "date": "2025-08-12T07:19:05.000Z",
+      "title": "BMT Micro Order Receipt (50991689)",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "BMT Micro Orders <orders@bmtmicro.com>",
+        "subject": "BMT Micro Order Receipt (50991689)",
+        "date": "2025-08-12T07:19:05.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-08-07-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-08-07T11:46:04.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-08-07T11:46:04.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-08-06-virta-kvittunin-n-fr-sorku",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Virta",
+      "date": "2025-08-06T10:44:41.000Z",
+      "title": "Kvittunin þín frá Ísorku.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Virta <noreply@virta.global>",
+        "subject": "Kvittunin þín frá Ísorku.",
+        "date": "2025-08-06T10:44:41.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-08-05-b-khald-alp-hf-alp-hf-j-nustureikningur-lt23038475",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Bókhald ALP hf",
+      "date": "2025-08-05T17:19:40.000Z",
+      "title": "ALP hf. - Þjónustureikningur LT23038475",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Bókhald ALP hf <accounting@alp.is>",
+        "subject": "ALP hf. - Þjónustureikningur LT23038475",
+        "date": "2025-08-05T17:19:40.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-08-03-google-play-your-google-play-order-receipt-from-aug-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google Play",
+      "date": "2025-08-03T19:09:11.000Z",
+      "title": "Your Google Play Order Receipt from Aug 3, 2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google Play <googleplay-noreply@google.com>",
+        "subject": "Your Google Play Order Receipt from Aug 3, 2025",
+        "date": "2025-08-03T19:09:11.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-08-03-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-08-03T02:47:44.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-08-03T02:47:44.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-08-01-audible-com-thanks-your-order-is-complete",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Audible.com",
+      "date": "2025-08-01T07:35:26.000Z",
+      "title": "Thanks, your order is complete",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Audible.com\" <donotreply@audible.com>",
+        "subject": "Thanks, your order is complete",
+        "date": "2025-08-01T07:35:26.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-07-25-google-skr-u-ig-inn-google-reikninginn-inn",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google",
+      "date": "2025-07-25T10:40:49.000Z",
+      "title": "Skráðu þig inn á Google-reikninginn þinn",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google <no-reply@accounts.google.com>",
+        "subject": "Skráðu þig inn á Google-reikninginn þinn",
+        "date": "2025-07-25T10:40:49.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-07-19-epic-games-your-epic-games-receipt",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Epic Games",
+      "date": "2025-07-19T20:04:32.000Z",
+      "title": "Your Epic Games Receipt",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Epic Games <help@acct.epicgames.com>",
+        "subject": "Your Epic Games Receipt",
+        "date": "2025-07-19T20:04:32.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-07-19-no-reply-easypark-net-your-easypark-receipt",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "no-reply@easypark.net",
+      "date": "2025-07-19T02:15:39.000Z",
+      "title": "Your EasyPark receipt",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "no-reply@easypark.net",
+        "subject": "Your EasyPark receipt",
+        "date": "2025-07-19T02:15:39.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-07-18-no-reply-easypark-net-your-easypark-receipt",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "no-reply@easypark.net",
+      "date": "2025-07-18T02:40:36.000Z",
+      "title": "Your EasyPark receipt",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "no-reply@easypark.net",
+        "subject": "Your EasyPark receipt",
+        "date": "2025-07-18T02:40:36.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-07-13-imou-easy4ipservice-com-order-confirmation",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Imou@easy4ipservice.com",
+      "date": "2025-07-13T13:04:20.000Z",
+      "title": "Order Confirmation",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Imou@easy4ipservice.com\" <Imou@easy4ipservice.com>",
+        "subject": "Order Confirmation",
+        "date": "2025-07-13T13:04:20.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-07-12-bmt-micro-orders-bmt-micro-order-receipt-50899089",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "BMT Micro Orders",
+      "date": "2025-07-12T07:19:23.000Z",
+      "title": "BMT Micro Order Receipt (50899089)",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "BMT Micro Orders <orders@bmtmicro.com>",
+        "subject": "BMT Micro Order Receipt (50899089)",
+        "date": "2025-07-12T07:19:23.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-07-09-virta-kvittunin-n-fr-sorku",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Virta",
+      "date": "2025-07-09T15:19:52.000Z",
+      "title": "Kvittunin þín frá Ísorku.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Virta <noreply@virta.global>",
+        "subject": "Kvittunin þín frá Ísorku.",
+        "date": "2025-07-09T15:19:52.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-07-07-wolt-your-order-s-delivered-kfc-k-pavogi-07-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-07-07T18:17:17.000Z",
+      "title": "Your order’s delivered: KFC Kópavogi 07.07.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Kópavogi 07.07.2025",
+        "date": "2025-07-07T18:17:17.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-07-07-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-07-07T12:56:47.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-07-07T12:56:47.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-07-04-no-reply-easypark-net-your-easypark-receipt",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "no-reply@easypark.net",
+      "date": "2025-07-04T03:33:44.000Z",
+      "title": "Your EasyPark receipt",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "no-reply@easypark.net",
+        "subject": "Your EasyPark receipt",
+        "date": "2025-07-04T03:33:44.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-07-03-google-play-your-google-play-order-receipt-from-jul-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google Play",
+      "date": "2025-07-03T19:09:11.000Z",
+      "title": "Your Google Play Order Receipt from Jul 3, 2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google Play <googleplay-noreply@google.com>",
+        "subject": "Your Google Play Order Receipt from Jul 3, 2025",
+        "date": "2025-07-03T19:09:11.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-07-03-icelandair-n-r-og-uppf-r-ur-saga-club-reikningur",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Icelandair",
+      "date": "2025-07-03T14:33:00.000Z",
+      "title": "Nýr og uppfærður Saga Club reikningur",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Icelandair\" <icelandair@email.icelandair.is>",
+        "subject": "Nýr og uppfærður Saga Club reikningur",
+        "date": "2025-07-03T14:33:00.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-07-02-b-khald-alp-hf-alp-hf-j-nustureikningur-lt23037644",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Bókhald ALP hf",
+      "date": "2025-07-02T17:51:39.000Z",
+      "title": "ALP hf. - Þjónustureikningur LT23037644",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Bókhald ALP hf <accounting@alp.is>",
+        "subject": "ALP hf. - Þjónustureikningur LT23037644",
+        "date": "2025-07-02T17:51:39.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-26-parka-p4-kvittun",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Parka",
+      "date": "2025-06-26T16:06:45.000Z",
+      "title": "P4 - Kvittun",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Parka <no-reply@parka.is>",
+        "subject": "P4 - Kvittun",
+        "date": "2025-06-26T16:06:45.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-16-b-khald-alp-hf-alp-hf-j-nustureikningur-lt23036836",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Bókhald ALP hf",
+      "date": "2025-06-16T14:34:56.000Z",
+      "title": "ALP hf. - Þjónustureikningur LT23036836",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Bókhald ALP hf <accounting@alp.is>",
+        "subject": "ALP hf. - Þjónustureikningur LT23036836",
+        "date": "2025-06-16T14:34:56.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-15-wolt-your-order-s-delivered-sb-in-gar-ab-15-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-06-15T22:17:38.000Z",
+      "title": "Your order’s delivered: Ísbúðin Garðabæ 15.06.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Ísbúðin Garðabæ 15.06.2025",
+        "date": "2025-06-15T22:17:38.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-12-imou-easy4ipservice-com-order-confirmation",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Imou@easy4ipservice.com",
+      "date": "2025-06-12T13:03:01.000Z",
+      "title": "Order Confirmation",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Imou@easy4ipservice.com\" <Imou@easy4ipservice.com>",
+        "subject": "Order Confirmation",
+        "date": "2025-06-12T13:03:01.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-12-wolt-your-order-s-delivered-kfc-k-pavogi-12-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-06-12T12:46:12.000Z",
+      "title": "Your order’s delivered: KFC Kópavogi 12.06.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Kópavogi 12.06.2025",
+        "date": "2025-06-12T12:46:12.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-12-bmt-micro-orders-bmt-micro-order-receipt-50814153",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "BMT Micro Orders",
+      "date": "2025-06-12T07:22:21.000Z",
+      "title": "BMT Micro Order Receipt (50814153)",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "BMT Micro Orders <orders@bmtmicro.com>",
+        "subject": "BMT Micro Order Receipt (50814153)",
+        "date": "2025-06-12T07:22:21.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-11-wolt-your-order-s-delivered-kfc-k-pavogi-11-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-06-11T18:14:16.000Z",
+      "title": "Your order’s delivered: KFC Kópavogi 11.06.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Kópavogi 11.06.2025",
+        "date": "2025-06-11T18:14:16.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-11-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-06-11T00:46:43.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-06-11T00:46:43.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-10-wolt-your-order-s-delivered-viking-kebab-10-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-06-10T15:50:05.000Z",
+      "title": "Your order’s delivered: Viking Kebab 10.06.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Viking Kebab 10.06.2025",
+        "date": "2025-06-10T15:50:05.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-09-wolt-your-order-s-delivered-grill66-mini-ol-s",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-06-09T16:31:09.000Z",
+      "title": "Your order’s delivered: Grill66 mini & Olís - Garðabæ 09.06.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Grill66 mini & Olís - Garðabæ 09.06.2025",
+        "date": "2025-06-09T16:31:09.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-09-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-06-09T03:50:54.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-06-09T03:50:54.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-07-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-06-07T22:47:46.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-06-07T22:47:46.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-07-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-06-07T16:46:19.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-06-07T16:46:19.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-07-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-06-07T16:44:17.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-06-07T16:44:17.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-07-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-06-07T08:43:11.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-06-07T08:43:11.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-06-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-06-06T11:45:29.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-06-06T11:45:29.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-05-debitum-debitum-is-reikningur-fr-l-knisfr-ileg-myndgreining",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "debitum@debitum.is",
+      "date": "2025-06-05T15:54:13.000Z",
+      "title": "Reikningur frá Læknisfræðileg myndgreining ehf. - 1745562",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"debitum@debitum.is\" <debitum@debitum.is>",
+        "subject": "Reikningur frá Læknisfræðileg myndgreining ehf. - 1745562",
+        "date": "2025-06-05T15:54:13.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-06-03-google-play-your-google-play-order-receipt-from-jun-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google Play",
+      "date": "2025-06-03T19:09:14.000Z",
+      "title": "Your Google Play Order Receipt from Jun 3, 2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google Play <googleplay-noreply@google.com>",
+        "subject": "Your Google Play Order Receipt from Jun 3, 2025",
+        "date": "2025-06-03T19:09:14.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-24-openai-llc-your-refund-from-openai-llc-3000-9779",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "OpenAI, LLC",
+      "date": "2025-05-24T16:37:55.000Z",
+      "title": "Your refund from OpenAI, LLC #3000-9779",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"OpenAI, LLC\" <invoice+statements+acct_1HOrSwC6h1nxGoI3@stripe.com>",
+        "subject": "Your refund from OpenAI, LLC #3000-9779",
+        "date": "2025-05-24T16:37:55.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-24-openai-llc-credit-note-from-openai-llc-for-invoice-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "OpenAI, LLC",
+      "date": "2025-05-24T16:37:54.000Z",
+      "title": "Credit note from OpenAI, LLC for invoice #6B6F1528-0025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"OpenAI, LLC\" <billing+acct_1HOrSwC6h1nxGoI3@stripe.com>",
+        "subject": "Credit note from OpenAI, LLC for invoice #6B6F1528-0025",
+        "date": "2025-05-24T16:37:54.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-21-b-khald-alp-hf-alp-hf-j-nustureikningur-lt23035473",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Bókhald ALP hf",
+      "date": "2025-05-21T09:42:39.000Z",
+      "title": "ALP hf. - Þjónustureikningur LT23035473",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Bókhald ALP hf <accounting@alp.is>",
+        "subject": "ALP hf. - Þjónustureikningur LT23035473",
+        "date": "2025-05-21T09:42:39.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-21-b-khald-alp-hf-alp-hf-j-nustukreditreikningur-lt2303547",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Bókhald ALP hf",
+      "date": "2025-05-21T09:41:11.000Z",
+      "title": "ALP hf. - Þjónustukreditreikningur LT23035474",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Bókhald ALP hf <accounting@alp.is>",
+        "subject": "ALP hf. - Þjónustukreditreikningur LT23035474",
+        "date": "2025-05-21T09:41:11.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-21-b-khald-alp-hf-alp-hf-j-nustureikningur-lt23035459",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Bókhald ALP hf",
+      "date": "2025-05-21T09:26:53.000Z",
+      "title": "ALP hf. - Þjónustureikningur LT23035459",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Bókhald ALP hf <accounting@alp.is>",
+        "subject": "ALP hf. - Þjónustureikningur LT23035459",
+        "date": "2025-05-21T09:26:53.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-17-audible-com-thanks-your-order-is-complete",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Audible.com",
+      "date": "2025-05-17T06:49:02.000Z",
+      "title": "Thanks, your order is complete",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Audible.com\" <donotreply@audible.com>",
+        "subject": "Thanks, your order is complete",
+        "date": "2025-05-17T06:49:02.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-17-audible-com-thanks-your-order-is-complete",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Audible.com",
+      "date": "2025-05-17T06:48:46.000Z",
+      "title": "Thanks, your order is complete",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Audible.com\" <donotreply@audible.com>",
+        "subject": "Thanks, your order is complete",
+        "date": "2025-05-17T06:48:46.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-17-no-reply-easypark-net-your-easypark-receipt",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "no-reply@easypark.net",
+      "date": "2025-05-17T02:30:38.000Z",
+      "title": "Your EasyPark receipt",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "no-reply@easypark.net",
+        "subject": "Your EasyPark receipt",
+        "date": "2025-05-17T02:30:38.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-16-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-05-16T14:53:03.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-05-16T14:53:03.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-16-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-05-16T14:51:20.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-05-16T14:51:20.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-16-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-05-16T11:58:37.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-05-16T11:58:37.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-15-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-05-15T19:49:05.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-05-15T19:49:05.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-15-deepstash-srl-your-receipt-from-deepstash-srl-2209-044",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "DEEPSTASH SRL",
+      "date": "2025-05-15T19:26:26.000Z",
+      "title": "Your receipt from DEEPSTASH SRL #2209-0448",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "DEEPSTASH SRL <invoice+statements+acct_1QefRKBA9dbzR13C@stripe.com>",
+        "subject": "Your receipt from DEEPSTASH SRL #2209-0448",
+        "date": "2025-05-15T19:26:26.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-15-2checkout-now-verifone-support-payment-receipt-from-www-iobit-com",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "2Checkout (now Verifone) Support",
+      "date": "2025-05-15T13:49:21.000Z",
+      "title": "Payment Receipt from www.iobit.com",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"2Checkout (now Verifone) Support\" <support@2checkout.com>",
+        "subject": "Payment Receipt from www.iobit.com",
+        "date": "2025-05-15T13:49:21.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-15-2checkout-now-verifone-iobit-online-order-confirmation-from-https-www",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "2Checkout (now Verifone) / IObit",
+      "date": "2025-05-15T13:49:19.000Z",
+      "title": "Online order confirmation from https://www.iobit.com",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"2Checkout (now Verifone) / IObit\" <no-reply@2checkout.com>",
+        "subject": "Online order confirmation from https://www.iobit.com",
+        "date": "2025-05-15T13:49:19.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-14-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-05-14T23:49:23.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-05-14T23:49:23.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-14-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-05-14T13:51:13.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-05-14T13:51:13.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-14-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-05-14T11:48:09.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-05-14T11:48:09.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-13-wolt-your-order-s-delivered-k-nahofi-13-05-20",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-05-13T19:40:41.000Z",
+      "title": "Your order’s delivered: Kínahofið 13.05.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Kínahofið 13.05.2025",
+        "date": "2025-05-13T19:40:41.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-12-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-05-12T23:43:39.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-05-12T23:43:39.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-12-imou-easy4ipservice-com-order-confirmation",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Imou@easy4ipservice.com",
+      "date": "2025-05-12T13:01:12.000Z",
+      "title": "Order Confirmation",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Imou@easy4ipservice.com\" <Imou@easy4ipservice.com>",
+        "subject": "Order Confirmation",
+        "date": "2025-05-12T13:01:12.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-12-bmt-micro-orders-bmt-micro-order-receipt-50724971",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "BMT Micro Orders",
+      "date": "2025-05-12T07:24:05.000Z",
+      "title": "BMT Micro Order Receipt (50724971)",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "BMT Micro Orders <orders@bmtmicro.com>",
+        "subject": "BMT Micro Order Receipt (50724971)",
+        "date": "2025-05-12T07:24:05.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-08-is-stopp-dhl-com-re-ref-310875263-re-reikningur-fyrir-sen",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "is.stopp@dhl.com",
+      "date": "2025-05-08T15:23:08.000Z",
+      "title": "Re: << Ref:310875263 >> Re: Reikningur fyrir sendingu 6335020860",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "is.stopp@dhl.com",
+        "subject": "Re: << Ref:310875263 >> Re: Reikningur fyrir sendingu 6335020860",
+        "date": "2025-05-08T15:23:08.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-08-arnar-kjartansson-re-ref-310875263-re-reikningur-fyrir-sen",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Arnar Kjartansson",
+      "date": "2025-05-08T13:46:38.000Z",
+      "title": "Re: << Ref:310875263 >> Re: Reikningur fyrir sendingu 6335020860",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Arnar Kjartansson <arnar1992@gmail.com>",
+        "subject": "Re: << Ref:310875263 >> Re: Reikningur fyrir sendingu 6335020860",
+        "date": "2025-05-08T13:46:38.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-08-is-stopp-dhl-com-re-ref-310875263-re-reikningur-fyrir-sen",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "is.stopp@dhl.com",
+      "date": "2025-05-08T13:45:22.000Z",
+      "title": "Re: << Ref:310875263 >> Re: Reikningur fyrir sendingu 6335020860",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "is.stopp@dhl.com",
+        "subject": "Re: << Ref:310875263 >> Re: Reikningur fyrir sendingu 6335020860",
+        "date": "2025-05-08T13:45:22.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-07-arnar-kjartansson-re-ref-310875263-re-reikningur-fyrir-sen",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Arnar Kjartansson",
+      "date": "2025-05-07T15:21:52.000Z",
+      "title": "Re: << Ref:310875263 >> Re: Reikningur fyrir sendingu 6335020860",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Arnar Kjartansson <arnar1992@gmail.com>",
+        "subject": "Re: << Ref:310875263 >> Re: Reikningur fyrir sendingu 6335020860",
+        "date": "2025-05-07T15:21:52.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-07-is-stopp-dhl-com-ref-310875263-re-reikningur-fyrir-sendin",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "is.stopp@dhl.com",
+      "date": "2025-05-07T15:00:34.000Z",
+      "title": "<< Ref:310875263 >> Re: Reikningur fyrir sendingu 6335020860",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "is.stopp@dhl.com",
+        "subject": "<< Ref:310875263 >> Re: Reikningur fyrir sendingu 6335020860",
+        "date": "2025-05-07T15:00:34.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-07-wolt-your-order-s-delivered-grill-66-ol-s-lfh",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-05-07T13:13:16.000Z",
+      "title": "Your order’s delivered: Grill 66 & Olís- Álfheimar 07.05.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Grill 66 & Olís- Álfheimar 07.05.2025",
+        "date": "2025-05-07T13:13:16.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-07-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-05-07T01:54:27.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-05-07T01:54:27.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-06-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-05-06T22:21:58.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-05-06T22:21:58.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-06-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-05-06T20:23:45.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-05-06T20:23:45.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-06-google-play-your-google-play-order-receipt-from-may-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google Play",
+      "date": "2025-05-06T19:29:16.000Z",
+      "title": "Your Google Play Order Receipt from May 6, 2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google Play <googleplay-noreply@google.com>",
+        "subject": "Your Google Play Order Receipt from May 6, 2025",
+        "date": "2025-05-06T19:29:16.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-06-donotreply-dhl-com-automatic-reply-ref-310875263-reikningur",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "donotreply@dhl.com",
+      "date": "2025-05-06T13:03:14.000Z",
+      "title": "Automatic Reply : << Ref:310875263 >> Reikningur fyrir sendingu 6335020860",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "donotreply@dhl.com",
+        "subject": "Automatic Reply : << Ref:310875263 >> Reikningur fyrir sendingu 6335020860",
+        "date": "2025-05-06T13:03:14.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-05-06-arnar-kjartansson-reikningur-fyrir-sendingu-6335020860",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Arnar Kjartansson",
+      "date": "2025-05-06T12:56:41.000Z",
+      "title": "Reikningur fyrir sendingu 6335020860",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Arnar Kjartansson <arnar1992@gmail.com>",
+        "subject": "Reikningur fyrir sendingu 6335020860",
+        "date": "2025-05-06T12:56:41.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-04-28-b-khald-alp-hf-alp-hf-j-nustukreditreikningur-lt2303447",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Bókhald ALP hf",
+      "date": "2025-04-28T09:11:28.000Z",
+      "title": "ALP hf. - Þjónustukreditreikningur LT23034471",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Bókhald ALP hf <accounting@alp.is>",
+        "subject": "ALP hf. - Þjónustukreditreikningur LT23034471",
+        "date": "2025-04-28T09:11:28.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-04-28-b-khald-alp-hf-alp-hf-j-nustureikningur-lt23032396",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Bókhald ALP hf",
+      "date": "2025-04-28T09:07:42.000Z",
+      "title": "ALP hf. - Þjónustureikningur LT23032396",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Bókhald ALP hf <accounting@alp.is>",
+        "subject": "ALP hf. - Þjónustureikningur LT23032396",
+        "date": "2025-04-28T09:07:42.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-04-28-b-khald-alp-hf-alp-hf-j-nustureikningur-lt23033452",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Bókhald ALP hf",
+      "date": "2025-04-28T09:07:30.000Z",
+      "title": "ALP hf. - Þjónustureikningur LT23033452",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Bókhald ALP hf <accounting@alp.is>",
+        "subject": "ALP hf. - Þjónustureikningur LT23033452",
+        "date": "2025-04-28T09:07:30.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-04-18-matt-from-spacegoods-re-your-order",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Matt from Spacegoods",
+      "date": "2025-04-18T16:23:12.000Z",
+      "title": "RE: Your Order",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Matt from Spacegoods <support@spacegoods.com>",
+        "subject": "RE: Your Order",
+        "date": "2025-04-18T16:23:12.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-04-13-receipts-epoch-com-cancellation-confirmation-2756793928",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "receipts@epoch.com",
+      "date": "2025-04-13T15:51:00.000Z",
+      "title": "Cancellation Confirmation: 2756793928",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "receipts@epoch.com",
+        "subject": "Cancellation Confirmation: 2756793928",
+        "date": "2025-04-13T15:51:00.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-04-12-google-veri-er-a-ey-a-google-reikningnum-num",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google",
+      "date": "2025-04-12T22:11:35.000Z",
+      "title": "Verið er að eyða Google-reikningnum þínum",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google <no-reply@accounts.google.com>",
+        "subject": "Verið er að eyða Google-reikningnum þínum",
+        "date": "2025-04-12T22:11:35.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-04-12-bmt-micro-orders-bmt-micro-order-receipt-50631807",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "BMT Micro Orders",
+      "date": "2025-04-12T20:42:12.000Z",
+      "title": "BMT Micro Order Receipt (50631807)",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "BMT Micro Orders <orders@bmtmicro.com>",
+        "subject": "BMT Micro Order Receipt (50631807)",
+        "date": "2025-04-12T20:42:12.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-04-11-imou-easy4ipservice-com-order-confirmation",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Imou@easy4ipservice.com",
+      "date": "2025-04-11T13:02:30.000Z",
+      "title": "Order Confirmation",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Imou@easy4ipservice.com\" <Imou@easy4ipservice.com>",
+        "subject": "Order Confirmation",
+        "date": "2025-04-11T13:02:30.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-04-11-spacegoods-your-order-has-been-delivered",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Spacegoods",
+      "date": "2025-04-11T00:48:40.000Z",
+      "title": "Your order has been delivered!",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Spacegoods <support@spacegoods.com>",
+        "subject": "Your order has been delivered!",
+        "date": "2025-04-11T00:48:40.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-04-08-wolt-your-order-s-delivered-sbarro-sm-ralind-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-04-08T16:34:34.000Z",
+      "title": "Your order’s delivered: Sbarro Smáralind 08.04.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Sbarro Smáralind 08.04.2025",
+        "date": "2025-04-08T16:34:34.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-04-03-google-play-your-google-play-order-receipt-from-apr-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google Play",
+      "date": "2025-04-03T19:09:08.000Z",
+      "title": "Your Google Play Order Receipt from Apr 3, 2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google Play <googleplay-noreply@google.com>",
+        "subject": "Your Google Play Order Receipt from Apr 3, 2025",
+        "date": "2025-04-03T19:09:08.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-04-02-2checkout-now-verifone-support-payment-receipt-from-www-iobit-com",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "2Checkout (now Verifone) Support",
+      "date": "2025-04-02T06:21:29.000Z",
+      "title": "Payment Receipt from www.iobit.com",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"2Checkout (now Verifone) Support\" <support@2checkout.com>",
+        "subject": "Payment Receipt from www.iobit.com",
+        "date": "2025-04-02T06:21:29.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-04-02-2checkout-now-verifone-iobit-online-order-confirmation-from-https-www",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "2Checkout (now Verifone) / IObit",
+      "date": "2025-04-02T06:21:26.000Z",
+      "title": "Online order confirmation from https://www.iobit.com",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"2Checkout (now Verifone) / IObit\" <no-reply@2checkout.com>",
+        "subject": "Online order confirmation from https://www.iobit.com",
+        "date": "2025-04-02T06:21:26.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-31-wolt-your-order-s-delivered-sb-in-gar-ab-31-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-03-31T20:11:39.000Z",
+      "title": "Your order’s delivered: Ísbúðin Garðabæ 31.03.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Ísbúðin Garðabæ 31.03.2025",
+        "date": "2025-03-31T20:11:39.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-31-wolt-your-order-s-delivered-kfc-hafnarfir-i-3",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-03-31T15:26:46.000Z",
+      "title": "Your order’s delivered: KFC Hafnarfirði 31.03.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Hafnarfirði 31.03.2025",
+        "date": "2025-03-31T15:26:46.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-29-wolt-your-order-s-delivered-kfc-hafnarfir-i-2",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-03-29T17:18:26.000Z",
+      "title": "Your order’s delivered: KFC Hafnarfirði 29.03.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Hafnarfirði 29.03.2025",
+        "date": "2025-03-29T17:18:26.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-29-the-athletic-pulse-was-tgl-a-hit-we-have-receipts",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "The Athletic Pulse",
+      "date": "2025-03-29T11:51:01.000Z",
+      "title": "Was TGL a hit? We have receipts",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"The Athletic Pulse\" <TheAthletic@e1.theathletic.com>",
+        "subject": "Was TGL a hit? We have receipts",
+        "date": "2025-03-29T11:51:01.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-29-spacegoods-an-update-on-your-order",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Spacegoods",
+      "date": "2025-03-29T05:35:33.000Z",
+      "title": "An update on your order",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Spacegoods <support@spacegoods.com>",
+        "subject": "An update on your order",
+        "date": "2025-03-29T05:35:33.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-28-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-03-28T15:58:09.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-03-28T15:58:09.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-28-ind-n-tt-d-ett-sameiginlegur-reikningur",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "indó",
+      "date": "2025-03-28T12:38:24.000Z",
+      "title": "Nýtt í dúett! Sameiginlegur reikningur! 💕",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"indó\" <indo@indo.is>",
+        "subject": "Nýtt í dúett! Sameiginlegur reikningur! 💕",
+        "date": "2025-03-28T12:38:24.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-25-spacegoods-your-order-has-been-picked-up",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Spacegoods",
+      "date": "2025-03-25T05:13:37.000Z",
+      "title": "Your order has been picked up!",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Spacegoods <support@spacegoods.com>",
+        "subject": "Your order has been picked up!",
+        "date": "2025-03-25T05:13:37.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-24-spacegoods-your-order-is-ready-to-ship",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Spacegoods",
+      "date": "2025-03-24T12:25:14.000Z",
+      "title": "Your order is ready to ship",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Spacegoods <support@spacegoods.com>",
+        "subject": "Your order is ready to ship",
+        "date": "2025-03-24T12:25:14.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-23-uber-receipts-your-sunday-evening-order-with-uber-eats",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-03-23T20:52:45.000Z",
+      "title": "Your Sunday evening order with Uber Eats",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Sunday evening order with Uber Eats",
+        "date": "2025-03-23T20:52:45.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-23-uber-receipts-your-sunday-morning-order-with-uber-eats",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-03-23T12:24:39.000Z",
+      "title": "Your Sunday morning order with Uber Eats",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Sunday morning order with Uber Eats",
+        "date": "2025-03-23T12:24:39.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-23-uber-receipts-your-sunday-morning-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-03-23T01:47:35.000Z",
+      "title": "Your Sunday morning trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Sunday morning trip with Uber",
+        "date": "2025-03-23T01:47:35.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-22-uber-receipts-your-saturday-afternoon-order-with-uber-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-03-22T17:44:55.000Z",
+      "title": "Your Saturday afternoon order with Uber Eats",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Uber Receipts\" <noreply@uber.com>",
+        "subject": "Your Saturday afternoon order with Uber Eats",
+        "date": "2025-03-22T17:44:55.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-21-everyman-order-confirmation",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "EVERYMAN",
+      "date": "2025-03-21T21:37:01.000Z",
+      "title": "Order confirmation",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "EVERYMAN <no-reply@everymancinema.com>",
+        "subject": "Order confirmation",
+        "date": "2025-03-21T21:37:01.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-21-uber-receipts-your-friday-evening-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-03-21T19:33:57.000Z",
+      "title": "Your Friday evening trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Friday evening trip with Uber",
+        "date": "2025-03-21T19:33:57.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-21-uber-receipts-your-friday-afternoon-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-03-21T18:40:07.000Z",
+      "title": "Your Friday afternoon trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Friday afternoon trip with Uber",
+        "date": "2025-03-21T18:40:07.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-21-uber-receipts-your-friday-afternoon-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-03-21T14:29:45.000Z",
+      "title": "Your Friday afternoon trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Friday afternoon trip with Uber",
+        "date": "2025-03-21T14:29:45.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-20-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-03-20T23:46:18.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-03-20T23:46:18.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-20-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-03-20T19:53:42.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-03-20T19:53:42.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-20-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-03-20T19:51:42.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-03-20T19:51:42.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-20-wolt-your-order-s-delivered-kfc-hafnarfir-i-2",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-03-20T18:23:27.000Z",
+      "title": "Your order’s delivered: KFC Hafnarfirði 20.03.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Hafnarfirði 20.03.2025",
+        "date": "2025-03-20T18:23:27.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-20-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-03-20T14:47:16.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-03-20T14:47:16.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-20-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-03-20T13:49:30.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-03-20T13:49:30.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-20-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-03-20T13:49:24.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-03-20T13:49:24.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-20-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-03-20T10:51:07.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-03-20T10:51:07.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-19-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-03-19T20:01:59.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-03-19T20:01:59.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-19-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-03-19T19:58:27.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-03-19T19:58:27.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-19-info-alp-hf-reikningur-lt23031688-pdf",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Info",
+      "date": "2025-03-19T06:35:00.000Z",
+      "title": "ALP hf. - Reikningur LT23031688.PDF",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Info <no-reply@avis.is>",
+        "subject": "ALP hf. - Reikningur LT23031688.PDF",
+        "date": "2025-03-19T06:35:00.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-18-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-03-18T16:52:19.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-03-18T16:52:19.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-18-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-03-18T16:47:34.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-03-18T16:47:34.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-18-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-03-18T14:02:20.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-03-18T14:02:20.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-18-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-03-18T13:57:41.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-03-18T13:57:41.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-17-wolt-your-order-s-delivered-sb-in-gar-ab-17-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-03-17T19:58:48.000Z",
+      "title": "Your order’s delivered: Ísbúðin Garðabæ 17.03.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Ísbúðin Garðabæ 17.03.2025",
+        "date": "2025-03-17T19:58:48.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-17-wolt-your-order-s-delivered-sbarro-sm-ralind-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-03-17T15:38:20.000Z",
+      "title": "Your order’s delivered: Sbarro Smáralind 17.03.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Sbarro Smáralind 17.03.2025",
+        "date": "2025-03-17T15:38:20.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-13-google-mikilv-gt-skr-u-ig-inn-google-reikningin",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Google",
+      "date": "2025-03-13T02:08:01.000Z",
+      "title": "Mikilvægt: Skráðu þig inn á Google-reikninginn þinn ef þú vilt halda honum",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Google <no-reply@accounts.google.com>",
+        "subject": "Mikilvægt: Skráðu þig inn á Google-reikninginn þinn ef þú vilt halda honum",
+        "date": "2025-03-13T02:08:01.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-11-wolt-your-order-s-delivered-wok-to-walk-hafna",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-03-11T13:40:50.000Z",
+      "title": "Your order’s delivered: Wok to Walk - Hafnarfjörður 11.03.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Wok to Walk - Hafnarfjörður 11.03.2025",
+        "date": "2025-03-11T13:40:50.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-11-imou-easy4ipservice-com-order-confirmation",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Imou@easy4ipservice.com",
+      "date": "2025-03-11T13:01:59.000Z",
+      "title": "Order Confirmation",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Imou@easy4ipservice.com\" <Imou@easy4ipservice.com>",
+        "subject": "Order Confirmation",
+        "date": "2025-03-11T13:01:59.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-10-wolt-your-order-s-delivered-sbarro-sm-ralind-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-03-10T18:23:53.000Z",
+      "title": "Your order’s delivered: Sbarro Smáralind 10.03.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Sbarro Smáralind 10.03.2025",
+        "date": "2025-03-10T18:23:53.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-06-spacegoods-your-order-has-been-delivered",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Spacegoods",
+      "date": "2025-03-06T23:07:33.000Z",
+      "title": "Your order has been delivered!",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Spacegoods <support@spacegoods.com>",
+        "subject": "Your order has been delivered!",
+        "date": "2025-03-06T23:07:33.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-04-wolt-your-order-s-delivered-sbarro-sm-ralind-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-03-04T12:16:09.000Z",
+      "title": "Your order’s delivered: Sbarro Smáralind 04.03.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Sbarro Smáralind 04.03.2025",
+        "date": "2025-03-04T12:16:09.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-04-spacegoods-an-update-on-your-order",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Spacegoods",
+      "date": "2025-03-04T01:34:33.000Z",
+      "title": "An update on your order",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Spacegoods <support@spacegoods.com>",
+        "subject": "An update on your order",
+        "date": "2025-03-04T01:34:33.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-03-01-booking-com-this-is-your-receipt",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Booking.com",
+      "date": "2025-03-01T13:42:53.000Z",
+      "title": "This is your receipt",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Booking.com\" <noreply-payments@booking.com>",
+        "subject": "This is your receipt",
+        "date": "2025-03-01T13:42:53.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-28-arnar-kjartansson-re-alp-hf-reikningur-lt23029454-grei-slu",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Arnar Kjartansson",
+      "date": "2025-02-28T13:26:56.000Z",
+      "title": "Re: ALP hf. - Reikningur LT23029454 - Greiðsluáminning",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Arnar Kjartansson <arnar1992@gmail.com>",
+        "subject": "Re: ALP hf. - Reikningur LT23029454 - Greiðsluáminning",
+        "date": "2025-02-28T13:26:56.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-28-inga-rut-helgad-ttir-alp-hf-reikningur-lt23029454-grei-slu-mi",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Inga Rut Helgadóttir",
+      "date": "2025-02-28T13:25:43.000Z",
+      "title": "ALP hf. - Reikningur LT23029454 - Greiðsluáminning",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Inga Rut Helgadóttir <inga.rut@alp.is>",
+        "subject": "ALP hf. - Reikningur LT23029454 - Greiðsluáminning",
+        "date": "2025-02-28T13:25:43.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-28-wolt-your-order-s-delivered-sbarro-sm-ralind-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-02-28T11:43:37.000Z",
+      "title": "Your order’s delivered: Sbarro Smáralind 28.02.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Sbarro Smáralind 28.02.2025",
+        "date": "2025-02-28T11:43:37.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-27-wolt-your-order-s-delivered-kfc-hafnarfir-i-2",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-02-27T16:28:16.000Z",
+      "title": "Your order’s delivered: KFC Hafnarfirði 27.02.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Hafnarfirði 27.02.2025",
+        "date": "2025-02-27T16:28:16.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-24-spacegoods-your-order-has-been-picked-up",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Spacegoods",
+      "date": "2025-02-24T19:08:37.000Z",
+      "title": "Your order has been picked up!",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Spacegoods <support@spacegoods.com>",
+        "subject": "Your order has been picked up!",
+        "date": "2025-02-24T19:08:37.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-24-spacegoods-your-order-is-ready-to-ship",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Spacegoods",
+      "date": "2025-02-24T14:17:48.000Z",
+      "title": "Your order is ready to ship",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Spacegoods <support@spacegoods.com>",
+        "subject": "Your order is ready to ship",
+        "date": "2025-02-24T14:17:48.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-24-wolt-your-order-s-delivered-krua-thai-b-jarli",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-02-24T13:23:57.000Z",
+      "title": "Your order’s delivered: Krua Thai - Bæjarlind 24.02.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Krua Thai - Bæjarlind 24.02.2025",
+        "date": "2025-02-24T13:23:57.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-24-wolt-your-order-s-delivered-kramb-in-k-rsnes-",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-02-24T13:09:49.000Z",
+      "title": "Your order’s delivered: Krambúðin - Kársnes 24.02.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Krambúðin - Kársnes 24.02.2025",
+        "date": "2025-02-24T13:09:49.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-23-latexplaytime-thank-you-for-your-order-to-latexplaytim",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "LatexPlaytime",
+      "date": "2025-02-23T15:20:47.000Z",
+      "title": "Thank you for your order to LatexPlaytime",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "LatexPlaytime <support@gammasupport.com>",
+        "subject": "Thank you for your order to LatexPlaytime",
+        "date": "2025-02-23T15:20:47.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-23-wolt-your-order-s-delivered-kfc-k-pavogi-23-0",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-02-23T13:37:53.000Z",
+      "title": "Your order’s delivered: KFC Kópavogi 23.02.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: KFC Kópavogi 23.02.2025",
+        "date": "2025-02-23T13:37:53.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-19-the-new-york-times-forgot-to-complete-your-order",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "The New York Times",
+      "date": "2025-02-19T16:14:30.000Z",
+      "title": "Forgot to complete your order?",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "The New York Times <nytimes@e.newyorktimes.com>",
+        "subject": "Forgot to complete your order?",
+        "date": "2025-02-19T16:14:30.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-18-wolt-your-order-s-delivered-krua-thai-b-jarli",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-02-18T12:01:58.000Z",
+      "title": "Your order’s delivered: Krua Thai - Bæjarlind 18.02.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Krua Thai - Bæjarlind 18.02.2025",
+        "date": "2025-02-18T12:01:58.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-16-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-02-16T22:52:24.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-02-16T22:52:24.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-11-wolt-tip-receipt",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-02-11T14:51:15.000Z",
+      "title": "Tip Receipt",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Tip Receipt",
+        "date": "2025-02-11T14:51:15.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-11-wolt-your-order-s-delivered-grill66-mini-ol-s",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Wolt",
+      "date": "2025-02-11T14:50:27.000Z",
+      "title": "Your order’s delivered: Grill66 mini & Olís - Garðabæ 11.02.2025",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Wolt <info@wolt.com>",
+        "subject": "Your order’s delivered: Grill66 mini & Olís - Garðabæ 11.02.2025",
+        "date": "2025-02-11T14:50:27.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-10-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-02-10T03:15:33.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-02-10T03:15:33.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-09-uber-receipts-your-sunday-evening-order-with-uber-eats",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-02-09T23:03:23.000Z",
+      "title": "Your Sunday evening order with Uber Eats",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Sunday evening order with Uber Eats",
+        "date": "2025-02-09T23:03:23.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-09-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-02-09T19:24:27.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-02-09T19:24:27.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-09-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-02-09T18:45:54.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-02-09T18:45:54.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-09-apple-your-receipt-from-apple",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Apple",
+      "date": "2025-02-09T18:44:46.000Z",
+      "title": "Your receipt from Apple.",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Apple <no_reply@email.apple.com>",
+        "subject": "Your receipt from Apple.",
+        "date": "2025-02-09T18:44:46.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-09-uber-receipts-your-sunday-afternoon-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-02-09T16:26:45.000Z",
+      "title": "Your Sunday afternoon trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Uber Receipts\" <noreply@uber.com>",
+        "subject": "Your Sunday afternoon trip with Uber",
+        "date": "2025-02-09T16:26:45.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-09-uber-receipts-your-sunday-afternoon-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-02-09T16:20:41.000Z",
+      "title": "Your Sunday afternoon trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Sunday afternoon trip with Uber",
+        "date": "2025-02-09T16:20:41.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-09-email-receipt-your-superdry-ereceipt-49165",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Email Receipt",
+      "date": "2025-02-09T15:43:17.000Z",
+      "title": "Your Superdry eReceipt #49165",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Email Receipt\" <Noreply-ereceipt@superdrystore.com>",
+        "subject": "Your Superdry eReceipt #49165",
+        "date": "2025-02-09T15:43:17.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-09-uber-receipts-your-saturday-evening-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-02-09T13:43:18.000Z",
+      "title": "Your Saturday evening trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Saturday evening trip with Uber",
+        "date": "2025-02-09T13:43:18.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-08-uber-receipts-your-saturday-evening-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-02-08T22:59:30.000Z",
+      "title": "Your Saturday evening trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Saturday evening trip with Uber",
+        "date": "2025-02-08T22:59:30.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-08-uber-receipts-your-saturday-evening-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-02-08T22:37:21.000Z",
+      "title": "Your Saturday evening trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Saturday evening trip with Uber",
+        "date": "2025-02-08T22:37:21.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-08-uber-receipts-your-saturday-evening-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-02-08T21:08:54.000Z",
+      "title": "Your Saturday evening trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Saturday evening trip with Uber",
+        "date": "2025-02-08T21:08:54.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-08-uber-receipts-your-saturday-evening-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-02-08T20:37:57.000Z",
+      "title": "Your Saturday evening trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Saturday evening trip with Uber",
+        "date": "2025-02-08T20:37:57.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-08-uber-receipts-your-saturday-evening-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-02-08T19:25:00.000Z",
+      "title": "Your Saturday evening trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Saturday evening trip with Uber",
+        "date": "2025-02-08T19:25:00.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-08-imou-easy4ipservice-com-order-confirmation",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Imou@easy4ipservice.com",
+      "date": "2025-02-08T13:02:04.000Z",
+      "title": "Order Confirmation",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Imou@easy4ipservice.com\" <Imou@easy4ipservice.com>",
+        "subject": "Order Confirmation",
+        "date": "2025-02-08T13:02:04.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-08-uber-receipts-your-saturday-afternoon-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-02-08T12:45:50.000Z",
+      "title": "Your Saturday afternoon trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Uber Receipts\" <noreply@uber.com>",
+        "subject": "Your Saturday afternoon trip with Uber",
+        "date": "2025-02-08T12:45:50.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-08-uber-receipts-your-saturday-morning-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-02-08T12:29:25.000Z",
+      "title": "Your Saturday morning trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "Uber Receipts <noreply@uber.com>",
+        "subject": "Your Saturday morning trip with Uber",
+        "date": "2025-02-08T12:29:25.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-08-uber-receipts-your-saturday-morning-trip-with-uber",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "Uber Receipts",
+      "date": "2025-02-08T02:14:27.000Z",
+      "title": "Your Saturday morning trip with Uber",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"Uber Receipts\" <noreply@uber.com>",
+        "subject": "Your Saturday morning trip with Uber",
+        "date": "2025-02-08T02:14:27.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    },
+    {
+      "id": "email-2025-02-07-wagamama-your-receipt",
+      "kind": "email_receipt",
+      "source": "gmail_dump",
+      "vendor": "wagamama",
+      "date": "2025-02-07T19:16:56.000Z",
+      "title": "your receipt",
+      "amountISK": null,
+      "category": "Email",
+      "raw": {
+        "from": "\"wagamama\" <noreply@wagamama.com>",
+        "subject": "your receipt",
+        "date": "2025-02-07T19:16:56.000Z",
+        "amountISK": null,
+        "preview": ""
+      }
+    }
+  ],
+  "denylist": {
+    "emailVendors": [
+      "motus",
+      "inkasso",
+      "innheimta",
+      "innheimt",
+      "kröfusafn",
+      "kro\u0000fusafn",
+      "kro\u0000fus\u0000f6fnun",
+      "kro\u0000f6fus\u0000f6fnun",
+      "grei\u0000f0sluse\u0000f0ill",
+      "l\u0000f6gfr\u0000e6\u0000f0istofa",
+      "collections",
+      "debt collection",
+      "collection agency",
+      "overdue",
+      "past due",
+      "final notice",
+      "payment reminder"
+    ]
+  }
 }
