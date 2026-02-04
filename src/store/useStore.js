@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const APP_VERSION = '5.4.5'
+const APP_VERSION = '5.5.0'
 
 // Project statuses for Projects Kanban
 // - ideas: Hugmyndir
