@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const APP_VERSION = '5.5.0'
+const APP_VERSION = '5.6.0'
 
 // Project statuses for Projects Kanban
 // - ideas: Hugmyndir
@@ -32,6 +32,72 @@ const ACCENT_COLORS = {
   green: '#22c55e',
   orange: '#f97316',
   pink: '#ec4899',
+}
+
+// --- Budget Saver helpers (streaks, dates) ---
+function toISODateLocal(d) {
+  const x = new Date(d)
+  const yyyy = x.getFullYear()
+  const mm = String(x.getMonth() + 1).padStart(2, '0')
+  const dd = String(x.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
+}
+
+function diffDaysLocal(fromISO, toDate) {
+  if (!fromISO) return null
+  const [y, m, d] = String(fromISO).split('-').map(Number)
+  if (!y || !m || !d) return null
+  const from = new Date(y, m - 1, d)
+  const to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate())
+  const ms = to.getTime() - from.getTime()
+  return Math.floor(ms / (24 * 60 * 60 * 1000))
+}
+
+function computeNextBudgetStreak(state, now = new Date()) {
+  // Duolingo-inspired: encourage consistency, but use shields to reduce anxiety.
+  const today = toISODateLocal(now)
+  const last = state.budgetStreakLastCheckIn
+
+  // init
+  if (!last) {
+    return {
+      budgetStreakDays: 1,
+      budgetStreakLastCheckIn: today,
+    }
+  }
+
+  if (last === today) return {}
+
+  const gap = diffDaysLocal(last, now)
+  if (gap === 1) {
+    const nextDays = (state.budgetStreakDays || 0) + 1
+    // earn a shield every 7-day streak, max 2 shields
+    const shields = state.budgetStreakShields ?? 2
+    const earnedShield = nextDays > 0 && nextDays % 7 === 0 && shields < 2
+    return {
+      budgetStreakDays: nextDays,
+      budgetStreakLastCheckIn: today,
+      budgetStreakShields: earnedShield ? Math.min(2, shields + 1) : shields,
+    }
+  }
+
+  // missed days
+  const shields = state.budgetStreakShields ?? 2
+  if (gap != null && gap > 1 && shields > 0) {
+    return {
+      budgetStreakLastCheckIn: today,
+      budgetStreakShields: shields - 1,
+      budgetStreakShieldsUsed: (state.budgetStreakShieldsUsed || 0) + 1,
+      budgetStreakLastShieldUsedAt: today,
+      // streak stays the same: we "forgive" the miss
+    }
+  }
+
+  // no shields left: gentle reset
+  return {
+    budgetStreakDays: 1,
+    budgetStreakLastCheckIn: today,
+  }
 }
 
 // Idea categories/tags
@@ -70,10 +136,56 @@ const useStore = create(
       budgetGoal: 300000,
       budgetWeeklyTarget: 10000,
       budgetSaved: 0,
+
+      // Savings history (for charts/insights)
+      budgetSavingsEvents: [],
+
+      // Goal milestones (single-goal for now)
+      budgetUnlockedMilestones: [],
+      unlockBudgetMilestone: (percent) => set((state) => {
+        const p = Number(percent)
+        if (!p) return {}
+        const existing = new Set(state.budgetUnlockedMilestones || [])
+        if (existing.has(p)) return {}
+        return { budgetUnlockedMilestones: [...existing, p].sort((a, b) => a - b) }
+      }),
+      resetBudgetMilestones: () => set({ budgetUnlockedMilestones: [] }),
+
+      // Smart streak (Duolingo-ish, but kind)
+      budgetStreakDays: 0,
+      budgetStreakShields: 2,
+      budgetStreakLastCheckIn: null, // YYYY-MM-DD
+      budgetStreakShieldsUsed: 0,
+      budgetStreakLastShieldUsedAt: null,
+      budgetStreakCheckIn: () => set((state) => ({ ...computeNextBudgetStreak(state, new Date()) })),
+      budgetStreakReset: () => set({ budgetStreakDays: 0, budgetStreakLastCheckIn: null }),
+      budgetStreakRefillShields: () => set({ budgetStreakShields: 2 }),
+
       setBudgetGoal: (n) => set({ budgetGoal: Number(n || 0) }),
       setBudgetWeeklyTarget: (n) => set({ budgetWeeklyTarget: Number(n || 0) }),
-      addBudgetSaved: (delta) => set((state) => ({ budgetSaved: (state.budgetSaved || 0) + Number(delta || 0) })),
+      // Savings are tracked as a total, but we also append events so we can build history/timelines.
+      addBudgetSaved: (delta, meta = {}) => set((state) => {
+        const amount = Number(delta || 0)
+        if (!amount) return {}
+        const event = {
+          id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          amount,
+          type: meta.type || 'manual', // manual | coach | challenge | transfer | milestone
+          note: meta.note || null,
+          createdAt: new Date().toISOString(),
+        }
+
+        // streak check-in (gentle, with shields)
+        const nextStreak = computeNextBudgetStreak(state, new Date())
+
+        return {
+          budgetSaved: (state.budgetSaved || 0) + amount,
+          budgetSavingsEvents: [...(state.budgetSavingsEvents || []), event],
+          ...nextStreak,
+        }
+      }),
       resetBudgetSaved: () => set({ budgetSaved: 0 }),
+      resetBudgetSavingsHistory: () => set({ budgetSavingsEvents: [], budgetSaved: 0, budgetUnlockedMilestones: [] }),
 
       // Budget data imports
       budgetReceipts: [],
@@ -105,6 +217,98 @@ const useStore = create(
         return { budgetReceipts: mergedReceipts, budgetTransactions: mergedTx, budgetEmailReceipts: mergedEmail }
       }),
       resetBudgetData: () => set({ budgetReceipts: [], budgetTransactions: [], budgetEmailReceipts: [] }),
+
+      // Budget Subscriptions (v5.5.2)
+      budgetSubscriptions: [],
+      addBudgetSubscription: (sub) => set((state) => ({
+        budgetSubscriptions: [...(state.budgetSubscriptions || []), sub]
+      })),
+      updateBudgetSubscription: (id, updates) => set((state) => ({
+        budgetSubscriptions: (state.budgetSubscriptions || []).map(s => 
+          s.id === id ? { ...s, ...updates } : s
+        )
+      })),
+      deleteBudgetSubscription: (id) => set((state) => ({
+        budgetSubscriptions: (state.budgetSubscriptions || []).filter(s => s.id !== id)
+      })),
+
+      // Budget Coach actions completed (v5.5.2)
+      budgetCoachCompleted: [],
+      completeBudgetCoachAction: (actionId, savings, meta = {}) => set((state) => {
+        const already = (state.budgetCoachCompleted || []).some(x => (
+          x.id === actionId && (meta.weekId ? x.weekId === meta.weekId : true)
+        ))
+        if (already) return {}
+
+        const amount = Number(savings || 0)
+        const nextStreak = computeNextBudgetStreak(state, new Date())
+
+        const event = amount ? {
+          id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          amount,
+          type: meta.type || 'coach',
+          note: meta.note || actionId,
+          createdAt: new Date().toISOString(),
+        } : null
+
+        return {
+          budgetCoachCompleted: [...(state.budgetCoachCompleted || []), {
+            id: actionId,
+            completedAt: new Date().toISOString(),
+            savings: amount,
+            weekId: meta.weekId || null,
+          }],
+          ...(amount ? {
+            budgetSaved: (state.budgetSaved || 0) + amount,
+            budgetSavingsEvents: [...(state.budgetSavingsEvents || []), event],
+          } : {}),
+          ...nextStreak,
+        }
+      }),
+      resetBudgetCoachWeekly: () => set({ budgetCoachCompleted: [] }),
+
+      // Micro Challenges (v5.5.2)
+      budgetChallengeProgress: {},
+      budgetCompletedChallenges: [],
+      updateChallengeProgress: (challengeId, progress) => set((state) => ({
+        budgetChallengeProgress: {
+          ...(state.budgetChallengeProgress || {}),
+          [challengeId]: progress
+        }
+      })),
+      completeChallenge: (challengeId, reward, meta = {}) => set((state) => {
+        if ((state.budgetCompletedChallenges || []).includes(challengeId)) return {}
+        const amount = Number(reward || 0)
+        const nextStreak = computeNextBudgetStreak(state, new Date())
+        const event = amount ? {
+          id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          amount,
+          type: meta.type || 'challenge',
+          note: meta.note || challengeId,
+          createdAt: new Date().toISOString(),
+        } : null
+
+        return {
+          budgetCompletedChallenges: [...(state.budgetCompletedChallenges || []), challengeId],
+          ...(amount ? {
+            budgetSaved: (state.budgetSaved || 0) + amount,
+            budgetSavingsEvents: [...(state.budgetSavingsEvents || []), event],
+          } : {}),
+          ...nextStreak,
+        }
+      }),
+      // Backwards compatible actions
+      incrementStreak: () => set((state) => ({ ...computeNextBudgetStreak(state, new Date()) })),
+      resetStreak: () => set({ budgetStreakDays: 0, budgetStreakLastCheckIn: null }),
+
+      // Transaction category overrides (v5.5.2)
+      budgetCategoryOverrides: {},
+      updateTransactionCategory: (txId, category) => set((state) => ({
+        budgetCategoryOverrides: {
+          ...(state.budgetCategoryOverrides || {}),
+          [txId]: category
+        }
+      })),
 
       // Projects
       projects: PROJECTS,

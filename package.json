@@ -1,6 +1,6 @@
 {
   "name": "arnarflow",
-  "version": "5.5.0",
+  "version": "5.6.0",
   "description": "Personal project management for Arnar",
   "main": "electron.js",
   "scripts": {
@@ -21,6 +21,7 @@
     "lucide-react": "^0.294.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "recharts": "^2.15.4",
     "zustand": "^4.4.0"
   },
   "devDependencies": {
@@ -69,7 +70,9 @@
       "icon": "public/icon.ico"
     },
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "category": "Utility"
     },
     "asar": true,

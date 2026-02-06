@@ -1,7 +1,19 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import useStore from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
-import { PiggyBank, Plus, Target, CheckCircle2 } from 'lucide-react'
+import { PiggyBank, Plus, CheckCircle2, ChevronDown, ChevronUp, Settings2 } from 'lucide-react'
+
+import Confetti from './Confetti'
+
+// Budget components
+import SavingsScore from './budget/SavingsScore'
+import SubscriptionManager from './budget/SubscriptionManager'
+import WeeklyCoach from './budget/WeeklyCoach'
+import TransactionsExplorer from './budget/TransactionsExplorer'
+import MicroChallenges from './budget/MicroChallenges'
+import SavingsTimelineChart from './budget/SavingsTimelineChart'
+import SpendingInsightsDashboard from './budget/SpendingInsightsDashboard'
+import GoalMilestones, { MILESTONES } from './budget/GoalMilestones'
 
 function clamp(n, a, b) {
   return Math.max(a, Math.min(b, n))
@@ -17,14 +29,51 @@ export default function BudgetSaver() {
     addBudgetSaved,
     setBudgetGoal,
     setBudgetWeeklyTarget,
+
+    // history + milestones
+    budgetSavingsEvents,
+    budgetUnlockedMilestones,
+    unlockBudgetMilestone,
+
+    // streak
+    budgetStreakDays,
+    budgetStreakShields,
+    budgetStreakLastShieldUsedAt,
+
+    // imports
     budgetReceipts,
     budgetTransactions,
     budgetEmailReceipts,
     importBudgetSync,
     resetBudgetData,
+
+    // subscriptions
+    budgetSubscriptions,
+    addBudgetSubscription,
+    updateBudgetSubscription,
+    deleteBudgetSubscription,
+
+    // coach
+    budgetCoachCompleted,
+    completeBudgetCoachAction,
+
+    // challenges
+    budgetChallengeProgress,
+    budgetCompletedChallenges,
+    updateChallengeProgress,
+    completeChallenge,
+
+    // tx category overrides
+    budgetCategoryOverrides,
+    updateTransactionCategory,
   } = useStore()
 
   const [addAmount, setAddAmount] = useState('')
+  const [showSettings, setShowSettings] = useState(false)
+  const [showImport, setShowImport] = useState(false)
+  const [activeTab, setActiveTab] = useState('coach') // coach, insights, challenges, transactions
+
+  const [confettiActive, setConfettiActive] = useState(false)
 
   const progress = useMemo(() => {
     if (!budgetGoal) return 0
@@ -34,10 +83,24 @@ export default function BudgetSaver() {
   const remaining = Math.max(0, (budgetGoal || 0) - (budgetSaved || 0))
   const weeksLeft = budgetWeeklyTarget > 0 ? Math.ceil(remaining / budgetWeeklyTarget) : null
 
-  const title = language === 'is' ? 'Budget Saver' : 'Budget Saver'
+  // Milestone unlock + celebration
+  useEffect(() => {
+    const unlocked = new Set(budgetUnlockedMilestones || [])
+    const newly = []
+    for (const m of MILESTONES) {
+      if (progress >= m && !unlocked.has(m)) newly.push(m)
+    }
+    if (newly.length === 0) return
+
+    // unlock all reached milestones; celebrate once (confetti)
+    newly.forEach((m) => unlockBudgetMilestone?.(m))
+    setConfettiActive(true)
+  }, [progress, budgetUnlockedMilestones, unlockBudgetMilestone])
+
+  const title = language === 'is' ? 'Sparnaður' : 'Budget Saver'
   const subtitle = language === 'is'
-    ? 'Einfalt sparnaðarborð: markmið, staða, og vikuleg áætlun.'
-    : 'Simple savings dashboard: goal, progress, and weekly plan.'
+    ? 'Sparnaðarþjálfari með áskorunum, innsýn og markmiðum.'
+    : 'Savings coach with challenges, insights, and goals.'
 
   const [importStatus, setImportStatus] = useState(null)
 
@@ -45,7 +108,6 @@ export default function BudgetSaver() {
     try {
       setImportStatus({ state: 'loading' })
 
-      // In Electron, prefer IPC to avoid file:// fetch issues
       let json = null
       if (typeof window !== 'undefined' && window.electronAPI?.readBudgetSyncFile) {
         json = await window.electronAPI.readBudgetSyncFile()
@@ -68,9 +130,35 @@ export default function BudgetSaver() {
     }
   }
 
+  // Calculate Wolt orders this week from receipts
+  const woltOrdersThisWeek = useMemo(() => {
+    const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
+    return (budgetReceipts || []).filter(r => {
+      const date = new Date(r.date || r.createdAt)
+      return date.getTime() > oneWeekAgo
+    }).length
+  }, [budgetReceipts])
+
+  // Calculate cancelable subscriptions amount
+  const subscriptionsCancelable = useMemo(() => {
+    return (budgetSubscriptions || [])
+      .filter(s => s.cancelCandidate)
+      .reduce((sum, s) => sum + (s.amount || 0), 0)
+  }, [budgetSubscriptions])
+
+  const tabs = [
+    { id: 'coach', label: language === 'is' ? 'Þjálfari' : 'Coach' },
+    { id: 'insights', label: language === 'is' ? 'Innsýn' : 'Insights' },
+    { id: 'challenges', label: language === 'is' ? 'Áskoranir' : 'Challenges' },
+    { id: 'transactions', label: language === 'is' ? 'Færslur' : 'Transactions' },
+  ]
+
   return (
     <div className="p-6">
-      <div className="max-w-5xl mx-auto">
+      <Confetti active={confettiActive} onComplete={() => setConfettiActive(false)} />
+
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold text-[var(--text-primary)] flex items-center gap-3">
@@ -81,166 +169,332 @@ export default function BudgetSaver() {
             </h1>
             <p className="text-sm text-[var(--text-secondary)] mt-2">{subtitle}</p>
           </div>
+          <button
+            onClick={() => setShowSettings(!showSettings)}
+            className={`p-2 rounded-lg transition-all ${
+              showSettings
+                ? 'bg-[var(--accent)]/20 text-[var(--accent)]'
+                : 'text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)]'
+            }`}
+          >
+            <Settings2 size={18} />
+          </button>
         </div>
 
-        {/* Goal card */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-          <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-4">
-            <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
-              <Target size={16} />
-              <span>{language === 'is' ? 'Markmið' : 'Goal'}</span>
+        {/* Main Grid - 3 columns on desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-6">
+          {/* Column 1 */}
+          <div className="lg:col-span-3 space-y-4">
+            <SavingsScore
+              budgetSaved={budgetSaved}
+              budgetGoal={budgetGoal}
+              budgetWeeklyTarget={budgetWeeklyTarget}
+              subscriptions={budgetSubscriptions || []}
+              transactions={budgetTransactions || []}
+              language={language}
+            />
+
+            {/* Quick Progress */}
+            <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-[var(--text-muted)]">
+                  {language === 'is' ? 'Framvinda' : 'Progress'}
+                </span>
+                <span className="font-mono text-[var(--text-primary)]">{progress.toFixed(1)}%</span>
+              </div>
+              <div className="mt-2 h-3 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all bg-[var(--accent)]"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-2 mt-3 text-center">
+                <div>
+                  <div className="text-lg font-bold text-[var(--accent)]">
+                    {(budgetSaved || 0).toLocaleString('is-IS')}
+                  </div>
+                  <div className="text-[10px] text-[var(--text-muted)]">
+                    {language === 'is' ? 'sparað' : 'saved'}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-[var(--text-primary)]">
+                    {remaining.toLocaleString('is-IS')}
+                  </div>
+                  <div className="text-[10px] text-[var(--text-muted)]">
+                    {language === 'is' ? 'eftir' : 'remaining'}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-[var(--text-primary)]">
+                    {weeksLeft ?? '—'}
+                  </div>
+                  <div className="text-[10px] text-[var(--text-muted)]">
+                    {language === 'is' ? 'vikur' : 'weeks'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick add */}
+              <div className="mt-4 flex gap-2">
+                <input
+                  value={addAmount}
+                  onChange={(e) => setAddAmount(e.target.value)}
+                  type="number"
+                  placeholder={language === 'is' ? 'Bæta við (kr)' : 'Add (ISK)'}
+                  className="flex-1 px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)] text-sm text-[var(--text-primary)]"
+                />
+                <button
+                  onClick={() => {
+                    const n = Number(addAmount || 0)
+                    if (!n) return
+                    addBudgetSaved(n, { type: 'manual' })
+                    setAddAmount('')
+                  }}
+                  className="px-3 py-2 rounded-lg bg-[var(--accent)] text-white hover:opacity-90 transition-all"
+                  title={language === 'is' ? 'Skrá sparnað' : 'Log savings'}
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+
+              {progress >= 100 && (
+                <div className="mt-3 p-2 rounded-lg bg-green-500/10 text-green-400 flex items-center gap-2 text-sm">
+                  <CheckCircle2 size={16} />
+                  <span>{language === 'is' ? 'Markmiði náð!' : 'Goal reached!'}</span>
+                </div>
+              )}
             </div>
-            <div className="mt-3">
-              <label className="text-xs text-[var(--text-muted)]">{language === 'is' ? 'Markmið (kr.)' : 'Goal (ISK)'}</label>
-              <input
-                value={budgetGoal}
-                onChange={(e) => setBudgetGoal(Number(e.target.value || 0))}
-                type="number"
-                className="mt-1 w-full px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)] text-[var(--text-primary)]"
-              />
-            </div>
-            <div className="mt-3">
-              <label className="text-xs text-[var(--text-muted)]">{language === 'is' ? 'Vikulegt markmið (kr.)' : 'Weekly target (ISK)'}</label>
-              <input
-                value={budgetWeeklyTarget}
-                onChange={(e) => setBudgetWeeklyTarget(Number(e.target.value || 0))}
-                type="number"
-                className="mt-1 w-full px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)] text-[var(--text-primary)]"
-              />
-            </div>
+
+            <GoalMilestones
+              progressPercent={progress}
+              unlocked={budgetUnlockedMilestones || []}
+              language={language}
+            />
+
+            <SubscriptionManager
+              subscriptions={budgetSubscriptions || []}
+              onAdd={addBudgetSubscription}
+              onUpdate={updateBudgetSubscription}
+              onDelete={deleteBudgetSubscription}
+              language={language}
+            />
           </div>
 
-          <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-4 md:col-span-2">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-[var(--text-muted)]">
-                {language === 'is' ? 'Staða' : 'Progress'}
-              </div>
-              <div className="text-xs text-[var(--text-muted)] font-mono">{progress.toFixed(1)}%</div>
+          {/* Column 2 */}
+          <div className="lg:col-span-9 space-y-4">
+            {/* Tab navigation */}
+            <div className="flex items-center gap-1 p-1 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border)]">
+              {tabs.map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    activeTab === tab.id
+                      ? 'bg-[var(--accent)] text-white'
+                      : 'text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
-            <div className="mt-3 h-2 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all"
-                style={{ width: `${progress}%`, backgroundColor: 'var(--accent)' }}
-              />
-            </div>
+            {/* Tab content */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {activeTab === 'coach' && (
+                <>
+                  <WeeklyCoach
+                    budgetWeeklyTarget={budgetWeeklyTarget}
+                    woltOrdersThisWeek={woltOrdersThisWeek}
+                    subscriptionsCancelable={subscriptionsCancelable}
+                    coachCompleted={budgetCoachCompleted || []}
+                    onComplete={(action) => {
+                      // Persist completion + record savings event.
+                      const type = action.id === 'weekly-transfer' ? 'transfer' : 'coach'
+                      completeBudgetCoachAction?.(action.id, action.savings, { type })
+                    }}
+                    language={language}
+                  />
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-              <div>
-                <div className="text-xs text-[var(--text-muted)]">{language === 'is' ? 'Sparað' : 'Saved'}</div>
-                <div className="text-lg font-semibold text-[var(--text-primary)]">{(budgetSaved || 0).toLocaleString('is-IS')} kr.</div>
-              </div>
-              <div>
-                <div className="text-xs text-[var(--text-muted)]">{language === 'is' ? 'Eftir' : 'Remaining'}</div>
-                <div className="text-lg font-semibold text-[var(--text-primary)]">{remaining.toLocaleString('is-IS')} kr.</div>
-              </div>
-              <div>
-                <div className="text-xs text-[var(--text-muted)]">{language === 'is' ? 'Vikur eftir (áætlun)' : 'Weeks left (est.)'}</div>
-                <div className="text-lg font-semibold text-[var(--text-primary)]">{weeksLeft ?? '—'}</div>
-              </div>
-              <div>
-                <div className="text-xs text-[var(--text-muted)]">{language === 'is' ? 'Vikulegt markmið' : 'Weekly target'}</div>
-                <div className="text-lg font-semibold text-[var(--text-primary)]">{(budgetWeeklyTarget || 0).toLocaleString('is-IS')} kr.</div>
-              </div>
-            </div>
+                  <SavingsTimelineChart
+                    events={budgetSavingsEvents || []}
+                    budgetGoal={budgetGoal}
+                    budgetSaved={budgetSaved}
+                    weeklyTarget={budgetWeeklyTarget}
+                    language={language}
+                  />
+                </>
+              )}
 
-            {/* Add saved */}
-            <div className="mt-5 flex flex-col md:flex-row gap-2">
-              <input
-                value={addAmount}
-                onChange={(e) => setAddAmount(e.target.value)}
-                type="number"
-                placeholder={language === 'is' ? 'Bæta við sparnaði (kr.)' : 'Add to savings (ISK)'}
-                className="flex-1 px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)] text-[var(--text-primary)]"
-              />
-              <button
-                onClick={() => {
-                  const n = Number(addAmount || 0)
-                  if (!n) return
-                  addBudgetSaved(n)
-                  setAddAmount('')
-                }}
-                className="px-4 py-2 rounded-lg bg-[var(--accent)] text-white hover:opacity-90 transition-all flex items-center justify-center gap-2"
-              >
-                <Plus size={16} />
-                {language === 'is' ? 'Bæta við' : 'Add'}
-              </button>
-            </div>
+              {activeTab === 'insights' && (
+                <>
+                  <SpendingInsightsDashboard
+                    transactions={budgetTransactions || []}
+                    receipts={budgetReceipts || []}
+                    onAddSubscriptionCandidate={addBudgetSubscription}
+                    language={language}
+                  />
+                  <MicroChallenges
+                    challengeProgress={budgetChallengeProgress || {}}
+                    completedChallenges={budgetCompletedChallenges || []}
+                    streakDays={budgetStreakDays || 0}
+                    streakShields={budgetStreakShields ?? 0}
+                    lastShieldUsedAt={budgetStreakLastShieldUsedAt}
+                    receipts={budgetReceipts || []}
+                    transactions={budgetTransactions || []}
+                    subscriptions={budgetSubscriptions || []}
+                    savingsEvents={budgetSavingsEvents || []}
+                    weeklyTarget={budgetWeeklyTarget}
+                    onUpdateProgress={updateChallengeProgress}
+                    onCompleteChallenge={(id, reward) => completeChallenge?.(id, reward, { type: 'challenge' })}
+                    language={language}
+                  />
+                </>
+              )}
 
-            {progress >= 100 && (
-              <div className="mt-4 p-3 rounded-lg bg-green-500/10 text-green-400 flex items-center gap-2">
-                <CheckCircle2 size={18} />
-                <span className="text-sm">{language === 'is' ? 'Markmiði náð!' : 'Goal reached!'}</span>
-              </div>
-            )}
+              {activeTab === 'challenges' && (
+                <div className="lg:col-span-2">
+                  <MicroChallenges
+                    challengeProgress={budgetChallengeProgress || {}}
+                    completedChallenges={budgetCompletedChallenges || []}
+                    streakDays={budgetStreakDays || 0}
+                    streakShields={budgetStreakShields ?? 0}
+                    lastShieldUsedAt={budgetStreakLastShieldUsedAt}
+                    receipts={budgetReceipts || []}
+                    transactions={budgetTransactions || []}
+                    subscriptions={budgetSubscriptions || []}
+                    savingsEvents={budgetSavingsEvents || []}
+                    weeklyTarget={budgetWeeklyTarget}
+                    onUpdateProgress={updateChallengeProgress}
+                    onCompleteChallenge={(id, reward) => completeChallenge?.(id, reward, { type: 'challenge' })}
+                    language={language}
+                  />
+                </div>
+              )}
+
+              {activeTab === 'transactions' && (
+                <div className="lg:col-span-2">
+                  <TransactionsExplorer
+                    transactions={budgetTransactions || []}
+                    receipts={budgetReceipts || []}
+                    categoryOverrides={budgetCategoryOverrides || {}}
+                    onUpdateCategory={updateTransactionCategory}
+                    language={language}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Import + Data */}
-        <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-4 mt-4">
-          <div className="flex items-center justify-between gap-2">
-            <div className="text-sm font-medium text-[var(--text-primary)]">
-              {language === 'is' ? 'Gagnainnlestur (Wolt + indó)' : 'Data import (Wolt + bank)'}
+        {/* Settings Panel */}
+        {showSettings && (
+          <div className="mt-4 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-4">
+            <div className="text-sm font-medium text-[var(--text-primary)] mb-3">
+              {language === 'is' ? 'Stillingar' : 'Settings'}
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs text-[var(--text-muted)]">
+                  {language === 'is' ? 'Sparnaðarmarkmið (kr)' : 'Savings goal (ISK)'}
+                </label>
+                <input
+                  value={budgetGoal}
+                  onChange={(e) => setBudgetGoal(Number(e.target.value || 0))}
+                  type="number"
+                  className="mt-1 w-full px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)] text-[var(--text-primary)]"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-[var(--text-muted)]">
+                  {language === 'is' ? 'Vikulegt markmið (kr)' : 'Weekly target (ISK)'}
+                </label>
+                <input
+                  value={budgetWeeklyTarget}
+                  onChange={(e) => setBudgetWeeklyTarget(Number(e.target.value || 0))}
+                  type="number"
+                  className="mt-1 w-full px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)] text-[var(--text-primary)]"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Data Import Section */}
+        <div className="mt-4 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl overflow-hidden">
+          <button
+            onClick={() => setShowImport(!showImport)}
+            className="w-full p-4 flex items-center justify-between text-left hover:bg-[var(--bg-tertiary)]/50 transition-all"
+          >
+            <span className="text-sm font-medium text-[var(--text-primary)]">
+              {language === 'is' ? 'Gagnainnlestur (Wolt + banki + email)' : 'Data import (Wolt + bank + email)'}
+            </span>
             <div className="flex items-center gap-2">
-              <button
-                onClick={importNow}
-                className="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-white hover:opacity-90 transition-all text-xs"
-              >
-                {language === 'is' ? 'Sækja & flytja inn' : 'Fetch & import'}
-              </button>
-              <button
-                onClick={resetBudgetData}
-                className="px-3 py-1.5 rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/20 transition-all text-xs"
-                title={language === 'is' ? 'Eyða importuðum gögnum (local)' : 'Clear imported local data'}
-              >
-                {language === 'is' ? 'Hreinsa' : 'Clear'}
-              </button>
+              <span className="text-xs text-[var(--text-muted)]">
+                {(budgetReceipts?.length || 0) + (budgetTransactions?.length || 0)} {language === 'is' ? 'færslur' : 'records'}
+              </span>
+              {showImport ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </div>
-          </div>
+          </button>
 
-          {importStatus?.state === 'loading' && (
-            <div className="mt-3 text-sm text-[var(--text-secondary)]">{language === 'is' ? 'Sæki...' : 'Fetching...'}</div>
-          )}
-          {importStatus?.state === 'done' && (
-            <div className="mt-3 text-sm text-green-400">
-              {language === 'is'
-                ? `Flutti inn: ${importStatus.receipts} Wolt kvittanir + ${importStatus.tx} bankafærslur + ${importStatus.email} email-kvittanir.`
-                : `Imported: ${importStatus.receipts} Wolt receipts + ${importStatus.tx} bank transactions + ${importStatus.email} email receipts.`}
-            </div>
-          )}
-          {importStatus?.state === 'error' && (
-            <div className="mt-3 text-sm text-red-400">{importStatus.message}</div>
-          )}
+          {showImport && (
+            <div className="p-4 pt-0 border-t border-[var(--border)]">
+              <div className="flex items-center gap-2 mt-3">
+                <button
+                  onClick={importNow}
+                  className="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-white hover:opacity-90 transition-all text-xs"
+                >
+                  {language === 'is' ? 'Sækja & flytja inn' : 'Fetch & import'}
+                </button>
+                <button
+                  onClick={resetBudgetData}
+                  className="px-3 py-1.5 rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/20 transition-all text-xs"
+                >
+                  {language === 'is' ? 'Hreinsa' : 'Clear'}
+                </button>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-            <div className="p-3 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)]">
-              <div className="text-xs text-[var(--text-muted)]">{language === 'is' ? 'Wolt kvittanir (importað)' : 'Wolt receipts (imported)'}</div>
-              <div className="text-lg font-semibold text-[var(--text-primary)]">{(budgetReceipts || []).length}</div>
-            </div>
-            <div className="p-3 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)]">
-              <div className="text-xs text-[var(--text-muted)]">{language === 'is' ? 'Bankafærslur (importað)' : 'Bank transactions (imported)'}</div>
-              <div className="text-lg font-semibold text-[var(--text-primary)]">{(budgetTransactions || []).length}</div>
-            </div>
-            <div className="p-3 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border)]">
-              <div className="text-xs text-[var(--text-muted)]">{language === 'is' ? 'Email kvittanir/reikningar (importað)' : 'Email receipts/invoices (imported)'}</div>
-              <div className="text-lg font-semibold text-[var(--text-primary)]">{(budgetEmailReceipts || []).length}</div>
-              <div className="text-[11px] text-[var(--text-muted)] mt-1">{language === 'is' ? 'Innheimta/Inkasso er falið.' : 'Debt collection is hidden.'}</div>
-            </div>
-          </div>
-        </div>
+              {importStatus?.state === 'loading' && (
+                <div className="mt-3 text-sm text-[var(--text-secondary)]">
+                  {language === 'is' ? 'Sæki...' : 'Fetching...'}
+                </div>
+              )}
+              {importStatus?.state === 'done' && (
+                <div className="mt-3 text-sm text-green-400">
+                  {language === 'is'
+                    ? `Flutti inn: ${importStatus.receipts} Wolt + ${importStatus.tx} banka + ${importStatus.email} email`
+                    : `Imported: ${importStatus.receipts} Wolt + ${importStatus.tx} bank + ${importStatus.email} email`}
+                </div>
+              )}
+              {importStatus?.state === 'error' && (
+                <div className="mt-3 text-sm text-red-400">{importStatus.message}</div>
+              )}
 
-        {/* Next actions */}
-        <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-4 mt-4">
-          <div className="text-sm font-medium text-[var(--text-primary)]">
-            {language === 'is' ? 'Næstu skref (hugmyndir)' : 'Next steps (ideas)'}
-          </div>
-          <ul className="mt-3 text-sm text-[var(--text-secondary)] list-disc pl-5 space-y-1">
-            <li>{language === 'is' ? 'Takmarka Wolt/pantanir og setja 2–3 “default” heimamáltíðir sem eru fljótlegar.' : 'Limit delivery and set 2–3 default home meals that are quick.'}</li>
-            <li>{language === 'is' ? 'Farðu yfir áskriftir 1× í mánuði og merktu “must keep” vs “nice to have”.' : 'Review subscriptions monthly and mark must-keep vs nice-to-have.'}</li>
-            <li>{language === 'is' ? 'Flytja 10.000 kr á “tölvusjóð” í byrjun hverrar viku (sjálfvirkt ef hægt).' : 'Move 10,000 ISK into the “computer fund” at the start of each week (automate if possible).'}
-            </li>
-          </ul>
+              <div className="grid grid-cols-3 gap-3 mt-4">
+                <div className="p-3 rounded-lg bg-[var(--bg-tertiary)] text-center">
+                  <div className="text-lg font-semibold text-[var(--text-primary)]">
+                    {(budgetReceipts || []).length}
+                  </div>
+                  <div className="text-[10px] text-[var(--text-muted)]">Wolt</div>
+                </div>
+                <div className="p-3 rounded-lg bg-[var(--bg-tertiary)] text-center">
+                  <div className="text-lg font-semibold text-[var(--text-primary)]">
+                    {(budgetTransactions || []).length}
+                  </div>
+                  <div className="text-[10px] text-[var(--text-muted)]">
+                    {language === 'is' ? 'Banki' : 'Bank'}
+                  </div>
+                </div>
+                <div className="p-3 rounded-lg bg-[var(--bg-tertiary)] text-center">
+                  <div className="text-lg font-semibold text-[var(--text-primary)]">
+                    {(budgetEmailReceipts || []).length}
+                  </div>
+                  <div className="text-[10px] text-[var(--text-muted)]">Email</div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
