@@ -32,6 +32,7 @@ function Sidebar({ onOpenCalendarSync }) {
     ideas,
     habits,
     habitLogs,
+    notes,
     setSettingsOpen,
     setRecurringOpen,
     setTimeTrackerOpen,
