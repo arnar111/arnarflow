@@ -42,7 +42,7 @@ function categorizeTransaction(tx, userOverrides = {}) {
   // Check user override first
   if (userOverrides[tx.id]) return userOverrides[tx.id]
   
-  const merchant = (tx.merchant || tx.description || '').toLowerCase()
+  const merchant = (tx.merchant || tx.title || tx.description || '').toLowerCase()
   
   for (const rule of CATEGORY_RULES) {
     if (rule.pattern.test(merchant)) {
@@ -72,12 +72,21 @@ export default function TransactionsExplorer({
   // Combine and categorize all transactions
   const allTransactions = useMemo(() => {
     const combined = [
-      ...transactions.map(t => ({ ...t, source: 'bank' })),
+      ...transactions.map(t => ({ 
+        ...t, 
+        source: 'bank',
+        // Map title to merchant for bank transactions
+        merchant: t.merchant || t.title || t.description || 'Unknown',
+        // Map amountISK to amount
+        amount: t.amount ?? t.amountISK ?? 0
+      })),
       ...receipts.map(r => ({ 
         ...r, 
         source: 'wolt',
-        merchant: r.restaurant || r.merchant || 'Wolt',
-        amount: r.total || r.amount || 0
+        // Map vendor/title to merchant for receipts
+        merchant: r.restaurant || r.merchant || r.vendor || r.title || 'Wolt',
+        // Map amountISK/total to amount
+        amount: r.total || r.amount || r.amountISK || 0
       }))
     ]
     
@@ -98,6 +107,7 @@ export default function TransactionsExplorer({
       const q = search.toLowerCase()
       result = result.filter(tx => 
         (tx.merchant || '').toLowerCase().includes(q) ||
+        (tx.title || '').toLowerCase().includes(q) ||
         (tx.description || '').toLowerCase().includes(q)
       )
     }
