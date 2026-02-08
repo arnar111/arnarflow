@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, Suspense } from 'react'
 import useStore from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
 import { PiggyBank, Plus, CheckCircle2, ChevronDown, ChevronUp, Settings2 } from 'lucide-react'
@@ -15,6 +15,8 @@ import SavingsTimelineChart from './budget/SavingsTimelineChart'
 import SpendingInsightsDashboard from './budget/SpendingInsightsDashboard'
 import GoalMilestones, { MILESTONES } from './budget/GoalMilestones'
 
+const SubscriptionsTab = React.lazy(() => import('./SubscriptionsView'))
+
 function clamp(n, a, b) {
   return Math.max(a, Math.min(b, n))
 }
@@ -22,51 +24,35 @@ function clamp(n, a, b) {
 export default function BudgetSaver() {
   const { language } = useTranslation()
 
-  const {
-    budgetGoal,
-    budgetWeeklyTarget,
-    budgetSaved,
-    addBudgetSaved,
-    setBudgetGoal,
-    setBudgetWeeklyTarget,
-
-    // history + milestones
-    budgetSavingsEvents,
-    budgetUnlockedMilestones,
-    unlockBudgetMilestone,
-
-    // streak
-    budgetStreakDays,
-    budgetStreakShields,
-    budgetStreakLastShieldUsedAt,
-
-    // imports
-    budgetReceipts,
-    budgetTransactions,
-    budgetEmailReceipts,
-    importBudgetSync,
-    resetBudgetData,
-
-    // subscriptions
-    budgetSubscriptions,
-    addBudgetSubscription,
-    updateBudgetSubscription,
-    deleteBudgetSubscription,
-
-    // coach
-    budgetCoachCompleted,
-    completeBudgetCoachAction,
-
-    // challenges
-    budgetChallengeProgress,
-    budgetCompletedChallenges,
-    updateChallengeProgress,
-    completeChallenge,
-
-    // tx category overrides
-    budgetCategoryOverrides,
-    updateTransactionCategory,
-  } = useStore()
+  const budgetGoal = useStore(state => state.budgetGoal)
+  const budgetWeeklyTarget = useStore(state => state.budgetWeeklyTarget)
+  const budgetSaved = useStore(state => state.budgetSaved)
+  const addBudgetSaved = useStore(state => state.addBudgetSaved)
+  const setBudgetGoal = useStore(state => state.setBudgetGoal)
+  const setBudgetWeeklyTarget = useStore(state => state.setBudgetWeeklyTarget)
+  const budgetSavingsEvents = useStore(state => state.budgetSavingsEvents)
+  const budgetUnlockedMilestones = useStore(state => state.budgetUnlockedMilestones)
+  const unlockBudgetMilestone = useStore(state => state.unlockBudgetMilestone)
+  const budgetStreakDays = useStore(state => state.budgetStreakDays)
+  const budgetStreakShields = useStore(state => state.budgetStreakShields)
+  const budgetStreakLastShieldUsedAt = useStore(state => state.budgetStreakLastShieldUsedAt)
+  const budgetReceipts = useStore(state => state.budgetReceipts)
+  const budgetTransactions = useStore(state => state.budgetTransactions)
+  const budgetEmailReceipts = useStore(state => state.budgetEmailReceipts)
+  const importBudgetSync = useStore(state => state.importBudgetSync)
+  const resetBudgetData = useStore(state => state.resetBudgetData)
+  const budgetSubscriptions = useStore(state => state.budgetSubscriptions)
+  const addBudgetSubscription = useStore(state => state.addBudgetSubscription)
+  const updateBudgetSubscription = useStore(state => state.updateBudgetSubscription)
+  const deleteBudgetSubscription = useStore(state => state.deleteBudgetSubscription)
+  const budgetCoachCompleted = useStore(state => state.budgetCoachCompleted)
+  const completeBudgetCoachAction = useStore(state => state.completeBudgetCoachAction)
+  const budgetChallengeProgress = useStore(state => state.budgetChallengeProgress)
+  const budgetCompletedChallenges = useStore(state => state.budgetCompletedChallenges)
+  const updateChallengeProgress = useStore(state => state.updateChallengeProgress)
+  const completeChallenge = useStore(state => state.completeChallenge)
+  const budgetCategoryOverrides = useStore(state => state.budgetCategoryOverrides)
+  const updateTransactionCategory = useStore(state => state.updateTransactionCategory)
 
   const [addAmount, setAddAmount] = useState('')
   const [showSettings, setShowSettings] = useState(false)
@@ -102,33 +88,8 @@ export default function BudgetSaver() {
     ? 'Sparnaðarþjálfari með áskorunum, innsýn og markmiðum.'
     : 'Savings coach with challenges, insights, and goals.'
 
-  const [importStatus, setImportStatus] = useState(null)
-
-  const importNow = async () => {
-    try {
-      setImportStatus({ state: 'loading' })
-
-      let json = null
-      if (typeof window !== 'undefined' && window.electronAPI?.readBudgetSyncFile) {
-        json = await window.electronAPI.readBudgetSyncFile()
-      } else {
-        const res = await fetch('/budget-sync.json?t=' + Date.now())
-        if (!res.ok) throw new Error('budget-sync.json fannst ekki')
-        json = await res.json()
-      }
-
-      importBudgetSync(json)
-      setImportStatus({
-        state: 'done',
-        receipts: json?.counts?.woltReceipts ?? (json?.receipts?.length || 0),
-        tx: json?.counts?.indo ?? (json?.transactions?.length || 0),
-        email: json?.counts?.emailReceipts ?? (json?.emailReceipts?.length || 0),
-      })
-      setTimeout(() => setImportStatus(null), 4000)
-    } catch (e) {
-      setImportStatus({ state: 'error', message: e?.message || 'Villa' })
-    }
-  }
+  const importNow = useStore(state => state.importNow)
+  const importStatus = useStore(state => state.budgetImportStatus)
 
   // Calculate Wolt orders this week from receipts
   const woltOrdersThisWeek = useMemo(() => {
@@ -149,15 +110,16 @@ export default function BudgetSaver() {
   const tabs = [
     { id: 'coach', label: language === 'is' ? 'Þjálfari' : 'Coach' },
     { id: 'insights', label: language === 'is' ? 'Innsýn' : 'Insights' },
+    { id: 'subscriptions', label: language === 'is' ? 'Áskriftir' : 'Subscriptions' },
     { id: 'challenges', label: language === 'is' ? 'Áskoranir' : 'Challenges' },
     { id: 'transactions', label: language === 'is' ? 'Færslur' : 'Transactions' },
   ]
 
   return (
-    <div className="p-6">
+    <div className="p-6 overflow-hidden">
       <Confetti active={confettiActive} onComplete={() => setConfettiActive(false)} />
 
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto relative z-0">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -195,7 +157,7 @@ export default function BudgetSaver() {
             />
 
             {/* Quick Progress */}
-            <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-4">
+            <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl p-4 overflow-hidden relative z-10">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[var(--text-muted)]">
                   {language === 'is' ? 'Framvinda' : 'Progress'}
@@ -353,6 +315,14 @@ export default function BudgetSaver() {
                 </>
               )}
 
+              {activeTab === 'subscriptions' && (
+                <div className="lg:col-span-2">
+                  <Suspense fallback={<div className="p-8 text-center text-[var(--text-muted)]">Hleð áskriftum...</div>}>
+                    <SubscriptionsTab />
+                  </Suspense>
+                </div>
+              )}
+
               {activeTab === 'challenges' && (
                 <div className="lg:col-span-2">
                   <MicroChallenges
@@ -463,8 +433,8 @@ export default function BudgetSaver() {
               {importStatus?.state === 'done' && (
                 <div className="mt-3 text-sm text-green-400">
                   {language === 'is'
-                    ? `Flutti inn: ${importStatus.receipts} Wolt + ${importStatus.tx} banka + ${importStatus.email} email`
-                    : `Imported: ${importStatus.receipts} Wolt + ${importStatus.tx} bank + ${importStatus.email} email`}
+                    ? `Flutti inn: ${importStatus.receipts} Wolt + ${importStatus.tx} banka + ${importStatus.email} email${importStatus.subs ? ` + ${importStatus.subs} áskriftir` : ''}`
+                    : `Imported: ${importStatus.receipts} Wolt + ${importStatus.tx} bank + ${importStatus.email} email${importStatus.subs ? ` + ${importStatus.subs} subscriptions` : ''}`}
                 </div>
               )}
               {importStatus?.state === 'error' && (

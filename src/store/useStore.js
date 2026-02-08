@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const APP_VERSION = '5.6.0'
+const APP_VERSION = '5.9.0'
 
 // Project statuses for Projects Kanban
 // - ideas: Hugmyndir
@@ -33,6 +33,9 @@ const ACCENT_COLORS = {
   orange: '#f97316',
   pink: '#ec4899',
 }
+
+// Undo timer for task deletion (not persisted)
+let lastDeletedTaskTimer = null
 
 // --- Budget Saver helpers (streaks, dates) ---
 function toISODateLocal(d) {
@@ -195,28 +198,137 @@ const useStore = create(
         const receipts = Array.isArray(payload?.receipts) ? payload.receipts : []
         const transactions = Array.isArray(payload?.transactions) ? payload.transactions : []
         const emailReceipts = Array.isArray(payload?.emailReceipts) ? payload.emailReceipts : []
+        const subscriptionsRaw = Array.isArray(payload?.subscriptions) ? payload.subscriptions : []
+
+        // Map subscriptions to include proper amount field for UI compatibility
+        const subscriptions = subscriptionsRaw.map(s => {
+          const amt = Number(s.amount || s.avgAmount || s.defaultAmount || 0)
+          return {
+            ...s,
+            amount: amt
+          }
+        })
 
         // de-dupe by id
-        const existingReceiptIds = new Set((state.budgetReceipts || []).map(r => r.id))
-        const existingTxIds = new Set((state.budgetTransactions || []).map(t => t.id))
+        const existingReceipts = state.budgetReceipts || []
+        const existingTx = state.budgetTransactions || []
+        const existingReceiptIds = new Set(existingReceipts.map(r => r.id))
+        const existingTxIds = new Set(existingTx.map(t => t.id))
         const existingEmailIds = new Set((state.budgetEmailReceipts || []).map(r => r.id))
+        
+        // Build fuzzy duplicate detector for Wolt + bank transactions
+        // Same purchase often appears as both Wolt receipt AND bank transaction
+        const txSignatures = new Set(existingTx.map(t => {
+          const date = t.date ? t.date.slice(0, 10) : ''
+          const merchant = (t.merchant || t.title || t.description || '').toLowerCase()
+          const amount = Math.abs(t.amount || 0)
+          return `${date}-${merchant}-${amount}`
+        }))
+        
+        // Use a set of names to prevent duplicates from the sync file itself or existing subs
+        const existingSubNames = new Set((state.subscriptions || []).map(s => s.name.toLowerCase()))
 
-        const mergedReceipts = [
-          ...(state.budgetReceipts || []),
-          ...receipts.filter(r => r && r.id && !existingReceiptIds.has(r.id))
-        ]
-        const mergedTx = [
-          ...(state.budgetTransactions || []),
-          ...transactions.filter(t => t && t.id && !existingTxIds.has(t.id))
-        ]
+        // Filter receipts - remove duplicates against existing receipts
+        const newReceipts = receipts.filter(r => r && r.id && !existingReceiptIds.has(r.id))
+        
+        // Filter transactions - remove duplicates against existing transactions
+        // AND remove Wolt duplicates (same date + amount ~ Wolt purchase)
+        const newTransactions = transactions.filter(t => {
+          if (!t || !t.id || existingTxIds.has(t.id)) return false
+          
+          // Check if this looks like a Wolt transaction we already have as receipt
+          const date = t.date ? t.date.slice(0, 10) : ''
+          const merchant = (t.merchant || t.title || t.description || '').toLowerCase()
+          const amount = Math.abs(t.amount || 0)
+          const signature = `${date}-${merchant}-${amount}`
+          
+          // Skip if exact match with existing transaction
+          if (txSignatures.has(signature)) return false
+          
+          // Check if it's a Wolt transaction (appears as receipt + bank tx)
+          const isWoltLike = merchant.includes('wolt') || merchant.includes('pyszne')
+          const hasMatchingReceipt = existingReceipts.some(r => {
+            const rDate = r.date ? r.date.slice(0, 10) : ''
+            const rAmount = Math.abs(r.total || 0)
+            return rDate === date && Math.abs(rAmount - amount) < 100 // Within 100kr
+          })
+          
+          if (isWoltLike && hasMatchingReceipt) {
+            console.log(`Skipping duplicate Wolt tx: ${t.description} (${amount} kr)`)
+            return false
+          }
+          
+          return true
+        })
+        
+        const mergedReceipts = [...existingReceipts, ...newReceipts]
+        const mergedTx = [...existingTx, ...newTransactions]
         const mergedEmail = [
           ...(state.budgetEmailReceipts || []),
           ...emailReceipts.filter(r => r && r.id && !existingEmailIds.has(r.id))
         ]
+        
+        // v5.8.8 - FORCE SYNC everything from the sync file subscriptions array
+        // If a sub name already exists, we skip it to avoid duplicates,
+        // BUT we must ensure the initial import gets ALL of them.
+        const newSubs = subscriptions
+          .filter(s => s && s.name && !existingSubNames.has(s.name.toLowerCase()))
+          .map(s => ({
+            ...s,
+            id: s.id || `sync-${Date.now()}-${Math.random()}`,
+            status: 'active',
+            billingCycle: s.frequency || 'monthly',
+            updatedAt: new Date().toISOString()
+          }))
 
-        return { budgetReceipts: mergedReceipts, budgetTransactions: mergedTx, budgetEmailReceipts: mergedEmail }
+        const mergedSubs = [
+          ...(state.subscriptions || []),
+          ...newSubs
+        ]
+
+        console.log(`IMPORT DEBUG: Imported ${newSubs.length} new subs. Total now: ${mergedSubs.length}`)
+
+        return { 
+          budgetReceipts: mergedReceipts, 
+          budgetTransactions: mergedTx, 
+          budgetEmailReceipts: mergedEmail,
+          subscriptions: mergedSubs,
+          budgetSubscriptions: mergedSubs
+        }
       }),
       resetBudgetData: () => set({ budgetReceipts: [], budgetTransactions: [], budgetEmailReceipts: [] }),
+
+      budgetImportStatus: null,
+      importNow: async () => {
+        try {
+          set({ budgetImportStatus: { state: 'loading' } })
+          
+          let json = null
+          if (typeof window !== 'undefined' && window.electronAPI?.readBudgetSyncFile) {
+            json = await window.electronAPI.readBudgetSyncFile()
+          } else {
+            const res = await fetch('/budget-sync.json?t=' + Date.now())
+            if (!res.ok) throw new Error('budget-sync.json fannst ekki')
+            json = await res.json()
+          }
+
+          if (json) {
+            get().importBudgetSync(json)
+            set({
+              budgetImportStatus: {
+                state: 'done',
+                receipts: json?.counts?.woltReceipts ?? (json?.receipts?.length || 0),
+                tx: json?.counts?.indo ?? (json?.transactions?.length || 0),
+                email: json?.counts?.emailReceipts ?? (json?.emailReceipts?.length || 0),
+                subs: json?.subscriptions?.length || 0,
+              }
+            })
+            setTimeout(() => set({ budgetImportStatus: null }), 4000)
+          }
+        } catch (e) {
+          set({ budgetImportStatus: { state: 'error', message: e?.message || 'Villa' } })
+        }
+      },
 
       // Budget Subscriptions (v5.5.2)
       budgetSubscriptions: [],
@@ -230,6 +342,63 @@ const useStore = create(
       })),
       deleteBudgetSubscription: (id) => set((state) => ({
         budgetSubscriptions: (state.budgetSubscriptions || []).filter(s => s.id !== id)
+      })),
+
+      // === SUBSCRIPTIONS TAB (v5.8.0) ===
+      subscriptions: [],
+      detectedSubscriptions: [],
+      dismissedDetections: [],
+      subscriptionViewMode: 'list',
+
+      addSubscription: (sub) => set((state) => ({
+        subscriptions: [...(state.subscriptions || []), {
+          ...sub,
+          id: sub.id || Date.now().toString(),
+          status: sub.status || 'active',
+          billingCycle: sub.billingCycle || 'monthly',
+          essential: sub.essential || false,
+          cancelCandidate: sub.cancelCandidate || false,
+          priceHistory: sub.priceHistory || [],
+          createdAt: sub.createdAt || new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }]
+      })),
+
+      updateSubscription: (id, updates) => set((state) => ({
+        subscriptions: (state.subscriptions || []).map(s =>
+          s.id === id ? { ...s, ...updates, updatedAt: new Date().toISOString() } : s
+        )
+      })),
+
+      deleteSubscription: (id) => set((state) => ({
+        subscriptions: (state.subscriptions || []).filter(s => s.id !== id)
+      })),
+
+      dismissDetection: (merchantKey) => set((state) => ({
+        dismissedDetections: [...(state.dismissedDetections || []), merchantKey]
+      })),
+
+      confirmDetection: (detection) => set((state) => ({
+        subscriptions: [...(state.subscriptions || []), {
+          id: Date.now().toString(),
+          name: detection.name,
+          amount: detection.amount,
+          category: detection.category,
+          status: 'active',
+          essential: false,
+          cancelCandidate: false,
+          billingCycle: 'monthly',
+          autoDetected: true,
+          confidence: detection.confidence,
+          merchantPattern: detection.merchantKey,
+          startDate: detection.firstSeen,
+          lastPaymentDate: detection.lastSeen,
+          lastPaymentAmount: detection.amount,
+          priceHistory: detection.priceHistory || [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }],
+        dismissedDetections: [...(state.dismissedDetections || []), detection.merchantKey]
       })),
 
       // Budget Coach actions completed (v5.5.2)
@@ -328,6 +497,7 @@ const useStore = create(
       
       // Tasks - enhanced with due dates and dependencies (v5.0.0)
       tasks: [],
+      lastDeletedTask: null,
       
       // Seed initial tasks from project analysis
       seedProjectTasks: () => {
@@ -394,12 +564,43 @@ const useStore = create(
           } : t
         )
       })),
-      deleteTask: (id) => set((state) => ({
-        tasks: state.tasks.filter(t => t.id !== id).map(t => ({
-          ...t,
-          blockedBy: (t.blockedBy || []).filter(bid => bid !== id)
-        }))
-      })),
+      // FIX 6: Undo for task deletion
+      deleteTask: (id) => set((state) => {
+        const taskToDelete = state.tasks.find(t => t.id === id) || null
+
+        // Clear previous undo timer
+        if (lastDeletedTaskTimer) {
+          clearTimeout(lastDeletedTaskTimer)
+          lastDeletedTaskTimer = null
+        }
+
+        // Auto-clear after 10s
+        lastDeletedTaskTimer = setTimeout(() => {
+          lastDeletedTaskTimer = null
+          set({ lastDeletedTask: null })
+        }, 10000)
+
+        return {
+          tasks: state.tasks.filter(t => t.id !== id).map(t => ({
+            ...t,
+            blockedBy: (t.blockedBy || []).filter(bid => bid !== id)
+          })),
+          lastDeletedTask: taskToDelete,
+        }
+      }),
+      undoDeleteTask: () => set((state) => {
+        if (!state.lastDeletedTask) return {}
+
+        if (lastDeletedTaskTimer) {
+          clearTimeout(lastDeletedTaskTimer)
+          lastDeletedTaskTimer = null
+        }
+
+        return {
+          tasks: [...state.tasks, state.lastDeletedTask],
+          lastDeletedTask: null,
+        }
+      }),
       updateTask: (id, updates) => set((state) => ({
         tasks: state.tasks.map(t => t.id === id ? { ...t, ...updates } : t)
       })),
@@ -715,11 +916,11 @@ const useStore = create(
       getTimeStats: () => {
         const state = get()
         const sessions = state.timeSessions
-        const today = new Date().toISOString().split('T')[0]
-        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        const today = toISODateLocal(new Date())
+        const weekAgo = toISODateLocal(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
         
-        const todaySessions = sessions.filter(s => new Date(s.startTime).toISOString().split('T')[0] === today)
-        const weekSessions = sessions.filter(s => new Date(s.startTime).toISOString().split('T')[0] >= weekAgo)
+        const todaySessions = sessions.filter(s => toISODateLocal(new Date(s.startTime)) === today)
+        const weekSessions = sessions.filter(s => toISODateLocal(new Date(s.startTime)) >= weekAgo)
         
         const totalSeconds = sessions.reduce((sum, s) => sum + s.duration, 0)
         const todaySeconds = todaySessions.reduce((sum, s) => sum + s.duration, 0)
@@ -755,9 +956,9 @@ const useStore = create(
         
         for (let i = 6; i >= 0; i--) {
           const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000)
-          const dateStr = date.toISOString().split('T')[0]
+          const dateStr = toISODateLocal(date)
           const daySessions = sessions.filter(s => 
-            new Date(s.startTime).toISOString().split('T')[0] === dateStr
+            toISODateLocal(new Date(s.startTime)) === dateStr
           )
           const totalSeconds = daySessions.reduce((sum, s) => sum + s.duration, 0)
           
@@ -1125,7 +1326,7 @@ const useStore = create(
       })),
       getPomodoroStats: () => {
         const sessions = get().pomodoroSessions
-        const today = new Date().toISOString().split('T')[0]
+        const today = toISODateLocal(new Date())
         const todaySessions = sessions.filter(s => s.completedAt?.startsWith(today))
         const totalMinutes = sessions.reduce((sum, s) => sum + (s.duration || 0), 0)
         const todayMinutes = todaySessions.reduce((sum, s) => sum + (s.duration || 0), 0)
@@ -1181,7 +1382,7 @@ const useStore = create(
         const toISODate = (d) => {
           const dd = new Date(d)
           dd.setHours(12, 0, 0, 0)
-          return dd.toISOString().split('T')[0]
+          return toISODateLocal(dd)
         }
 
         const tasks = Array.isArray(state.tasks) ? state.tasks : []
@@ -1305,7 +1506,7 @@ function calculateStreak(habitId, habitLogs) {
   for (let i = 0; i < 365; i++) {
     const checkDate = new Date(today)
     checkDate.setDate(checkDate.getDate() - i)
-    const dateStr = checkDate.toISOString().split('T')[0]
+    const dateStr = toISODateLocal(checkDate)
     
     if (habitLogs[`${habitId}-${dateStr}`]) {
       currentStreak++
@@ -1318,7 +1519,7 @@ function calculateStreak(habitId, habitLogs) {
   for (const dateStr of dates) {
     const prevDate = new Date(dateStr)
     prevDate.setDate(prevDate.getDate() - 1)
-    const prevDateStr = prevDate.toISOString().split('T')[0]
+    const prevDateStr = toISODateLocal(prevDate)
     
     if (habitLogs[`${habitId}-${prevDateStr}`]) {
       tempStreak++

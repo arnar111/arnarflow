@@ -54,19 +54,17 @@ function NotificationSystem({ onClose }) {
   const { language } = useTranslation()
   const locale = language === 'is' ? is : enUS
   
-  const {
-    notifications,
-    unreadNotificationCount,
-    notificationPreferences,
-    markNotificationRead,
-    markAllNotificationsRead,
-    deleteNotification,
-    clearAllNotifications,
-    setNotificationPreference,
-    isQuietHours,
-    setActiveView,
-    setSelectedProject
-  } = useStore()
+  const notifications = useStore(state => state.notifications)
+  const unreadNotificationCount = useStore(state => state.unreadNotificationCount)
+  const notificationPreferences = useStore(state => state.notificationPreferences)
+  const markNotificationRead = useStore(state => state.markNotificationRead)
+  const markAllNotificationsRead = useStore(state => state.markAllNotificationsRead)
+  const deleteNotification = useStore(state => state.deleteNotification)
+  const clearAllNotifications = useStore(state => state.clearAllNotifications)
+  const setNotificationPreference = useStore(state => state.setNotificationPreference)
+  const isQuietHours = useStore(state => state.isQuietHours)
+  const setActiveView = useStore(state => state.setActiveView)
+  const setSelectedProject = useStore(state => state.setSelectedProject)
   
   const [activeTab, setActiveTab] = useState('all') // 'all' | 'unread' | 'settings'
   const inQuietHours = isQuietHours()
@@ -349,7 +347,7 @@ function NotificationSystem({ onClose }) {
 
 // Notification Bell Button (for header)
 export function NotificationBell({ onClick }) {
-  const { unreadNotificationCount } = useStore()
+  const unreadNotificationCount = useStore(state => state.unreadNotificationCount)
   
   return (
     <button

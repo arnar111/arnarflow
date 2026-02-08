@@ -24,17 +24,15 @@ const PRESETS = {
 
 function PomodoroTimer({ onClose }) {
   const { t, language } = useTranslation()
-  const { 
-    focusProject, 
-    focusTask, 
-    projects, 
-    tasks,
-    pomodoroSettings,
-    setPomodoroSettings,
-    pomodoroStats,
-    addPomodoroSession,
-    endFocus
-  } = useStore()
+  const focusProject = useStore(state => state.focusProject)
+  const focusTask = useStore(state => state.focusTask)
+  const projects = useStore(state => state.projects)
+  const tasks = useStore(state => state.tasks)
+  const pomodoroSettings = useStore(state => state.pomodoroSettings)
+  const setPomodoroSettings = useStore(state => state.setPomodoroSettings)
+  const pomodoroStats = useStore(state => state.pomodoroStats)
+  const addPomodoroSession = useStore(state => state.addPomodoroSession)
+  const endFocus = useStore(state => state.endFocus)
 
   const [mode, setMode] = useState('work') // work, break, longBreak
   const [timeLeft, setTimeLeft] = useState(PRESETS.pomodoro.work * 60)

@@ -23,7 +23,8 @@ import {
 import { useTranslation } from '../i18n/useTranslation'
 
 function Timeline({ tasks, compact = false }) {
-  const { projects, toggleTask } = useStore()
+  const projects = useStore((s) => s.projects)
+  const toggleTask = useStore((s) => s.toggleTask)
   const { t } = useTranslation()
 
   // Group tasks by time period

@@ -5,7 +5,8 @@ export default function TitleBar() {
   const handleMinimize = () => window.electronAPI?.minimize()
   const handleMaximize = () => window.electronAPI?.maximize()
   const handleClose = () => window.electronAPI?.close()
-  const { setQuickAddOpen, setQuickIdeaMode } = useStore()
+  const setQuickAddOpen = useStore(state => state.setQuickAddOpen)
+  const setQuickIdeaMode = useStore(state => state.setQuickIdeaMode)
 
   const handleQuickAdd = () => { setQuickIdeaMode(false); setQuickAddOpen(true) }
   const handleQuickIdea = () => { setQuickIdeaMode(true); setQuickAddOpen(true) }

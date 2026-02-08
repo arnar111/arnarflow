@@ -23,14 +23,12 @@ const CAPTURE_TYPES = {
 
 function QuickCaptureBar({ isExpanded, onExpand, onCollapse }) {
   const { t, language } = useTranslation()
-  const { 
-    projects, 
-    tags,
-    addTask, 
-    addIdea,
-    setFocusProject,
-    setActiveView 
-  } = useStore()
+  const projects = useStore((s) => s.projects)
+  const tags = useStore((s) => s.tags)
+  const addTask = useStore((s) => s.addTask)
+  const addIdea = useStore((s) => s.addIdea)
+  const setFocusProject = useStore((s) => s.setFocusProject)
+  const setActiveView = useStore((s) => s.setActiveView)
 
   const [input, setInput] = useState('')
   const [captureType, setCaptureType] = useState('task')

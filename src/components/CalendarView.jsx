@@ -30,7 +30,11 @@ import {
 
 function CalendarView() {
   const { t, language } = useTranslation()
-  const { tasks, projects, toggleTask, setActiveView, setSelectedProject } = useStore()
+  const tasks = useStore(state => state.tasks)
+  const projects = useStore(state => state.projects)
+  const toggleTask = useStore(state => state.toggleTask)
+  const setActiveView = useStore(state => state.setActiveView)
+  const setSelectedProject = useStore(state => state.setSelectedProject)
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState(new Date())
 

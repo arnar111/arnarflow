@@ -13,7 +13,10 @@ export default function BlaerSync() {
   const [importedCount, setImportedCount] = useState(0)
   const [showPanel, setShowPanel] = useState(false)
   
-  const { addTask, tasks, projects, addIdea } = useStore()
+  const addTask = useStore(state => state.addTask)
+  const tasks = useStore(state => state.tasks)
+  const projects = useStore(state => state.projects)
+  const addIdea = useStore(state => state.addIdea)
 
   // Fetch sync data from file
   const fetchSyncData = async () => {

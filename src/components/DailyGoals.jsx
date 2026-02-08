@@ -75,14 +75,12 @@ function MiniProgressBar({ progress, color = '#3b82f6', height = 4 }) {
 
 function DailyGoals() {
   const { t, language } = useTranslation()
-  const { 
-    tasks, 
-    habits, 
-    habitLogs, 
-    dailyGoals,
-    setDailyGoals,
-    pomodoroSessions 
-  } = useStore()
+  const tasks = useStore(state => state.tasks)
+  const habits = useStore(state => state.habits)
+  const habitLogs = useStore(state => state.habitLogs)
+  const dailyGoals = useStore(state => state.dailyGoals)
+  const setDailyGoals = useStore(state => state.setDailyGoals)
+  const pomodoroSessions = useStore(state => state.pomodoroSessions)
 
   const today = format(new Date(), 'yyyy-MM-dd')
 

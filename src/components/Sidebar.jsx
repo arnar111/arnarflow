@@ -23,23 +23,21 @@ import {
 
 function Sidebar({ onOpenCalendarSync }) {
   const { t, language } = useTranslation()
-  const { 
-    activeView, 
-    setActiveView, 
-    selectedProject, 
-    setSelectedProject,
-    tasks,
-    ideas,
-    habits,
-    habitLogs,
-    notes,
-    setSettingsOpen,
-    setRecurringOpen,
-    setTimeTrackerOpen,
-    setNotificationsPanelOpen,
-    setKeyboardShortcutsOpen,
-    unreadNotificationCount,
-  } = useStore()
+  const activeView = useStore(state => state.activeView)
+  const setActiveView = useStore(state => state.setActiveView)
+  const selectedProject = useStore(state => state.selectedProject)
+  const setSelectedProject = useStore(state => state.setSelectedProject)
+  const tasks = useStore(state => state.tasks)
+  const ideas = useStore(state => state.ideas)
+  const habits = useStore(state => state.habits)
+  const habitLogs = useStore(state => state.habitLogs)
+  const notes = useStore(state => state.notes)
+  const setSettingsOpen = useStore(state => state.setSettingsOpen)
+  const setRecurringOpen = useStore(state => state.setRecurringOpen)
+  const setTimeTrackerOpen = useStore(state => state.setTimeTrackerOpen)
+  const setNotificationsPanelOpen = useStore(state => state.setNotificationsPanelOpen)
+  const setKeyboardShortcutsOpen = useStore(state => state.setKeyboardShortcutsOpen)
+  const unreadNotificationCount = useStore(state => state.unreadNotificationCount)
 
   const today = new Date().toISOString().split('T')[0]
   const inboxIdeas = ideas.filter(i => i.status === 'inbox').length

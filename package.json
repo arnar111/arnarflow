@@ -1,6 +1,6 @@
 {
   "name": "arnarflow",
-  "version": "5.6.0",
+  "version": "5.9.0",
   "description": "Personal project management for Arnar",
   "main": "electron.js",
   "scripts": {
@@ -46,6 +46,7 @@
       "dist/**/*",
       "electron.js",
       "preload.js",
+      "update-splash.html",
       "package.json"
     ],
     "extraMetadata": {
@@ -79,7 +80,10 @@
     "asarUnpack": [],
     "nsis": {
       "oneClick": true,
-      "perMachine": false
+      "perMachine": false,
+      "installerIcon": "public/icon.ico",
+      "uninstallerIcon": "public/icon.ico",
+      "include": "build/installer.nsh"
     },
     "publish": {
       "provider": "github",

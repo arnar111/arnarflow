@@ -34,28 +34,26 @@ import { checkTaskReminders, checkHabitReminders } from '../utils/notifications'
 
 function Dashboard() {
   const { t, language } = useTranslation()
-  const { 
-    projects, 
-    tasks, 
-    ideas, 
-    habits, 
-    habitLogs,
-    toggleTask,
-    focusProject,
-    setFocusProject,
-    setFocusTask,
-    endFocus,
-    focusElapsed,
-    focusTask,
-    setActiveView,
-    setSelectedProject,
-    setQuickAddOpen,
-    notificationsEnabled,
-    taskRemindersEnabled,
-    habitRemindersEnabled,
-    lastNotificationCheck,
-    setLastNotificationCheck
-  } = useStore()
+  const projects = useStore(state => state.projects)
+  const tasks = useStore(state => state.tasks)
+  const ideas = useStore(state => state.ideas)
+  const habits = useStore(state => state.habits)
+  const habitLogs = useStore(state => state.habitLogs)
+  const toggleTask = useStore(state => state.toggleTask)
+  const focusProject = useStore(state => state.focusProject)
+  const setFocusProject = useStore(state => state.setFocusProject)
+  const setFocusTask = useStore(state => state.setFocusTask)
+  const endFocus = useStore(state => state.endFocus)
+  const focusElapsed = useStore(state => state.focusElapsed)
+  const focusTask = useStore(state => state.focusTask)
+  const setActiveView = useStore(state => state.setActiveView)
+  const setSelectedProject = useStore(state => state.setSelectedProject)
+  const setQuickAddOpen = useStore(state => state.setQuickAddOpen)
+  const notificationsEnabled = useStore(state => state.notificationsEnabled)
+  const taskRemindersEnabled = useStore(state => state.taskRemindersEnabled)
+  const habitRemindersEnabled = useStore(state => state.habitRemindersEnabled)
+  const lastNotificationCheck = useStore(state => state.lastNotificationCheck)
+  const setLastNotificationCheck = useStore(state => state.setLastNotificationCheck)
 
   const [completedTaskId, setCompletedTaskId] = useState(null)
 

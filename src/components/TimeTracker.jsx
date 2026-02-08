@@ -27,19 +27,17 @@ function TimeTracker({ onClose }) {
   const { t, language } = useTranslation()
   const locale = language === 'is' ? is : enUS
   
-  const {
-    projects,
-    tasks,
-    activeTimeSession,
-    timeSessions,
-    startTimeTracking,
-    stopTimeTracking,
-    updateActiveSessionDescription,
-    toggleSessionBillable,
-    deleteTimeSession,
-    getTimeStats,
-    getWeeklyTimeReport
-  } = useStore()
+  const projects = useStore(state => state.projects)
+  const tasks = useStore(state => state.tasks)
+  const activeTimeSession = useStore(state => state.activeTimeSession)
+  const timeSessions = useStore(state => state.timeSessions)
+  const startTimeTracking = useStore(state => state.startTimeTracking)
+  const stopTimeTracking = useStore(state => state.stopTimeTracking)
+  const updateActiveSessionDescription = useStore(state => state.updateActiveSessionDescription)
+  const toggleSessionBillable = useStore(state => state.toggleSessionBillable)
+  const deleteTimeSession = useStore(state => state.deleteTimeSession)
+  const getTimeStats = useStore(state => state.getTimeStats)
+  const getWeeklyTimeReport = useStore(state => state.getWeeklyTimeReport)
   
   const [activeTab, setActiveTab] = useState('timer') // 'timer' | 'history' | 'reports'
   const [selectedProject, setSelectedProject] = useState(null)
@@ -562,13 +560,11 @@ function TimeTracker({ onClose }) {
 // Floating Time Tracker Widget (for header/sidebar)
 export function TimeTrackerWidget({ compact = false }) {
   const { language } = useTranslation()
-  const {
-    activeTimeSession,
-    stopTimeTracking,
-    setTimeTrackerOpen,
-    projects,
-    tasks
-  } = useStore()
+  const activeTimeSession = useStore(state => state.activeTimeSession)
+  const stopTimeTracking = useStore(state => state.stopTimeTracking)
+  const setTimeTrackerOpen = useStore(state => state.setTimeTrackerOpen)
+  const projects = useStore(state => state.projects)
+  const tasks = useStore(state => state.tasks)
   
   const [elapsed, setElapsed] = useState(0)
   

@@ -85,23 +85,21 @@ function HighlightedText({ text, matchIndices }) {
 
 function CommandPalette() {
   const { t, language } = useTranslation()
-  const { 
-    setCommandPaletteOpen, 
-    setActiveView, 
-    setSelectedProject,
-    setQuickAddOpen,
-    setSettingsOpen,
-    setKeyboardShortcutsOpen,
-    setAboutOpen,
-    setFocusProject,
-    setFocusTask,
-    projects,
-    tasks,
-    ideas,
-    toggleTask,
-    addIdea,
-    setQuickIdeaMode
-  } = useStore()
+  const setCommandPaletteOpen = useStore(state => state.setCommandPaletteOpen)
+  const setActiveView = useStore(state => state.setActiveView)
+  const setSelectedProject = useStore(state => state.setSelectedProject)
+  const setQuickAddOpen = useStore(state => state.setQuickAddOpen)
+  const setSettingsOpen = useStore(state => state.setSettingsOpen)
+  const setKeyboardShortcutsOpen = useStore(state => state.setKeyboardShortcutsOpen)
+  const setAboutOpen = useStore(state => state.setAboutOpen)
+  const setFocusProject = useStore(state => state.setFocusProject)
+  const setFocusTask = useStore(state => state.setFocusTask)
+  const projects = useStore(state => state.projects)
+  const tasks = useStore(state => state.tasks)
+  const ideas = useStore(state => state.ideas)
+  const toggleTask = useStore(state => state.toggleTask)
+  const addIdea = useStore(state => state.addIdea)
+  const setQuickIdeaMode = useStore(state => state.setQuickIdeaMode)
   
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)

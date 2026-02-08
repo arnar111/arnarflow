@@ -7,7 +7,8 @@ import {
   XCircle, 
   HelpCircle,
   TrendingDown,
-  Sparkles
+  Sparkles,
+  Bell
 } from 'lucide-react'
 
 const COMMON_SUBSCRIPTIONS = [
@@ -36,6 +37,8 @@ export default function SubscriptionManager({
 }) {
   const [showAdd, setShowAdd] = useState(false)
   const [newSub, setNewSub] = useState({ name: '', amount: '', category: 'Other' })
+  const [justDeleted, setJustDeleted] = useState(null) // { sub, timeoutId }
+  const [undoTimer, setUndoTimer] = useState(0)
 
   const stats = useMemo(() => {
     const total = subscriptions.reduce((sum, s) => sum + (s.amount || 0), 0)
@@ -43,6 +46,17 @@ export default function SubscriptionManager({
     const cancelable = subscriptions.filter(s => s.cancelCandidate).reduce((sum, s) => sum + (s.amount || 0), 0)
     const unreviewed = subscriptions.filter(s => !s.essential && !s.cancelCandidate).length
     return { total, essential, cancelable, unreviewed }
+  }, [subscriptions])
+
+  // Calculate upcoming renewals (subscriptions without nextPaymentDate or within 7 days)
+  const upcomingRenewals = useMemo(() => {
+    const now = new Date()
+    const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+    return subscriptions.filter(s => {
+      if (!s.nextPaymentDate) return true // No date set = assume soon
+      const nextDate = new Date(s.nextPaymentDate)
+      return nextDate <= oneWeekFromNow
+    }).slice(0, 3)
   }, [subscriptions])
 
   const handleAddSubscription = () => {
@@ -70,6 +84,42 @@ export default function SubscriptionManager({
       cancelCandidate: false,
       createdAt: new Date().toISOString()
     })
+  }
+
+  const handleDeleteWithUndo = (sub) => {
+    // Clear any existing undo
+    if (justDeleted?.timeoutId) clearTimeout(justDeleted.timeoutId)
+    
+    // Store the sub for potential undo
+    const timeoutId = setTimeout(() => {
+      setJustDeleted(null)
+      setUndoTimer(0)
+      // Actually delete after 5 seconds
+      onDelete?.(sub.id)
+    }, 5000)
+    
+    setJustDeleted({ sub, timeoutId })
+    setUndoTimer(5)
+    
+    // Countdown
+    const countdown = setInterval(() => {
+      setUndoTimer(t => {
+        if (t <= 1) { clearInterval(countdown); return 0 }
+        return t - 1
+      })
+    }, 1000)
+    
+    // Remove from list immediately (visual only)
+    onDelete?.(sub.id)
+  }
+
+  const handleUndo = () => {
+    if (justDeleted?.timeoutId) {
+      clearTimeout(justDeleted.timeoutId)
+      onAdd?.(justDeleted.sub) // Restore the sub
+      setJustDeleted(null)
+      setUndoTimer(0)
+    }
   }
 
   const existingNames = new Set(subscriptions.map(s => s.name.toLowerCase()))
@@ -119,6 +169,33 @@ export default function SubscriptionManager({
           </div>
         </div>
       </div>
+
+      {/* Upcoming renewals alert */}
+      {upcomingRenewals.length > 0 && (
+        <div className="mt-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+          <div className="flex items-center gap-2 text-xs text-amber-400 mb-2">
+            <Bell size={14} />
+            <span>
+              {language === 'is'
+                ? `${upcomingRenewals.length} áskrift endurnýjast innan 7 daga`
+                : `${upcomingRenewals.length} subscription${upcomingRenewals.length > 1 ? 's' : ''} renew${upcomingRenewals.length > 1 ? '' : 's'} within 7 days`}
+            </span>
+          </div>
+          <div className="space-y-1.5">
+            {upcomingRenewals.map(sub => (
+              <div key={sub.id} className="flex items-center justify-between text-xs">
+                <span className="text-[var(--text-primary)]">{sub.name}</span>
+                <span className="text-[var(--text-muted)]">
+                  {sub.nextPaymentDate
+                    ? new Date(sub.nextPaymentDate).toLocaleDateString('is-IS', { month: 'short', day: 'numeric' })
+                    : (language === 'is' ? 'Óþekkt' : 'Unknown')
+                  }
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* What-if slider */}
       {stats.cancelable > 0 && (
@@ -246,7 +323,7 @@ export default function SubscriptionManager({
                     <XCircle size={16} />
                   </button>
                   <button
-                    onClick={() => onDelete?.(sub.id)}
+                    onClick={() => handleDeleteWithUndo(sub)}
                     className="p-1.5 rounded text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10 transition-all"
                     title={language === 'is' ? 'Eyða' : 'Delete'}
                   >
@@ -267,6 +344,23 @@ export default function SubscriptionManager({
               ? `${stats.unreviewed} áskriftir óyfirfarnar — merktu sem nauðsynlegt eða til að hætta` 
               : `${stats.unreviewed} subscriptions unreviewed — mark as essential or cancel candidate`}
           </span>
+        </div>
+      )}
+
+      {/* Undo notification */}
+      {justDeleted && (
+        <div className="mt-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-between">
+          <span className="text-xs text-red-400">
+            {language === 'is'
+              ? `"${justDeleted.sub.name}" eytt`
+              : `"${justDeleted.sub.name}" deleted`}
+          </span>
+          <button
+            onClick={handleUndo}
+            className="text-xs font-medium text-[var(--accent)] hover:underline"
+          >
+            {language === 'is' ? 'Afturkalla' : 'Undo'} ({undoTimer}s)
+          </button>
         </div>
       )}
     </div>

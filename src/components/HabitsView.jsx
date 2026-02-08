@@ -191,7 +191,11 @@ function WeekCell({ day, habits, habitLogs, onToggle, isToday }) {
 
 function HabitsView() {
   const { t, language } = useTranslation()
-  const { habits, habitLogs, habitStreaks, toggleHabit, recalculateAllStreaks } = useStore()
+  const habits = useStore(state => state.habits)
+  const habitLogs = useStore(state => state.habitLogs)
+  const habitStreaks = useStore(state => state.habitStreaks)
+  const toggleHabit = useStore(state => state.toggleHabit)
+  const recalculateAllStreaks = useStore(state => state.recalculateAllStreaks)
   const [completedAnimation, setCompletedAnimation] = useState(null)
   const [viewMode, setViewMode] = useState('week')
   const [showConfetti, setShowConfetti] = useState(false)

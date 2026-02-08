@@ -33,16 +33,14 @@ const IDEA_TYPES = [
 
 function IdeasInbox() {
   const { t, language } = useTranslation()
-  const { 
-    ideas, 
-    addIdea, 
-    updateIdea, 
-    deleteIdea, 
-    projects,
-    addTagToIdea,
-    removeTagFromIdea,
-    ideaCategories
-  } = useStore()
+  const ideas = useStore(state => state.ideas)
+  const addIdea = useStore(state => state.addIdea)
+  const updateIdea = useStore(state => state.updateIdea)
+  const deleteIdea = useStore(state => state.deleteIdea)
+  const projects = useStore(state => state.projects)
+  const addTagToIdea = useStore(state => state.addTagToIdea)
+  const removeTagFromIdea = useStore(state => state.removeTagFromIdea)
+  const ideaCategories = useStore(state => state.ideaCategories)
   const [newIdea, setNewIdea] = useState('')
   const [ideaType, setIdeaType] = useState('app')
   const [selectedCategory, setSelectedCategory] = useState(null)

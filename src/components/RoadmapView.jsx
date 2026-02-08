@@ -41,16 +41,14 @@ function RoadmapView() {
   const { t, language } = useTranslation()
   const locale = language === 'is' ? is : enUS
   
-  const {
-    projects,
-    tasks,
-    roadmapZoom,
-    setRoadmapZoom,
-    updateTask,
-    setActiveView,
-    setSelectedProject,
-    isTaskBlocked
-  } = useStore()
+  const projects = useStore((s) => s.projects)
+  const tasks = useStore((s) => s.tasks)
+  const roadmapZoom = useStore((s) => s.roadmapZoom)
+  const setRoadmapZoom = useStore((s) => s.setRoadmapZoom)
+  const updateTask = useStore((s) => s.updateTask)
+  const setActiveView = useStore((s) => s.setActiveView)
+  const setSelectedProject = useStore((s) => s.setSelectedProject)
+  const isTaskBlocked = useStore((s) => s.isTaskBlocked)
   
   const containerRef = useRef(null)
   const [viewStart, setViewStart] = useState(() => {

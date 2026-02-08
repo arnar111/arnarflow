@@ -17,7 +17,9 @@ import DynamicIcon from './Icons'
 
 function FocusHistory() {
   const { language } = useTranslation()
-  const { pomodoroSessions, projects, tasks } = useStore()
+  const pomodoroSessions = useStore(state => state.pomodoroSessions)
+  const projects = useStore(state => state.projects)
+  const tasks = useStore(state => state.tasks)
   const [expandedDays, setExpandedDays] = useState(new Set([format(new Date(), 'yyyy-MM-dd')]))
 
   // Group sessions by day

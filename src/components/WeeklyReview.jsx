@@ -19,7 +19,10 @@ import { ProgressRing } from './DailyGoals'
 
 function WeeklyReview({ onClose }) {
   const { language } = useTranslation()
-  const { tasks, habits, habitLogs, pomodoroSessions } = useStore()
+  const tasks = useStore(state => state.tasks)
+  const habits = useStore(state => state.habits)
+  const habitLogs = useStore(state => state.habitLogs)
+  const pomodoroSessions = useStore(state => state.pomodoroSessions)
 
   // Calculate date ranges
   const today = new Date()

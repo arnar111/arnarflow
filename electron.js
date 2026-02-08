@@ -4,12 +4,63 @@ const path = require('path')
 const fs = require('fs')
 
 let mainWindow
+let updateSplash = null
 
 // Auto-updater config
 autoUpdater.autoDownload = true
 autoUpdater.autoInstallOnAppQuit = true
 autoUpdater.logger = require('electron-log')
 autoUpdater.logger.transports.file.level = 'info'
+
+// ============================================
+// Dark Mode Update Splash Window
+// ============================================
+function createUpdateSplash() {
+  if (updateSplash && !updateSplash.isDestroyed()) return updateSplash
+  
+  updateSplash = new BrowserWindow({
+    width: 400,
+    height: 320,
+    frame: false,
+    transparent: false,
+    resizable: false,
+    center: true,
+    alwaysOnTop: true,
+    skipTaskbar: false,
+    backgroundColor: '#0f0f1a',
+    icon: path.join(__dirname, 'public/icon.ico'),
+    title: 'ArnarFlow Update',
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    }
+  })
+
+  updateSplash.loadFile(path.join(__dirname, 'update-splash.html'))
+  
+  updateSplash.on('closed', () => {
+    updateSplash = null
+  })
+
+  return updateSplash
+}
+
+function sendSplashStatus(status, data = {}) {
+  if (updateSplash && !updateSplash.isDestroyed()) {
+    updateSplash.webContents.send('update-splash-status', { status, ...data })
+  }
+}
+
+// Update splash IPC handlers
+ipcMain.on('update-splash-close', () => {
+  if (updateSplash && !updateSplash.isDestroyed()) {
+    updateSplash.close()
+  }
+})
+
+ipcMain.on('update-splash-restart', () => {
+  autoUpdater.quitAndInstall()
+})
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -43,38 +94,40 @@ function sendUpdateStatus(status, data = {}) {
 // Auto-updater events
 autoUpdater.on('checking-for-update', () => {
   sendUpdateStatus('checking')
+  // Don't show splash for just checking — wait until we know there's an update
 })
 
 autoUpdater.on('update-available', (info) => {
   sendUpdateStatus('available', { version: info.version })
+  // Show dark mode splash window
+  createUpdateSplash()
+  // Small delay to ensure window is loaded
+  setTimeout(() => {
+    sendSplashStatus('available', { version: info.version })
+  }, 500)
 })
 
 autoUpdater.on('update-not-available', (info) => {
   sendUpdateStatus('up-to-date', { version: info.version })
+  // If splash was somehow open, update it
+  sendSplashStatus('up-to-date', { version: info.version })
 })
 
 autoUpdater.on('download-progress', (progress) => {
-  sendUpdateStatus('downloading', { percent: Math.round(progress.percent) })
+  const percent = Math.round(progress.percent)
+  sendUpdateStatus('downloading', { percent })
+  sendSplashStatus('downloading', { percent })
 })
 
 autoUpdater.on('update-downloaded', (info) => {
   sendUpdateStatus('ready', { version: info.version })
-  
-  dialog.showMessageBox(mainWindow, {
-    type: 'info',
-    title: 'Update Ready',
-    message: `Version ${info.version} has been downloaded.`,
-    detail: 'The update will be installed when you restart the app.',
-    buttons: ['Restart Now', 'Later']
-  }).then((result) => {
-    if (result.response === 0) {
-      autoUpdater.quitAndInstall()
-    }
-  })
+  sendSplashStatus('ready', { version: info.version })
+  // No more native dialog — the splash window handles restart/later
 })
 
 autoUpdater.on('error', (error) => {
   sendUpdateStatus('error', { message: error.message })
+  sendSplashStatus('error', { message: error.message })
 })
 
 // IPC handlers
@@ -90,8 +143,14 @@ ipcMain.on('window-close', () => mainWindow?.close())
 
 ipcMain.on('check-for-updates', () => {
   sendUpdateStatus('checking')
+  // Show splash immediately when user manually checks
+  createUpdateSplash()
+  setTimeout(() => {
+    sendSplashStatus('checking')
+  }, 300)
   autoUpdater.checkForUpdates().catch(err => {
     sendUpdateStatus('error', { message: err.message })
+    sendSplashStatus('error', { message: err.message })
   })
 })
 

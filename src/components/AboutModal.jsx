@@ -5,7 +5,8 @@ import { X, Zap, Github, Heart, RefreshCw } from 'lucide-react'
 
 function AboutModal() {
   const { t } = useTranslation()
-  const { setAboutOpen, setWhatsNewOpen } = useStore()
+  const setAboutOpen = useStore(state => state.setAboutOpen)
+  const setWhatsNewOpen = useStore(state => state.setWhatsNewOpen)
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {

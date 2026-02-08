@@ -87,16 +87,14 @@ function ProjectMenu({ project, onOpen, onQuickTask, onDelete, onRename, onEditA
 
 export default function ProjectsBoard() {
   const { t, language } = useTranslation()
-  const {
-    projects,
-    tasks,
-    setActiveView,
-    setSelectedProject,
-    setAddProjectOpen,
-    setQuickAddOpen,
-    setQuickIdeaMode,
-    deleteProject,
-  } = useStore()
+  const projects = useStore((s) => s.projects)
+  const tasks = useStore((s) => s.tasks)
+  const setActiveView = useStore((s) => s.setActiveView)
+  const setSelectedProject = useStore((s) => s.setSelectedProject)
+  const setAddProjectOpen = useStore((s) => s.setAddProjectOpen)
+  const setQuickAddOpen = useStore((s) => s.setQuickAddOpen)
+  const setQuickIdeaMode = useStore((s) => s.setQuickIdeaMode)
+  const deleteProject = useStore((s) => s.deleteProject)
 
   const statsByProject = useMemo(() => {
     const map = new Map()
