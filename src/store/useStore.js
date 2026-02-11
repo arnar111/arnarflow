@@ -1654,6 +1654,12 @@ const useStore = create(
           totalHours: Math.round(totalMinutes / 60 * 10) / 10,
         }
       },
+
+      // v6.0.0 - Projects board ordering (dnd-kit)
+      // Allows ProjectsBoard to persist the ordering from drag & drop.
+      setProjectsOrder: (nextProjects) => set((state) => ({
+        projects: Array.isArray(nextProjects) ? nextProjects : state.projects,
+      })),
     }),
     {
       name: 'arnarflow-storage',

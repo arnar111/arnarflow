@@ -111,13 +111,57 @@ function QuickCaptureBar({ isExpanded, onExpand, onCollapse }) {
     e.preventDefault()
     if (!input.trim()) return
 
-    const parsed = parseInput(input)
+    let text = input.trim()
+    let effectiveType = captureType
+    let extraTags = []
+    let forcedProjectId = null
 
-    if (captureType === 'idea') {
+    // Universal capture:
+    // !text -> task
+    if (text.startsWith('!')) {
+      effectiveType = 'task'
+      text = text.slice(1).trim()
+    }
+
+    // #tag text -> tagged idea (unless it matches a project shortcut)
+    if (text.startsWith('#')) {
+      const m = text.match(/^#(\w+)(?:\s+(.+))?$/)
+      if (m) {
+        const token = (m[1] || '').toLowerCase()
+        const remainder = (m[2] || '').trim()
+
+        const project = projects.find((p) => {
+          const name = String(p.name || '').toLowerCase()
+          const id = String(p.id || '').toLowerCase()
+          return id === token || name.startsWith(token)
+        })
+
+        if (project) {
+          // Treat as project shortcut (existing behavior)
+          forcedProjectId = project.id
+          text = remainder || project.name
+        } else {
+          // Treat as tag shortcut
+          effectiveType = 'idea'
+          extraTags = [token]
+          text = remainder || token
+        }
+      }
+    }
+
+    const parsedRaw = parseInput(text)
+    const parsed = {
+      ...parsedRaw,
+      projectId: forcedProjectId || parsedRaw.projectId,
+    }
+
+    const finalTags = [...new Set([...(parsed.tags || []), ...extraTags])]
+
+    if (effectiveType === 'idea') {
       addIdea({
         title: parsed.title,
         projectId: parsed.projectId,
-        tags: parsed.tags,
+        tags: finalTags,
       })
     } else {
       addTask({
@@ -125,7 +169,7 @@ function QuickCaptureBar({ isExpanded, onExpand, onCollapse }) {
         projectId: parsed.projectId || projects[0]?.id,
         priority: parsed.priority,
         dueDate: parsed.dueDate,
-        tags: parsed.tags,
+        tags: finalTags,
       })
     }
 
