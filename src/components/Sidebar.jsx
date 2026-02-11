@@ -19,6 +19,7 @@ import {
   Keyboard,
   FolderKanban,
   PiggyBank,
+  ChefHat,
 } from 'lucide-react'
 
 function Sidebar({ onOpenCalendarSync }) {
@@ -52,6 +53,7 @@ function Sidebar({ onOpenCalendarSync }) {
     { id: 'habits', icon: Target, label: t('nav.habits'), count: habits.length > 0 ? `${habitsDoneToday}/${habits.length}` : null, countColor: habitsDoneToday === habits.length ? 'green' : 'purple' },
     { id: 'focus', icon: Clock, label: language === 'is' ? 'Einbeiting' : 'Focus' },
     { id: 'stats', icon: BarChart3, label: language === 'is' ? 'Tölfræði' : 'Stats' },
+    { id: 'recipes', icon: ChefHat, label: language === 'is' ? 'Uppskriftir' : 'Recipes', badge: 'new' },
     { id: 'budget', icon: PiggyBank, label: language === 'is' ? 'Sparnaður' : 'Budget Saver', badge: 'new' },
   ]
 

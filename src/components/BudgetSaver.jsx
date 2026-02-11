@@ -297,21 +297,7 @@ export default function BudgetSaver() {
                     onAddSubscriptionCandidate={addBudgetSubscription}
                     language={language}
                   />
-                  <MicroChallenges
-                    challengeProgress={budgetChallengeProgress || {}}
-                    completedChallenges={budgetCompletedChallenges || []}
-                    streakDays={budgetStreakDays || 0}
-                    streakShields={budgetStreakShields ?? 0}
-                    lastShieldUsedAt={budgetStreakLastShieldUsedAt}
-                    receipts={budgetReceipts || []}
-                    transactions={budgetTransactions || []}
-                    subscriptions={budgetSubscriptions || []}
-                    savingsEvents={budgetSavingsEvents || []}
-                    weeklyTarget={budgetWeeklyTarget}
-                    onUpdateProgress={updateChallengeProgress}
-                    onCompleteChallenge={(id, reward) => completeChallenge?.(id, reward, { type: 'challenge' })}
-                    language={language}
-                  />
+
                 </>
               )}
 

@@ -316,6 +316,26 @@ ipcMain.handle('read-budget-sync-file', async () => {
   }
 })
 
+// Rainmeter Widget Export
+const WIDGET_EXPORT_PATH = path.join(
+  app.getPath('documents'),
+  'Rainmeter', 'Skins', 'ArnarFlow', 'data', 'arnarflow-widget.json'
+)
+
+ipcMain.handle('export-widget-data', async (event, jsonString) => {
+  try {
+    const dir = path.dirname(WIDGET_EXPORT_PATH)
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
+    fs.writeFileSync(WIDGET_EXPORT_PATH, jsonString, 'utf8')
+    return { success: true }
+  } catch (error) {
+    console.error('Widget export failed:', error)
+    return { success: false, error: error.message }
+  }
+})
+
 app.whenReady().then(createWindow)
 
 app.on('window-all-closed', () => {

@@ -31,6 +31,7 @@ const StatsView = React.lazy(() => import('./components/StatsView'))
 const CalendarView = React.lazy(() => import('./components/CalendarView'))
 const RoadmapView = React.lazy(() => import('./components/RoadmapView'))
 const HabitsView = React.lazy(() => import('./components/HabitsView'))
+const RecipeBank = React.lazy(() => import('./components/RecipeBank'))
 const NotesView = React.lazy(() => import('./components/NotesView'))
 const FocusHistory = React.lazy(() => import('./components/FocusHistory'))
 const WeeklyReview = React.lazy(() => import('./components/WeeklyReview'))
@@ -289,6 +290,8 @@ function App() {
         return <RoadmapView />
       case 'budget':
         return <BudgetSaver />
+      case 'recipes':
+        return <RecipeBank />
       default:
         return <Dashboard />
     }

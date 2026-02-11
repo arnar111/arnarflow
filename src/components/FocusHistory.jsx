@@ -10,7 +10,9 @@ import {
   ChevronRight,
   Play,
   Coffee,
-  Target
+  Target,
+  AlertOctagon,
+  Infinity
 } from 'lucide-react'
 import { format, parseISO, isToday, isYesterday, startOfDay, subDays } from 'date-fns'
 import DynamicIcon from './Icons'
@@ -243,46 +245,65 @@ function FocusHistory() {
                   {day.sessions.map(session => {
                     const project = getProject(session.projectId)
                     const task = getTask(session.taskId)
+                    const isFlow = session.type === 'flow'
+                    const distractions = session.distractions || []
 
                     return (
                       <div 
                         key={session.id}
-                        className="flex items-center gap-3 p-3 bg-dark-800/50 rounded-xl"
+                        className="p-3 bg-dark-800/50 rounded-xl hover:bg-dark-800 transition-colors"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                          <Play size={14} className="text-accent" />
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-lg ${isFlow ? 'bg-purple-500/20' : 'bg-accent/20'} flex items-center justify-center flex-shrink-0`}>
+                            {isFlow ? <Infinity size={14} className="text-purple-400" /> : <Play size={14} className="text-accent" />}
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            {project ? (
+                              <div className="flex items-center gap-2">
+                                <DynamicIcon 
+                                  name={project.icon} 
+                                  size={12} 
+                                  style={{ color: project.color }} 
+                                />
+                                <span className="text-sm truncate">{project.name}</span>
+                              </div>
+                            ) : (
+                              <span className="text-sm text-zinc-400">
+                                {isFlow 
+                                  ? (language === 'is' ? 'Flæðislota' : 'Flow session') 
+                                  : (language === 'is' ? 'Einbeitingarlota' : 'Focus session')}
+                              </span>
+                            )}
+                            {task && (
+                              <p className="text-2xs text-zinc-600 truncate mt-0.5">
+                                {task.title}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="text-right flex-shrink-0">
+                            <p className="text-sm font-mono font-medium">
+                              {session.duration}m
+                            </p>
+                            <p className="text-2xs text-zinc-600">
+                              {formatTime(session.completedAt)}
+                            </p>
+                          </div>
                         </div>
                         
-                        <div className="flex-1 min-w-0">
-                          {project ? (
-                            <div className="flex items-center gap-2">
-                              <DynamicIcon 
-                                name={project.icon} 
-                                size={12} 
-                                style={{ color: project.color }} 
-                              />
-                              <span className="text-sm truncate">{project.name}</span>
-                            </div>
-                          ) : (
-                            <span className="text-sm text-zinc-400">
-                              {language === 'is' ? 'Einbeitingarlota' : 'Focus session'}
-                            </span>
-                          )}
-                          {task && (
-                            <p className="text-2xs text-zinc-600 truncate mt-0.5">
-                              {task.title}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="text-right flex-shrink-0">
-                          <p className="text-sm font-mono font-medium">
-                            {session.duration}m
-                          </p>
-                          <p className="text-2xs text-zinc-600">
-                            {formatTime(session.completedAt)}
-                          </p>
-                        </div>
+                        {/* Distractions - if any */}
+                        {distractions.length > 0 && (
+                          <div className="mt-2 ml-11 flex flex-wrap gap-2">
+                            {distractions.map((d, i) => (
+                              <div key={i} className="text-2xs text-amber-500/80 bg-amber-500/10 px-2 py-1 rounded-md flex items-center gap-1.5 border border-amber-500/10">
+                                <AlertOctagon size={10} />
+                                <span>{d.note || (language === 'is' ? 'Truflun' : 'Distraction')}</span>
+                                <span className="text-amber-500/40">• {formatTime(d.timestamp)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )
                   })}
