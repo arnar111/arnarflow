@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const APP_VERSION = '5.9.0'
+const APP_VERSION = '6.0.0-alpha.1'
 
 // Project statuses for Projects Kanban
 // - ideas: Hugmyndir
@@ -18,10 +18,10 @@ const PROJECTS = [
 ]
 
 const HABITS = [
-  { id: 'exercise', name: 'Exercise', nameIs: 'Hreyfing', icon: 'Dumbbell', target: 'Move for 15 min (gentle on back)', targetIs: 'Hreyfa sig í 15 mín (varlega á bakið)' },
-  { id: 'clean', name: 'Clean', nameIs: 'Þrifa', icon: 'Sparkles', target: 'Tidy one area', targetIs: 'Þrífa eitt svæði' },
-  { id: 'cook', name: 'Cook', nameIs: 'Elda', icon: 'ChefHat', target: 'Make a healthy meal', targetIs: 'Elda hollt mat' },
-  { id: 'cocopuffs', name: 'Coco Puffs', nameIs: 'Coco Puffs', icon: 'Cat', target: 'Quality time with kitty', targetIs: 'Gæðatími með kettinum' },
+  { id: 'exercise', name: 'Exercise', nameIs: 'Hreyfing', icon: 'Dumbbell', target: 'Move for 15 min (gentle on back)', targetIs: 'Hreyfa sig í 15 mín (varlega á bakið)', type: 'binary' },
+  { id: 'clean', name: 'Clean', nameIs: 'Þrifa', icon: 'Sparkles', target: 'Tidy one area', targetIs: 'Þrífa eitt svæði', type: 'binary' },
+  { id: 'cook', name: 'Cook', nameIs: 'Elda', icon: 'ChefHat', target: 'Make a healthy meal', targetIs: 'Elda hollt mat', type: 'binary' },
+  { id: 'cocopuffs', name: 'Coco Puffs', nameIs: 'Coco Puffs', icon: 'Cat', target: 'Quality time with kitty', targetIs: 'Gæðatími með kettinum', type: 'binary' },
 ]
 
 const ACCENT_COLORS = {
@@ -33,6 +33,185 @@ const ACCENT_COLORS = {
   orange: '#f97316',
   pink: '#ec4899',
 }
+
+// --- Recipes (v5.10.0) ---
+const RECIPE_CATEGORIES = ['Aðalréttur', 'Meðlæti', 'Súpa', 'Bakkelsi', 'Sósa', 'Annað']
+
+function recipeId() {
+  // Prefer crypto.randomUUID() (Electron/Chromium), fallback to timestamp-based id
+  if (typeof crypto !== 'undefined' && crypto?.randomUUID) return crypto.randomUUID()
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`
+}
+
+function normalizeRecipeShape(input, opts = {}) {
+  const r = input || {}
+  const nowISO = new Date().toISOString()
+  const id = String(r.id || '').trim()
+
+  return {
+    id: id || (opts.generateId === false ? '' : recipeId()),
+    name: String(r.name || 'Ný uppskrift').trim(),
+    description: String(r.description || '').trim(),
+    image: String(r.image || '').trim(),
+    servings: Number.isFinite(Number(r.servings)) ? Number(r.servings) : 2,
+    prepTime: Number.isFinite(Number(r.prepTime)) ? Number(r.prepTime) : 10,
+    cookTime: Number.isFinite(Number(r.cookTime)) ? Number(r.cookTime) : 10,
+    category: RECIPE_CATEGORIES.includes(r.category) ? r.category : 'Aðalréttur',
+    ingredients: Array.isArray(r.ingredients) ? r.ingredients : [],
+    instructions: Array.isArray(r.instructions) ? r.instructions : [],
+    tags: Array.isArray(r.tags) ? r.tags : [],
+    favorite: typeof r.favorite === 'boolean' ? r.favorite : false,
+    nutrition: {
+      pros: Array.isArray(r.nutrition?.pros) ? r.nutrition.pros.slice(0, 3) : [],
+      cons: Array.isArray(r.nutrition?.cons) ? r.nutrition.cons.slice(0, 3) : [],
+    },
+    createdAt: String(r.createdAt || opts.createdAtFallback || nowISO),
+  }
+}
+
+const SEED_RECIPES = [
+  {
+    id: recipeId(),
+    name: 'Rjómalöguð Mutti tómata-pasta (mascarpone)',
+    description: 'Fljótleg tómatasósa með falnum grænmeti (Nutribullet) og mascarpone.',
+    image: '',
+    servings: 4,
+    prepTime: 8,
+    cookTime: 12,
+    category: 'Aðalréttur',
+    ingredients: [
+      { name: 'Pasta', amount: '400', unit: 'g' },
+      { name: 'Mutti San Marzano tómatar', amount: '1', unit: 'dós' },
+      { name: 'Mascarpone', amount: '150', unit: 'g' },
+      { name: 'Laukur', amount: '1', unit: 'stk' },
+      { name: 'Gulrót', amount: '1', unit: 'stk' },
+      { name: 'Paprika', amount: '1/2', unit: 'stk' },
+      { name: 'Hvítlaukur', amount: '2', unit: 'geirar' },
+      { name: 'Ólífuolía', amount: '1', unit: 'msk' },
+      { name: 'Salt', amount: '', unit: '' },
+      { name: 'Pipar', amount: '', unit: '' },
+    ],
+    instructions: [
+      'Saxaðu lauk, gulrót og papriku gróft. Steiktu í ólífuolíu 3–4 mín.',
+      'Settu grænmetið í Nutribullet/blender með dósinni af Mutti San Marzano og maukaðu slétt.',
+      'Helltu aftur á pönnu, kryddaðu (salt/pipar) og láttu malla 6–8 mín.',
+      'Sjóðaðu pasta á meðan. Taktu frá smá pastavatn.',
+      'Hrærið mascarpone út í sósuna. Þynntu með pastavatni ef þarf. Blandaðu pasta saman við og berðu fram.',
+    ],
+    tags: ['pasta', 'quick', 'mutti', 'blended-veg'],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: recipeId(),
+    name: 'Air fryer kjúklingur + rjóma-mutti pasta',
+    description: 'Kjúklingur í air fryer og mjög fljótleg rjómasósa með Mutti + mascarpone.',
+    image: '',
+    servings: 2,
+    prepTime: 10,
+    cookTime: 12,
+    category: 'Aðalréttur',
+    ingredients: [
+      { name: 'Pasta', amount: '250', unit: 'g' },
+      { name: 'Kjúklingabringur', amount: '2', unit: 'stk' },
+      { name: 'Mutti San Marzano tómatar', amount: '1/2', unit: 'dós' },
+      { name: 'Mascarpone', amount: '120', unit: 'g' },
+      { name: 'Krydd (paprika/ítalskt)', amount: '1', unit: 'tsk' },
+      { name: 'Salt', amount: '', unit: '' },
+      { name: 'Pipar', amount: '', unit: '' },
+      { name: 'Ólífuolía', amount: '1', unit: 'msk' },
+    ],
+    instructions: [
+      'Kryddaðu kjúkling, smá olía og settu í air fryer: 200°C í 10–12 mín (fer eftir þykkt).',
+      'Sjóðaðu pasta á meðan.',
+      'Hitaðu Mutti á pönnu, hrærðu mascarpone út í og kryddaðu. Þynntu með pastavatni ef þarf.',
+      'Skerðu kjúkling í sneiðar, blandaðu við pasta og sósu.',
+    ],
+    tags: ['air-fryer', 'pasta', 'quick', 'mutti'],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: recipeId(),
+    name: 'Pasta með air fryer kjötbollum (faldar grænmetisbætur)',
+    description: 'Air fryer kjötbollur + tómatasósa með maukuðu grænmeti.',
+    image: '',
+    servings: 4,
+    prepTime: 10,
+    cookTime: 15,
+    category: 'Aðalréttur',
+    ingredients: [
+      { name: 'Pasta', amount: '400', unit: 'g' },
+      { name: 'Kjötbollur (tilbúnar eða heimagerðar)', amount: '500', unit: 'g' },
+      { name: 'Mutti San Marzano tómatar', amount: '1', unit: 'dós' },
+      { name: 'Mascarpone', amount: '100', unit: 'g' },
+      { name: 'Laukur', amount: '1', unit: 'stk' },
+      { name: 'Kúrbítur', amount: '1/2', unit: 'stk' },
+      { name: 'Hvítlaukur', amount: '2', unit: 'geirar' },
+      { name: 'Ólífuolía', amount: '1', unit: 'msk' },
+    ],
+    instructions: [
+      'Settu kjötbollur í air fryer: 200°C í 10–12 mín (hristu körfu í miðjunni).',
+      'Steiktu lauk, hvítlauk og kúrbít 3–4 mín. Maukaðu með Mutti í blender.',
+      'Láttu sósu malla 5–7 mín, hrærðu mascarpone út í.',
+      'Sjóðaðu pasta, blandaðu sósu og kjötbollum saman við.',
+    ],
+    tags: ['air-fryer', 'meatballs', 'pasta', 'blended-veg', 'quick'],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: recipeId(),
+    name: 'Mascarpone-„alfredo“ (án parmesan) með hvítlauk',
+    description: 'Mjög einföld rjómasósa fyrir pasta – mascarpone, hvítlaukur og pastavatn.',
+    image: '',
+    servings: 2,
+    prepTime: 5,
+    cookTime: 10,
+    category: 'Sósa',
+    ingredients: [
+      { name: 'Pasta', amount: '250', unit: 'g' },
+      { name: 'Mascarpone', amount: '160', unit: 'g' },
+      { name: 'Hvítlaukur', amount: '2', unit: 'geirar' },
+      { name: 'Smjör', amount: '1', unit: 'msk' },
+      { name: 'Salt', amount: '', unit: '' },
+      { name: 'Pipar', amount: '', unit: '' },
+    ],
+    instructions: [
+      'Sjóðaðu pasta og taktu frá 1/2 bolla af pastavatni.',
+      'Bræddu smjör, steiktu hvítlauk 30–60 sek.',
+      'Hrærið mascarpone út í og þynntu með pastavatni þar til sósan er silkimjúk.',
+      'Kryddaðu og blandaðu við pasta.',
+    ],
+    tags: ['pasta', 'quick', 'no-parmesan'],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: recipeId(),
+    name: 'Mutti tómata- & basil súpa (blandað grænmeti)',
+    description: 'Silkimjúk tómatasúpa með falinni gulrót/papriku – 15 mín.',
+    image: '',
+    servings: 3,
+    prepTime: 8,
+    cookTime: 12,
+    category: 'Súpa',
+    ingredients: [
+      { name: 'Mutti San Marzano tómatar', amount: '1', unit: 'dós' },
+      { name: 'Grænmetissoð', amount: '400', unit: 'ml' },
+      { name: 'Gulrót', amount: '1', unit: 'stk' },
+      { name: 'Paprika', amount: '1/2', unit: 'stk' },
+      { name: 'Laukur', amount: '1/2', unit: 'stk' },
+      { name: 'Mascarpone', amount: '80', unit: 'g' },
+      { name: 'Basil', amount: '', unit: '' },
+      { name: 'Salt', amount: '', unit: '' },
+      { name: 'Pipar', amount: '', unit: '' },
+    ],
+    instructions: [
+      'Steiktu lauk, gulrót og papriku 3–4 mín.',
+      'Bættu við Mutti + grænmetissoði og láttu malla 8–10 mín.',
+      'Blandaðu slétt í blender, hrærðu mascarpone út í, kryddaðu og toppaðu með basil.',
+    ],
+    tags: ['quick', 'mutti', 'blended-veg', 'soup'],
+    createdAt: new Date().toISOString(),
+  },
+]
 
 // Undo timer for task deletion (not persisted)
 let lastDeletedTaskTimer = null
@@ -757,18 +936,35 @@ const useStore = create(
       habits: HABITS,
       habitLogs: {},
       habitStreaks: {}, // { habitId: { current: number, longest: number } }
-      toggleHabit: (habitId, date) => set((state) => {
+      setHabitStatus: (habitId, date, status) => set((state) => {
         const key = `${habitId}-${date}`
         const newLogs = { ...state.habitLogs }
-        const wasCompleted = newLogs[key]
-        newLogs[key] = !wasCompleted
+        if (status === null) {
+          delete newLogs[key]
+        } else {
+          newLogs[key] = status
+        }
         
         // Recalculate streak for this habit
         const newStreaks = { ...state.habitStreaks }
+        // We need the helper function available here, but it's outside. 
+        // We can just call it since it's in scope.
+        // Wait, calculateStreak is defined below. Is it hoisted? Function declarations are hoisted.
         const streak = calculateStreak(habitId, newLogs)
         newStreaks[habitId] = streak
         
         return { habitLogs: newLogs, habitStreaks: newStreaks }
+      }),
+      toggleHabit: (habitId, date) => set((state) => {
+        const key = `${habitId}-${date}`
+        const currentStatus = state.habitLogs[key]
+        // Toggle logic: done -> null -> done (simple toggle)
+        // If it was 'skip', toggle to 'done'? Or 'null'?
+        // Let's say toggle is mainly for the main checkbox.
+        const newStatus = (currentStatus === 'done' || currentStatus === true) ? null : 'done'
+        
+        get().setHabitStatus(habitId, date, newStatus)
+        return {} // State update handled by setHabitStatus
       }),
       getHabitStreak: (habitId) => {
         const state = get()
@@ -831,6 +1027,84 @@ const useStore = create(
         delete newNotes[date]
         return { notes: newNotes }
       }),
+
+      // Recipes (v5.10.0)
+      recipes: SEED_RECIPES,
+      addRecipe: (recipe) => set((state) => {
+        const normalized = normalizeRecipeShape(recipe)
+        return {
+          recipes: [
+            normalized,
+            ...(state.recipes || []),
+          ]
+        }
+      }),
+      removeRecipe: (id) => set((state) => ({
+        recipes: (state.recipes || []).filter(r => r.id !== id)
+      })),
+      toggleFavoriteRecipe: (id) => set((state) => ({
+        recipes: (state.recipes || []).map(r =>
+          r.id === id ? { ...r, favorite: !r.favorite } : r
+        )
+      })),
+      updateRecipe: (id, updates) => set((state) => ({
+        recipes: (state.recipes || []).map(r => {
+          if (r.id !== id) return r
+          const u = updates || {}
+          const next = { ...r, ...u }
+          // Preserve createdAt unless explicitly overwritten
+          if (!Object.prototype.hasOwnProperty.call(u, 'createdAt')) next.createdAt = r.createdAt
+          return normalizeRecipeShape(next, { generateId: false, createdAtFallback: r.createdAt })
+        })
+      })),
+      importRecipes: (recipes, opts = {}) => {
+        const list = Array.isArray(recipes) ? recipes : []
+        const mode = opts.onCollision === 'newId' ? 'newId' : 'update'
+        let summary = { imported: 0, updated: 0, skipped: 0 }
+
+        set((state) => {
+          const existing = Array.isArray(state.recipes) ? state.recipes : []
+          const byId = new Map(existing.filter(Boolean).map(r => [r.id, r]))
+          const next = [...existing]
+
+          for (const raw of list) {
+            if (!raw) { summary.skipped++; continue }
+
+            const normalized = normalizeRecipeShape(raw)
+            if (!normalized.id || !normalized.name) { summary.skipped++; continue }
+
+            const found = byId.get(normalized.id)
+            if (found) {
+              if (mode === 'update') {
+                // Keep original createdAt unless import explicitly contains it
+                const keepCreatedAt = found.createdAt
+                const merged = { ...found, ...normalized }
+                if (!Object.prototype.hasOwnProperty.call(raw, 'createdAt')) merged.createdAt = keepCreatedAt
+
+                const cleaned = normalizeRecipeShape(merged, { generateId: false, createdAtFallback: keepCreatedAt })
+                const idx = next.findIndex(r => r.id === normalized.id)
+                if (idx >= 0) next[idx] = cleaned
+                byId.set(cleaned.id, cleaned)
+                summary.updated++
+              } else {
+                const copy = normalizeRecipeShape({ ...normalized, id: recipeId(), createdAt: new Date().toISOString() })
+                next.unshift(copy)
+                byId.set(copy.id, copy)
+                summary.imported++
+              }
+              continue
+            }
+
+            next.unshift(normalized)
+            byId.set(normalized.id, normalized)
+            summary.imported++
+          }
+
+          return { recipes: next }
+        })
+
+        return summary
+      },
 
       // ═══════════════════════════════════════════════════════════════
       // v5.0.0 - Time Tracking
@@ -1139,12 +1413,24 @@ const useStore = create(
       focusTask: null,
       focusStartTime: null,
       focusElapsed: 0, // seconds
+      focusDistractions: [], // List of distraction notes/timestamps
+      
       setFocusProject: (projectId) => set({ 
         focusProject: projectId, 
         focusStartTime: projectId ? Date.now() : null,
-        focusElapsed: 0
+        focusElapsed: 0,
+        focusDistractions: [] 
       }),
       setFocusTask: (taskId) => set({ focusTask: taskId }),
+      
+      addDistraction: (note) => set((state) => ({
+        focusDistractions: [...state.focusDistractions, {
+          id: Date.now().toString(),
+          timestamp: new Date().toISOString(),
+          note: note || null
+        }]
+      })),
+      
       updateFocusElapsed: () => set((state) => {
         if (!state.focusStartTime) return {}
         return { focusElapsed: Math.floor((Date.now() - state.focusStartTime) / 1000) }
@@ -1160,7 +1446,8 @@ const useStore = create(
           focusProject: null, 
           focusTask: null, 
           focusStartTime: null, 
-          focusElapsed: 0 
+          focusElapsed: 0,
+          focusDistractions: []
         })
       },
 
@@ -1341,7 +1628,7 @@ const useStore = create(
     }),
     {
       name: 'arnarflow-storage',
-      version: 3,
+      version: 4,
       migrate: (persistedState, fromVersion) => {
         const state = persistedState || {}
 
@@ -1476,10 +1763,19 @@ const useStore = create(
           return { ...t, startDate: t.startDate || toISODate(start), dueDate: toISODate(due) }
         })
 
+        const existingRecipes = Array.isArray(state.recipes) ? state.recipes : []
+        const seeded = (fromVersion < 4 && existingRecipes.length === 0) ? SEED_RECIPES : existingRecipes
+
+        const migratedRecipes = (Array.isArray(seeded) ? seeded : [])
+          .filter(Boolean)
+          .map(r => normalizeRecipeShape(r, { generateId: false, createdAtFallback: r?.createdAt }))
+          .filter(r => r && r.id)
+
         return {
           ...state,
           projects: migratedProjects,
           tasks: filledTasks,
+          recipes: migratedRecipes,
         }
       },
     }
@@ -1490,59 +1786,87 @@ const useStore = create(
 function calculateStreak(habitId, habitLogs) {
   let currentStreak = 0
   let longestStreak = 0
-  let tempStreak = 0
   
-  // Get all dates with logs for this habit
+  // Get all dates with logs for this habit, sorted descending
   const dates = Object.keys(habitLogs)
-    .filter(key => key.startsWith(`${habitId}-`) && habitLogs[key])
+    .filter(key => key.startsWith(`${habitId}-`))
     .map(key => key.replace(`${habitId}-`, ''))
-    .sort()
-    .reverse()
+    .sort((a, b) => b.localeCompare(a)) // Descending: latest first
   
-  // Calculate current streak (consecutive days from today)
+  // Create a map for quick lookup
+  const statusMap = new Map()
+  dates.forEach(date => {
+    statusMap.set(date, habitLogs[`${habitId}-${date}`])
+  })
+
+  // Calculate current streak
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   
-  for (let i = 0; i < 365; i++) {
+  // Check from today backwards
+  for (let i = 0; i < 3650; i++) { // Check up to 10 years back
     const checkDate = new Date(today)
     checkDate.setDate(checkDate.getDate() - i)
     const dateStr = toISODateLocal(checkDate)
-    
-    if (habitLogs[`${habitId}-${dateStr}`]) {
+    const status = statusMap.get(dateStr)
+
+    if (status === true || status === 'done') {
       currentStreak++
+    } else if (status === 'skip') {
+      // Skip preserves streak but doesn't add to it
+      continue 
+    } else if (i === 0 && !status) {
+      // If today is not done/skipped, check yesterday
+      continue
     } else {
-      break
+      // Break on missing day (unless it's today and we just haven't done it yet)
+      if (i > 0) break
     }
   }
-  
+
   // Calculate longest streak
-  for (const dateStr of dates) {
-    const prevDate = new Date(dateStr)
-    prevDate.setDate(prevDate.getDate() - 1)
-    const prevDateStr = toISODateLocal(prevDate)
+  let tempStreak = 0
+  // Convert map to sorted array of [date, status]
+  const sortedEntries = Array.from(statusMap.entries()).sort((a, b) => a[0].localeCompare(b[0])) // Ascending
+
+  // Since we need to account for gaps, iterating through known log entries isn't enough if there are gaps.
+  // But wait, gaps break the streak. So we only care about consecutive entries.
+  // Actually, we need to iterate day by day to find gaps.
+  
+  if (sortedEntries.length > 0) {
+    const firstDate = new Date(sortedEntries[0][0])
+    const lastDate = new Date(sortedEntries[sortedEntries.length - 1][0])
+    const diff = Math.floor((lastDate - firstDate) / (1000 * 60 * 60 * 24))
     
-    if (habitLogs[`${habitId}-${prevDateStr}`]) {
-      tempStreak++
-    } else {
-      if (tempStreak > longestStreak) {
-        longestStreak = tempStreak
+    for (let i = 0; i <= diff; i++) {
+      const d = new Date(firstDate)
+      d.setDate(d.getDate() + i)
+      const dateStr = toISODateLocal(d)
+      const status = statusMap.get(dateStr)
+      
+      if (status === true || status === 'done') {
+        tempStreak++
+      } else if (status === 'skip') {
+        // Skip preserves streak
+      } else {
+        if (tempStreak > longestStreak) longestStreak = tempStreak
+        tempStreak = 0
       }
-      tempStreak = 1
     }
-  }
-  
-  // Final check for longest
-  if (tempStreak > longestStreak) {
-    longestStreak = tempStreak
-  }
-  
-  // Current streak should count in longest
-  if (currentStreak > longestStreak) {
-    longestStreak = currentStreak
+    if (tempStreak > longestStreak) longestStreak = tempStreak
   }
   
   return { current: currentStreak, longest: longestStreak }
 }
 
 export { APP_VERSION, ACCENT_COLORS, IDEA_CATEGORIES, DEFAULT_TAGS }
+
+// Rainmeter widget auto-export
+import { scheduleWidgetExport } from '../utils/widgetExporter'
+useStore.subscribe((state, prevState) => {
+  if (state.tasks !== prevState?.tasks) {
+    scheduleWidgetExport(state.tasks, state.projects, state.activeProject)
+  }
+})
+
 export default useStore
