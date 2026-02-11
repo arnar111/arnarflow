@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import useStore from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
 import { 
@@ -12,10 +12,12 @@ import {
   Target,
   Award,
   BarChart3,
-  ArrowRight
+  ArrowRight,
+  ArrowLeft,
+  X,
+  AlertCircle
 } from 'lucide-react'
-import { format, subDays, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from 'date-fns'
-import { ProgressRing } from './DailyGoals'
+import { format, subDays, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, isBefore, startOfDay } from 'date-fns'
 
 function WeeklyReview({ onClose }) {
   const { language } = useTranslation()
@@ -23,6 +25,10 @@ function WeeklyReview({ onClose }) {
   const habits = useStore(state => state.habits)
   const habitLogs = useStore(state => state.habitLogs)
   const pomodoroSessions = useStore(state => state.pomodoroSessions)
+  const addWeeklyReview = useStore(state => state.addWeeklyReview)
+
+  const [step, setStep] = useState(1)
+  const [goals, setGoals] = useState('')
 
   // Calculate date ranges
   const today = new Date()
@@ -42,10 +48,11 @@ function WeeklyReview({ onClose }) {
       const completed = new Date(t.completedAt)
       return completed >= thisWeekStart && completed <= thisWeekEnd
     })
-    const lastWeekTasks = tasks.filter(t => {
-      if (!t.completedAt) return false
-      const completed = new Date(t.completedAt)
-      return completed >= lastWeekStart && completed <= lastWeekEnd
+    
+    // Overdue Tasks
+    const overdueTasks = tasks.filter(t => {
+      if (t.completed || !t.dueDate) return false
+      return isBefore(new Date(t.dueDate), startOfDay(today))
     })
 
     // Habits
@@ -53,25 +60,15 @@ function WeeklyReview({ onClose }) {
       const dateStr = format(day, 'yyyy-MM-dd')
       return count + habits.filter(h => habitLogs[`${h.id}-${dateStr}`]).length
     }, 0)
-    const lastWeekHabits = lastWeekDays.reduce((count, day) => {
-      const dateStr = format(day, 'yyyy-MM-dd')
-      return count + habits.filter(h => habitLogs[`${h.id}-${dateStr}`]).length
-    }, 0)
-
+    
     const maxPossibleHabits = thisWeekDays.length * habits.length
-    const lastMaxPossibleHabits = lastWeekDays.length * habits.length
+    const habitConsistency = maxPossibleHabits > 0 ? Math.round((thisWeekHabits / maxPossibleHabits) * 100) : 0
 
     // Focus time
     const thisWeekFocus = (pomodoroSessions || []).filter(s => {
-      if (!s.completedAt) return false
-      const completed = new Date(s.completedAt)
-      return completed >= thisWeekStart && completed <= thisWeekEnd
-    }).reduce((sum, s) => sum + (s.duration || 0), 0)
-
-    const lastWeekFocus = (pomodoroSessions || []).filter(s => {
-      if (!s.completedAt) return false
-      const completed = new Date(s.completedAt)
-      return completed >= lastWeekStart && completed <= lastWeekEnd
+      if (!s.completedAt && !s.startTime) return false
+      const date = new Date(s.completedAt || s.startTime)
+      return date >= thisWeekStart && date <= thisWeekEnd
     }).reduce((sum, s) => sum + (s.duration || 0), 0)
 
     // Daily breakdown
@@ -84,222 +81,305 @@ function WeeklyReview({ onClose }) {
         tasks: tasks.filter(t => t.completedAt?.startsWith(dateStr)).length,
         habits: habits.filter(h => habitLogs[`${h.id}-${dateStr}`]).length,
         focus: (pomodoroSessions || [])
-          .filter(s => s.completedAt?.startsWith(dateStr))
+          .filter(s => (s.completedAt || s.startTime)?.startsWith(dateStr))
           .reduce((sum, s) => sum + (s.duration || 0), 0)
       }
     })
 
     return {
-      thisWeekTasks: thisWeekTasks.length,
-      lastWeekTasks: lastWeekTasks.length,
-      thisWeekHabits,
-      lastWeekHabits,
-      maxPossibleHabits,
-      lastMaxPossibleHabits,
+      thisWeekTasks,
+      overdueTasks,
+      habitConsistency,
       thisWeekFocus,
-      lastWeekFocus,
-      dailyBreakdown
+      dailyBreakdown,
+      completedCount: thisWeekTasks.length,
+      overdueCount: overdueTasks.length
     }
-  }, [tasks, habits, habitLogs, pomodoroSessions, thisWeekStart, thisWeekEnd, lastWeekStart, lastWeekEnd])
-
-  // Calculate changes
-  const taskChange = stats.thisWeekTasks - stats.lastWeekTasks
-  const habitRate = stats.maxPossibleHabits > 0 ? (stats.thisWeekHabits / stats.maxPossibleHabits) * 100 : 0
-  const lastHabitRate = stats.lastMaxPossibleHabits > 0 ? (stats.lastWeekHabits / stats.lastMaxPossibleHabits) * 100 : 0
-  const habitChange = habitRate - lastHabitRate
-  const focusChange = stats.thisWeekFocus - stats.lastWeekFocus
+  }, [tasks, habits, habitLogs, pomodoroSessions, thisWeekStart, thisWeekEnd])
 
   const formatMinutes = (mins) => {
     const hours = Math.floor(mins / 60)
     const minutes = mins % 60
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`
-    }
+    if (hours > 0) return `${hours}h ${minutes}m`
     return `${minutes}m`
   }
 
-  const getTrendIcon = (change) => {
-    if (change > 0) return <TrendingUp size={14} className="text-green-400" />
-    if (change < 0) return <TrendingDown size={14} className="text-red-400" />
-    return <Minus size={14} className="text-zinc-500" />
+  const handleSave = () => {
+    addWeeklyReview({
+      weekStart: thisWeekStart.toISOString(),
+      completedTasks: stats.completedCount,
+      overdueTasks: stats.overdueCount,
+      habitConsistency: stats.habitConsistency,
+      focusHours: Math.round((stats.thisWeekFocus / 60) * 10) / 10,
+      goals,
+      createdAt: new Date().toISOString()
+    })
+    onClose()
   }
 
-  const getTrendColor = (change) => {
-    if (change > 0) return 'text-green-400'
-    if (change < 0) return 'text-red-400'
-    return 'text-zinc-500'
-  }
-
-  // Best day
-  const bestDay = stats.dailyBreakdown.reduce((best, day) => {
-    const score = day.tasks * 10 + day.habits * 5 + day.focus
-    const bestScore = best.tasks * 10 + best.habits * 5 + best.focus
-    return score > bestScore ? day : best
-  }, stats.dailyBreakdown[0])
-
-  return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in p-4">
-      <div className="w-full max-w-2xl bg-dark-900 rounded-2xl border border-dark-500 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="px-6 py-5 border-b border-dark-600 bg-gradient-to-br from-accent/10 to-purple-500/5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-accent/20 flex items-center justify-center">
-                <Calendar size={24} className="text-accent" />
+  // Render step content
+  const renderStep = () => {
+    switch (step) {
+      case 1: // Completed Tasks
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle2 size={32} className="text-green-500" />
               </div>
-              <div>
-                <h2 className="text-xl font-bold">
-                  {language === 'is' ? 'Vikuyfirlit' : 'Weekly Review'}
-                </h2>
-                <p className="text-xs text-zinc-500">
-                  {format(thisWeekStart, 'MMM d')} - {format(today, 'MMM d, yyyy')}
-                </p>
-              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Hvað kláraðist?</h3>
+              <p className="text-zinc-400">Yfirlit yfir verkefni vikunnar</p>
             </div>
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm text-zinc-400 hover:text-white transition-colors"
-            >
-              {language === 'is' ? 'Loka' : 'Close'}
-            </button>
-          </div>
-        </div>
 
-        {/* Stats Grid */}
-        <div className="p-6">
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            {/* Tasks */}
-            <div className="bg-dark-800/50 rounded-2xl p-4 border border-dark-600/50">
-              <div className="flex items-center gap-2 mb-3">
-                <CheckCircle2 size={16} className="text-blue-400" />
-                <span className="text-xs text-zinc-500 uppercase tracking-wider">
-                  {language === 'is' ? 'Verkefni' : 'Tasks'}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-dark-800 p-6 rounded-2xl border border-dark-600 text-center">
+                <span className="text-4xl font-bold text-white block mb-2">{stats.completedCount}</span>
+                <span className="text-sm text-zinc-500 uppercase tracking-wider">Verkefni kláruð</span>
+              </div>
+              <div className="bg-dark-800 p-6 rounded-2xl border border-dark-600 text-center">
+                <span className="text-4xl font-bold text-accent block mb-2">
+                  {stats.dailyBreakdown.reduce((acc, day) => acc + day.tasks, 0) > 0 ? 'Já' : 'Nei'}
                 </span>
-              </div>
-              <div className="text-3xl font-bold text-white mb-1">
-                {stats.thisWeekTasks}
-              </div>
-              <div className={`flex items-center gap-1 text-xs ${getTrendColor(taskChange)}`}>
-                {getTrendIcon(taskChange)}
-                <span>{taskChange >= 0 ? '+' : ''}{taskChange} {language === 'is' ? 'frá síðustu viku' : 'from last week'}</span>
+                <span className="text-sm text-zinc-500 uppercase tracking-wider">Virkni</span>
               </div>
             </div>
 
-            {/* Habits */}
-            <div className="bg-dark-800/50 rounded-2xl p-4 border border-dark-600/50">
-              <div className="flex items-center gap-2 mb-3">
-                <Flame size={16} className="text-orange-400" />
-                <span className="text-xs text-zinc-500 uppercase tracking-wider">
-                  {language === 'is' ? 'Venjur' : 'Habits'}
-                </span>
-              </div>
-              <div className="text-3xl font-bold text-white mb-1">
-                {Math.round(habitRate)}%
-              </div>
-              <div className={`flex items-center gap-1 text-xs ${getTrendColor(habitChange)}`}>
-                {getTrendIcon(habitChange)}
-                <span>{habitChange >= 0 ? '+' : ''}{Math.round(habitChange)}% {language === 'is' ? 'frá síðustu viku' : 'from last week'}</span>
-              </div>
-            </div>
-
-            {/* Focus Time */}
-            <div className="bg-dark-800/50 rounded-2xl p-4 border border-dark-600/50">
-              <div className="flex items-center gap-2 mb-3">
-                <Clock size={16} className="text-purple-400" />
-                <span className="text-xs text-zinc-500 uppercase tracking-wider">
-                  {language === 'is' ? 'Einbeiting' : 'Focus'}
-                </span>
-              </div>
-              <div className="text-3xl font-bold text-white mb-1">
-                {formatMinutes(stats.thisWeekFocus)}
-              </div>
-              <div className={`flex items-center gap-1 text-xs ${getTrendColor(focusChange)}`}>
-                {getTrendIcon(focusChange)}
-                <span>{focusChange >= 0 ? '+' : ''}{formatMinutes(Math.abs(focusChange))}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Daily Breakdown Chart */}
-          <div className="bg-dark-800/30 rounded-2xl p-5 border border-dark-600/30 mb-6">
-            <h3 className="text-sm font-medium mb-4 flex items-center gap-2">
-              <BarChart3 size={16} className="text-accent" />
-              {language === 'is' ? 'Dagleg sundurliðun' : 'Daily Breakdown'}
-            </h3>
-            <div className="flex items-end justify-between gap-2 h-32">
-              {stats.dailyBreakdown.map((day, i) => {
-                const maxTasks = Math.max(...stats.dailyBreakdown.map(d => d.tasks), 1)
-                const height = (day.tasks / maxTasks) * 100
-                const isToday = isSameDay(day.date, today)
-                const isBest = day === bestDay && day.tasks > 0
-
-                return (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                    <div className="w-full flex flex-col items-center justify-end h-20 relative">
-                      {isBest && (
-                        <Award size={14} className="text-amber-400 absolute -top-5 animate-bounce" />
-                      )}
-                      <div 
-                        className={`w-full rounded-t-lg transition-all duration-500 ${
-                          isToday ? 'bg-accent' : isBest ? 'bg-amber-500' : 'bg-dark-600'
-                        }`}
-                        style={{ 
-                          height: `${Math.max(height, 8)}%`,
-                          minHeight: day.tasks > 0 ? '12px' : '4px'
-                        }}
-                      />
+            <div className="bg-dark-800/50 rounded-xl p-4 max-h-60 overflow-y-auto">
+              <h4 className="text-sm font-medium text-zinc-400 mb-3">Nýlega klárað</h4>
+              {stats.thisWeekTasks.length > 0 ? (
+                <div className="space-y-2">
+                  {stats.thisWeekTasks.slice(0, 5).map(task => (
+                    <div key={task.id} className="flex items-center gap-3 p-2 hover:bg-dark-700/50 rounded-lg">
+                      <CheckCircle2 size={16} className="text-green-500 flex-shrink-0" />
+                      <span className="text-sm text-zinc-300 truncate">{task.title}</span>
                     </div>
-                    <div className="text-center">
-                      <span className={`text-2xs block ${isToday ? 'text-accent font-medium' : 'text-zinc-500'}`}>
-                        {day.dayName}
+                  ))}
+                  {stats.thisWeekTasks.length > 5 && (
+                    <div className="text-xs text-center text-zinc-500 pt-2">
+                      + {stats.thisWeekTasks.length - 5} önnur verkefni
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-zinc-500 text-center py-4">Engin verkefni kláruð þessa viku.</p>
+              )}
+            </div>
+          </div>
+        )
+
+      case 2: // Overdue Tasks
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle size={32} className="text-red-500" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Hvað seinkaði?</h3>
+              <p className="text-zinc-400">Verkefni sem þurfa athygli</p>
+            </div>
+
+            <div className="bg-dark-800 p-6 rounded-2xl border border-dark-600 text-center mb-6">
+              <span className="text-4xl font-bold text-red-400 block mb-2">{stats.overdueCount}</span>
+              <span className="text-sm text-zinc-500 uppercase tracking-wider">Verkefni framyfir áætlun</span>
+            </div>
+
+            <div className="bg-dark-800/50 rounded-xl p-4 max-h-60 overflow-y-auto">
+              {stats.overdueTasks.length > 0 ? (
+                <div className="space-y-2">
+                  {stats.overdueTasks.slice(0, 5).map(task => (
+                    <div key={task.id} className="flex items-center gap-3 p-2 hover:bg-dark-700/50 rounded-lg border-l-2 border-red-500/50">
+                      <span className="text-sm text-zinc-300 truncate">{task.title}</span>
+                      <span className="text-xs text-red-400 ml-auto whitespace-nowrap">
+                        {task.dueDate && format(new Date(task.dueDate), 'd. MMM')}
                       </span>
-                      <span className="text-2xs text-zinc-600">{day.tasks}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <CheckCircle2 size={32} className="text-green-500 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm text-zinc-400">Allt á áætlun! Engin verkefni framyfir.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )
+
+      case 3: // Habits
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Flame size={32} className="text-orange-500" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Vanabrot</h3>
+              <p className="text-zinc-400">Hvernig gengur að halda rútínu?</p>
+            </div>
+
+            <div className="flex justify-center mb-8">
+              <div className="relative w-40 h-40 flex items-center justify-center">
+                <svg className="w-full h-full transform -rotate-90">
+                  <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="10" fill="transparent" className="text-dark-700" />
+                  <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="10" fill="transparent" 
+                    strokeDasharray={440}
+                    strokeDashoffset={440 - (440 * stats.habitConsistency) / 100}
+                    className="text-orange-500 transition-all duration-1000 ease-out" 
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-3xl font-bold text-white">{stats.habitConsistency}%</span>
+                  <span className="text-xs text-zinc-500 uppercase">Árangur</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {habits.slice(0, 4).map(habit => {
+                const streak = 0 // Placeholder, could calculate real streak
+                return (
+                  <div key={habit.id} className="bg-dark-800 p-3 rounded-xl border border-dark-600 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-dark-700 flex items-center justify-center text-lg">
+                      {/* Icon placeholder */}
+                      🔥
+                    </div>
+                    <div className="overflow-hidden">
+                      <p className="text-sm font-medium text-zinc-200 truncate">{habit.nameIs || habit.name}</p>
+                      <p className="text-xs text-zinc-500">
+                         {stats.habitConsistency > 80 ? 'Vel gert!' : 'Má bæta'}
+                      </p>
                     </div>
                   </div>
                 )
               })}
             </div>
           </div>
+        )
 
-          {/* Best Day Highlight */}
-          {bestDay && bestDay.tasks > 0 && (
-            <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-2xl p-4 border border-amber-500/20 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                  <Award size={20} className="text-amber-400" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-amber-400">
-                    {language === 'is' ? 'Besti dagurinn' : 'Best Day'}
-                  </p>
-                  <p className="text-xs text-zinc-400">
-                    {format(bestDay.date, 'EEEE, MMMM d')} - {bestDay.tasks} {language === 'is' ? 'verkefni' : 'tasks'}, {bestDay.habits} {language === 'is' ? 'venjur' : 'habits'}, {formatMinutes(bestDay.focus)} {language === 'is' ? 'einbeiting' : 'focus'}
-                  </p>
-                </div>
+      case 4: // Focus
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Clock size={32} className="text-purple-500" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Einbeiting</h3>
+              <p className="text-zinc-400">Tími varið í djúpvinnu</p>
+            </div>
+
+            <div className="bg-dark-800 p-8 rounded-2xl border border-dark-600 text-center mb-6">
+              <span className="text-5xl font-bold text-white block mb-2">{formatMinutes(stats.thisWeekFocus)}</span>
+              <span className="text-sm text-zinc-500 uppercase tracking-wider">Fókus tími</span>
+            </div>
+
+            <div className="bg-dark-800/50 rounded-xl p-5">
+              <h4 className="text-sm font-medium text-zinc-400 mb-4">Dagleg dreifing</h4>
+              <div className="flex items-end justify-between h-32 gap-2">
+                {stats.dailyBreakdown.map((day, i) => {
+                  const maxFocus = Math.max(...stats.dailyBreakdown.map(d => d.focus), 1)
+                  const height = (day.focus / maxFocus) * 100
+                  const isTodayDay = isSameDay(day.date, today)
+                  
+                  return (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
+                      <div className="w-full bg-dark-700 rounded-t-sm relative h-full flex items-end">
+                        <div 
+                          className={`w-full ${isTodayDay ? 'bg-purple-500' : 'bg-purple-500/50'} rounded-t-sm transition-all duration-500 group-hover:bg-purple-400`}
+                          style={{ height: `${height}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-zinc-500">{day.dayName}</span>
+                    </div>
+                  )
+                })}
               </div>
             </div>
-          )}
-
-          {/* Motivational Message */}
-          <div className="text-center py-4">
-            {stats.thisWeekTasks >= 20 ? (
-              <p className="text-sm text-green-400">
-                🏆 {language === 'is' ? 'Frábær vika! Þú rokkaðir!' : 'Amazing week! You crushed it!'}
-              </p>
-            ) : stats.thisWeekTasks >= 10 ? (
-              <p className="text-sm text-blue-400">
-                💪 {language === 'is' ? 'Góð vika! Haltu áfram svona!' : 'Good week! Keep it up!'}
-              </p>
-            ) : stats.thisWeekTasks >= 5 ? (
-              <p className="text-sm text-amber-400">
-                🌱 {language === 'is' ? 'Góð byrjun! Þú getur gert betur næstu viku.' : 'Good start! You can do more next week.'}
-              </p>
-            ) : (
-              <p className="text-sm text-zinc-500">
-                🎯 {language === 'is' ? 'Næsta vika verður betri!' : 'Next week will be better!'}
-              </p>
-            )}
           </div>
+        )
+
+      case 5: // Goals
+        return (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Target size={32} className="text-accent" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Markmið næstu viku</h3>
+              <p className="text-zinc-400">Hvað viltu áorka?</p>
+            </div>
+
+            <textarea
+              value={goals}
+              onChange={(e) => setGoals(e.target.value)}
+              placeholder="Skrifaðu niður helstu markmiðin þín..."
+              className="w-full h-40 bg-dark-800 border border-dark-600 rounded-xl p-4 text-white placeholder-zinc-500 focus:ring-2 focus:ring-accent focus:border-transparent resize-none"
+              autoFocus
+            />
+
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+              <h4 className="text-sm font-bold text-blue-400 mb-1">Ráð:</h4>
+              <p className="text-xs text-zinc-400">Veldu 1-3 stór markmið. Ekki ofhlaða listann.</p>
+            </div>
+          </div>
+        )
+      
+      default:
+        return null
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 animate-fade-in p-4">
+      <div className="w-full max-w-lg bg-dark-900 rounded-2xl border border-dark-600 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-dark-700 flex justify-between items-center bg-dark-800/50">
+          <div className="flex gap-1">
+            {[1, 2, 3, 4, 5].map(i => (
+              <div 
+                key={i} 
+                className={`h-1.5 w-8 rounded-full transition-colors ${i <= step ? 'bg-accent' : 'bg-dark-600'}`}
+              />
+            ))}
+          </div>
+          <button onClick={onClose} className="text-zinc-500 hover:text-white transition-colors">
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-8 flex-1 overflow-y-auto">
+          {renderStep()}
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-5 border-t border-dark-700 bg-dark-800/30 flex justify-between items-center">
+          <button
+            onClick={() => setStep(s => Math.max(1, s - 1))}
+            disabled={step === 1}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              step === 1 ? 'text-zinc-600 cursor-not-allowed' : 'text-zinc-400 hover:bg-dark-700 hover:text-white'
+            }`}
+          >
+            <ArrowLeft size={16} />
+            Til baka
+          </button>
+
+          {step < 5 ? (
+            <button
+              onClick={() => setStep(s => Math.min(5, s + 1))}
+              className="flex items-center gap-2 px-6 py-2 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition-colors shadow-lg shadow-accent/20"
+            >
+              Áfram
+              <ArrowRight size={16} />
+            </button>
+          ) : (
+            <button
+              onClick={handleSave}
+              className="flex items-center gap-2 px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg text-sm font-medium transition-colors shadow-lg shadow-green-600/20"
+            >
+              <CheckCircle2 size={16} />
+              Vista yfirlit
+            </button>
+          )}
         </div>
       </div>
     </div>

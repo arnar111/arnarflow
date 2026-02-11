@@ -1106,6 +1106,35 @@ const useStore = create(
         return summary
       },
 
+      // Weekly Reviews (Phase 7)
+      weeklyReviews: [],
+      addWeeklyReview: (review) => set((state) => ({
+        weeklyReviews: [...state.weeklyReviews, {
+          id: Date.now().toString(),
+          createdAt: new Date().toISOString(),
+          ...review
+        }]
+      })),
+
+      // Milestones (Phase 10)
+      milestones: [],
+      addMilestone: (milestone) => set((state) => ({
+        milestones: [...state.milestones, {
+          id: Date.now().toString(),
+          createdAt: new Date().toISOString(),
+          completed: false,
+          ...milestone
+        }]
+      })),
+      toggleMilestone: (id) => set((state) => ({
+        milestones: state.milestones.map(m => 
+          m.id === id ? { ...m, completed: !m.completed } : m
+        )
+      })),
+      deleteMilestone: (id) => set((state) => ({
+        milestones: state.milestones.filter(m => m.id !== id)
+      })),
+
       // ═══════════════════════════════════════════════════════════════
       // v5.0.0 - Time Tracking
       // ═══════════════════════════════════════════════════════════════
