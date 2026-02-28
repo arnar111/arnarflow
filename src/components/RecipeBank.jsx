@@ -19,6 +19,9 @@ import {
   ThumbsUp,
   ThumbsDown,
   Minus,
+  Sparkles,
+  Loader2,
+  ClipboardPaste,
 } from 'lucide-react'
 
 const CATEGORY_COLORS = {
@@ -99,6 +102,217 @@ function validateRecipe(input) {
       ...(createdAt ? { createdAt } : {}),
     }
   }
+}
+
+const SMART_PASTE_PROMPT = `Þú ert uppskriftarparser. Greindu eftirfarandi texta og skilaðu JSON hlut.
+
+REGLUR:
+- Nafn uppskriftar: dragðu út eða búðu til lýsandi nafn á íslensku
+- Lýsing: stutt, 1-2 setningar á íslensku
+- Flokkur: veldu úr [Aðalréttur, Meðlæti, Súpa, Bakkelsi, Sósa, Annað]
+- Hráefni: greindu nafn, magn (tala eða brot sem strengur), og einingu
+  - Ef magn vantar: "1" og "stk"
+- Leiðbeiningar: listi af skrefum
+- Skammtar: áætla ef ekki gefið (default 4)
+- Undirbúningstími og eldunartími í mínútum
+- Tags: 2-4 lýsandi tög (t.d. air-fryer, quick, pasta, spicy)
+- Nutrition pros: 2-3 jákvæðir kostir (t.d. "Ríkt af C-vítamíni", "Lítil fita")
+- Nutrition cons: 1-2 gallar ef einhverjir (t.d. "Hátt natríum", "Mikil fita")
+
+SKILAÐU AÐEINS HREINU JSON:
+{
+  "name": "string",
+  "description": "string",
+  "category": "string",
+  "servings": number,
+  "prepTime": number,
+  "cookTime": number,
+  "ingredients": [{"name": "string", "amount": "string", "unit": "string"}],
+  "instructions": ["string"],
+  "tags": ["string"],
+  "nutrition": { "pros": ["string"], "cons": ["string"] }
+}
+
+Textinn:
+`
+
+function SmartPasteModal({ open, onClose, onSave }) {
+  const [rawText, setRawText] = useState('')
+  const [parsed, setParsed] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!open) { setRawText(''); setParsed(null); setError('') }
+  }, [open])
+
+  if (!open) return null
+
+  const handleParse = async () => {
+    if (!rawText.trim()) return
+    setLoading(true)
+    setError('')
+    setParsed(null)
+    try {
+      const res = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDl60bNuZodkY8ROXb8hJzJX5SgIp0QOvo',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: SMART_PASTE_PROMPT + rawText }] }],
+            generationConfig: { temperature: 0.1, responseMimeType: 'application/json' },
+          }),
+        }
+      )
+      const data = await res.json()
+      const raw = data.candidates?.[0]?.content?.parts?.[0]?.text
+      if (!raw) throw new Error('Ekkert svar frá Gemini')
+      setParsed(JSON.parse(raw))
+    } catch (e) {
+      setError('Villa: ' + e.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateField = (field, value) => setParsed(p => ({ ...p, [field]: value }))
+  const updateIngredient = (idx, field, value) => setParsed(p => {
+    const ingredients = [...p.ingredients]
+    ingredients[idx] = { ...ingredients[idx], [field]: value }
+    return { ...p, ingredients }
+  })
+  const updateInstruction = (idx, value) => setParsed(p => {
+    const instructions = [...p.instructions]
+    instructions[idx] = value
+    return { ...p, instructions }
+  })
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div className="relative w-full max-w-3xl bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl shadow-2xl overflow-hidden">
+        <div className="p-4 border-b border-[var(--border)] flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles size={18} className="text-purple-400" />
+            <h2 className="text-sm font-semibold text-[var(--text-primary)]">Smart Paste</h2>
+            <span className="text-2xs text-[var(--text-muted)]">— límdu uppskrift, AI greinir</span>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]"><X size={16} /></button>
+        </div>
+
+        <div className="p-4 max-h-[75vh] overflow-auto space-y-4">
+          {!parsed ? (
+            <>
+              <textarea
+                value={rawText}
+                onChange={(e) => setRawText(e.target.value)}
+                placeholder={'Límdu uppskrift hingað...\n\nT.d.:\nPasta Carbonara\n400g spaghetti\n200g beikon\n4 egg\n\n1. Sjóðaðu pasta...\n2. Steiktu beikon...'}
+                rows={10}
+                className="w-full px-4 py-3 rounded-xl bg-[var(--bg-primary)] border border-[var(--border)] text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-purple-500/30 resize-none"
+                autoFocus
+              />
+              {error && <div className="text-sm text-[var(--error)] bg-[var(--error)]/10 px-3 py-2 rounded-lg">{error}</div>}
+              <button
+                onClick={handleParse}
+                disabled={loading || !rawText.trim()}
+                className="w-full py-3 rounded-xl font-medium text-white transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+                style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }}
+              >
+                {loading ? <><Loader2 size={16} className="animate-spin" /> Greini...</> : <><Sparkles size={16} /> Greina uppskrift</>}
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="px-3 py-2 rounded-lg flex items-center gap-2 text-sm" style={{ background: 'rgba(139,92,246,0.1)', color: '#a78bfa' }}>
+                <Sparkles size={14} /> AI greindi uppskriftina — skoðaðu og vistaðu
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-2xs text-[var(--text-muted)]">Nafn</label>
+                  <input value={parsed.name || ''} onChange={e => updateField('name', e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border)] text-sm text-[var(--text-primary)] font-medium" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-2xs text-[var(--text-muted)]">Flokkur</label>
+                  <select value={parsed.category || 'Aðalréttur'} onChange={e => updateField('category', e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border)] text-sm text-[var(--text-primary)]">
+                    {CATEGORIES.filter(c => c !== 'Allt').map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-1 md:col-span-2">
+                  <label className="text-2xs text-[var(--text-muted)]">Lýsing</label>
+                  <textarea value={parsed.description || ''} onChange={e => updateField('description', e.target.value)}
+                    rows={2} className="w-full px-3 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border)] text-sm text-[var(--text-primary)] resize-none" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-2xs text-[var(--text-muted)]">Skammtar</label>
+                  <input type="number" value={parsed.servings || 4} onChange={e => updateField('servings', +e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border)] text-sm text-[var(--text-primary)]" />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <label className="text-2xs text-[var(--text-muted)]">Undirbún. (mín)</label>
+                    <input type="number" value={parsed.prepTime || 0} onChange={e => updateField('prepTime', +e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border)] text-sm text-[var(--text-primary)]" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-2xs text-[var(--text-muted)]">Eldun (mín)</label>
+                    <input type="number" value={parsed.cookTime || 0} onChange={e => updateField('cookTime', +e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border)] text-sm text-[var(--text-primary)]" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Ingredients */}
+              <div>
+                <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-2">Hráefni ({parsed.ingredients?.length || 0})</h3>
+                <div className="space-y-1.5">
+                  {(parsed.ingredients || []).map((ing, i) => (
+                    <div key={i} className="grid grid-cols-12 gap-1.5">
+                      <input value={ing.amount || ''} onChange={e => updateIngredient(i, 'amount', e.target.value)}
+                        className="col-span-2 px-2 py-1.5 rounded-lg bg-[var(--bg-primary)] border border-[var(--border)] text-sm text-[var(--text-primary)] text-center" placeholder="Magn" />
+                      <input value={ing.unit || ''} onChange={e => updateIngredient(i, 'unit', e.target.value)}
+                        className="col-span-2 px-2 py-1.5 rounded-lg bg-[var(--bg-primary)] border border-[var(--border)] text-sm text-[var(--text-primary)] text-center" placeholder="Ein." />
+                      <input value={ing.name || ''} onChange={e => updateIngredient(i, 'name', e.target.value)}
+                        className="col-span-8 px-2 py-1.5 rounded-lg bg-[var(--bg-primary)] border border-[var(--border)] text-sm text-[var(--text-primary)]" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Instructions */}
+              <div>
+                <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-2">Leiðbeiningar ({parsed.instructions?.length || 0})</h3>
+                <div className="space-y-1.5">
+                  {(parsed.instructions || []).map((step, i) => (
+                    <div key={i} className="flex gap-2 items-start">
+                      <span className="w-5 h-5 rounded-full flex items-center justify-center text-2xs font-bold shrink-0 mt-1" style={{ background: 'rgba(139,92,246,0.15)', color: '#a78bfa' }}>{i + 1}</span>
+                      <textarea value={step} onChange={e => updateInstruction(i, e.target.value)}
+                        rows={2} className="flex-1 px-3 py-1.5 rounded-lg bg-[var(--bg-primary)] border border-[var(--border)] text-sm text-[var(--text-primary)] resize-none" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3 pt-2">
+                <button onClick={() => setParsed(null)}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-medium border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] flex items-center justify-center gap-2">
+                  <ClipboardPaste size={14} /> Breyta texta
+                </button>
+                <button onClick={() => { onSave(parsed); onClose() }}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)]">
+                  <Plus size={14} /> Vista uppskrift
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 function RecipeModal({ open, mode, initialRecipe, onClose, onSave }) {
@@ -717,6 +931,7 @@ export default function RecipeBank() {
   const [modalMode, setModalMode] = useState('create')
   const [modalInitialRecipe, setModalInitialRecipe] = useState(null)
 
+  const [smartPasteOpen, setSmartPasteOpen] = useState(false)
   const [ioOpen, setIoOpen] = useState(false)
   const fileInputRef = useRef(null)
 
@@ -808,6 +1023,14 @@ export default function RecipeBank() {
           </div>
 
           <div className="relative flex items-center gap-2" data-io-menu>
+            <button
+              onClick={() => setSmartPasteOpen(true)}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-white hover:opacity-90 transition-opacity"
+              style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }}
+              title="Límdu uppskrift — AI greinir"
+            >
+              <Sparkles size={16} /> Smart Paste
+            </button>
             <button
               onClick={() => {
                 setModalMode('create')
@@ -997,6 +1220,17 @@ export default function RecipeBank() {
             return
           }
           addRecipe(payload)
+        }}
+      />
+
+      <SmartPasteModal
+        open={smartPasteOpen}
+        onClose={() => setSmartPasteOpen(false)}
+        onSave={(parsed) => {
+          addRecipe({
+            ...parsed,
+            createdAt: new Date().toISOString(),
+          })
         }}
       />
     </div>

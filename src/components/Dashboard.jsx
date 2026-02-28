@@ -219,6 +219,22 @@ function Dashboard() {
   const maxCompleted = Math.max(...weeklyActivity.map((d) => d.completed), 1)
   const weeklyTotal = weeklyActivity.reduce((sum, d) => sum + d.completed, 0)
 
+  // 12-week activity heatmap data (GitHub-style)
+  const heatmapData = useMemo(() => {
+    const weeks = 12
+    const days = weeks * 7
+    const cells = []
+    for (let i = days - 1; i >= 0; i--) {
+      const d = subDays(new Date(), i)
+      const dateStr = format(d, 'yyyy-MM-dd')
+      const completed = tasks.filter((x) => x.completedAt && x.completedAt.startsWith(dateStr)).length
+      const habitsComplete = habits.filter((h) => habitLogs[`${h.id}-${dateStr}`]).length
+      const total = completed + habitsComplete
+      cells.push({ date: dateStr, day: format(d, 'EEE'), count: total, tasks: completed, habits: habitsComplete })
+    }
+    return cells
+  }, [tasks, habits, habitLogs])
+
   // Streak calculation (task completion streak)
   const getCurrentStreak = () => {
     let streak = 0
@@ -650,6 +666,69 @@ function Dashboard() {
                   <span className={`text-2xs ${day.isToday ? 'text-accent font-medium' : 'text-zinc-500'}`}>{day.day}</span>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* 12-Week Activity Heatmap */}
+          <div className="bg-dark-800/30 rounded-2xl border border-dark-600/30 p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-medium flex items-center gap-2">
+                <Flame size={16} className="text-orange-400" />
+                {language === 'is' ? '12 vikna yfirlit' : '12 Week Overview'}
+              </h2>
+              <div className="flex items-center gap-3 text-2xs text-zinc-500">
+                <span>{language === 'is' ? 'Minna' : 'Less'}</span>
+                {[0, 1, 3, 5, 8].map((level) => (
+                  <span
+                    key={level}
+                    className="w-3 h-3 rounded-sm"
+                    style={{
+                      backgroundColor: level === 0 ? 'rgba(255,255,255,0.05)' :
+                        `rgba(34, 197, 94, ${Math.min(0.2 + level * 0.15, 0.9)})`
+                    }}
+                  />
+                ))}
+                <span>{language === 'is' ? 'Meira' : 'More'}</span>
+              </div>
+            </div>
+            <div className="grid gap-[3px]" style={{ gridTemplateColumns: 'repeat(12, 1fr)', gridTemplateRows: 'repeat(7, 1fr)' }}>
+              {(() => {
+                // Rearrange: columns = weeks, rows = days (Mon-Sun)
+                const weeks = 12
+                const cells = []
+                for (let dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++) {
+                  for (let week = 0; week < weeks; week++) {
+                    const idx = week * 7 + dayOfWeek
+                    const cell = heatmapData[idx]
+                    if (!cell) continue
+                    const maxCount = Math.max(...heatmapData.map(c => c.count), 1)
+                    const intensity = cell.count === 0 ? 0 : Math.min(cell.count / maxCount, 1)
+                    cells.push(
+                      <div
+                        key={cell.date}
+                        className="w-full aspect-square rounded-sm cursor-pointer group relative"
+                        style={{
+                          backgroundColor: cell.count === 0
+                            ? 'rgba(255,255,255,0.05)'
+                            : `rgba(34, 197, 94, ${0.2 + intensity * 0.7})`
+                        }}
+                        title={`${cell.date}: ${cell.tasks} verkefni, ${cell.habits} venjur`}
+                      >
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                          <div className="bg-dark-700 px-2 py-1 rounded text-2xs text-white whitespace-nowrap shadow-lg">
+                            {cell.count} {language === 'is' ? 'aðgerðir' : 'actions'} · {format(parseISO(cell.date), 'MMM d')}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  }
+                }
+                return cells
+              })()}
+            </div>
+            <div className="flex justify-between mt-2 text-2xs text-zinc-600">
+              <span>{format(parseISO(heatmapData[0]?.date || today), 'MMM d')}</span>
+              <span>{language === 'is' ? 'Í dag' : 'Today'}</span>
             </div>
           </div>
 
