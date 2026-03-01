@@ -19,6 +19,7 @@ import {
   Keyboard,
   FolderKanban,
   PiggyBank,
+  Sun,
 } from 'lucide-react'
 
 function Sidebar({ onOpenCalendarSync }) {
@@ -44,7 +45,11 @@ function Sidebar({ onOpenCalendarSync }) {
   const inboxIdeas = ideas.filter(i => i.status === 'inbox').length
   const habitsDoneToday = habits.filter(h => habitLogs[`${h.id}-${today}`]).length
 
+  const todayTaskIds = useStore(state => state.todayTaskIds) || []
+  const todayDone = todayTaskIds.filter(id => tasks.find(t => t.id === id)?.completed).length
+
   const navItems = [
+    { id: 'today', icon: Sun, label: language === 'is' ? 'Í dag' : 'Today', count: todayTaskIds.length > 0 ? `${todayDone}/${todayTaskIds.length}` : null, countColor: todayDone === todayTaskIds.length && todayTaskIds.length > 0 ? 'green' : 'amber' },
     { id: 'dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
     { id: 'projects', icon: FolderKanban, label: language === 'is' ? 'Verkefni' : 'Projects', badge: 'new' },
     { id: 'calendar', icon: Calendar, label: t('nav.calendar') },

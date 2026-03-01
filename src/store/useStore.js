@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const APP_VERSION = '5.5.0'
+const APP_VERSION = '5.6.0'
 
 // Project statuses for Projects Kanban
 // - ideas: Hugmyndir
@@ -343,6 +343,10 @@ const useStore = create(
 
       // Habits - enhanced with streak tracking
       habits: HABITS,
+      // v5.6.0 - Today View (ADHD focus)
+      todayTaskIds: [],
+      setTodayTaskIds: (ids) => set({ todayTaskIds: ids }),
+
       habitLogs: {},
       habitStreaks: {}, // { habitId: { current: number, longest: number } }
       toggleHabit: (habitId, date) => set((state) => {
