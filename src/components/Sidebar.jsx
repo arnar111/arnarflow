@@ -19,6 +19,7 @@ import {
   Keyboard,
   FolderKanban,
   PiggyBank,
+  Zap,
 } from 'lucide-react'
 
 function Sidebar({ onOpenCalendarSync }) {
@@ -46,6 +47,7 @@ function Sidebar({ onOpenCalendarSync }) {
 
   const navItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
+    { id: 'focusmode', icon: Zap, label: language === 'is' ? 'Einbeittu þér' : 'Focus Mode', badge: 'new' },
     { id: 'projects', icon: FolderKanban, label: language === 'is' ? 'Verkefni' : 'Projects', badge: 'new' },
     { id: 'calendar', icon: Calendar, label: t('nav.calendar') },
     { id: 'roadmap', icon: GitBranch, label: language === 'is' ? 'Tímalína' : 'Roadmap', badge: 'new' },

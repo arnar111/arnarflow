@@ -29,6 +29,7 @@ import BlaerSync from './components/BlaerSync'
 import TimeTracker from './components/TimeTracker'
 import NotificationSystem, { useNotificationChecker } from './components/NotificationSystem'
 import RoadmapView from './components/RoadmapView'
+import FocusModeView from './components/FocusModeView'
 import CalendarSync from './components/CalendarSync'
 import TaskDetailPanel from './components/TaskDetailPanel'
 import { ACCENT_COLORS } from './store/useStore'
@@ -250,6 +251,8 @@ function App() {
         return <RoadmapView />
       case 'budget':
         return <BudgetSaver />
+      case 'focusmode':
+        return <FocusModeView />
       default:
         return <Dashboard />
     }
