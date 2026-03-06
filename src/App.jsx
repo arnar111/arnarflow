@@ -1,38 +1,52 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, lazy, Suspense } from 'react'
 import useStore from './store/useStore'
 import TitleBar from './components/TitleBar'
 import Sidebar from './components/Sidebar'
 import Dashboard from './components/Dashboard'
-import ProjectView from './components/ProjectView'
-import ProjectsBoard from './components/ProjectsBoard'
-import IdeasInbox from './components/IdeasInbox'
-import HabitsView from './components/HabitsView'
-import CalendarView from './components/CalendarView'
-import QuickAddModal from './components/QuickAddModal'
-import CommandPalette from './components/CommandPalette'
-import SettingsModal from './components/SettingsModal'
-import AddProjectModal from './components/AddProjectModal'
-import KeyboardShortcutsModal from './components/KeyboardShortcutsModal'
-import WhatsNewModal from './components/WhatsNewModal'
-import AboutModal from './components/AboutModal'
-import PomodoroTimer from './components/PomodoroTimer'
-import QuickCaptureBar from './components/QuickCaptureBar'
-import FocusHistory from './components/FocusHistory'
-import WeeklyReview from './components/WeeklyReview'
-import StatsView from './components/StatsView'
-import NotesView from './components/NotesView'
-import BudgetSaver from './components/BudgetSaver'
-import OnboardingModal from './components/OnboardingModal'
-import RecurringTasksModal from './components/RecurringTasksModal'
-import BlaerSync from './components/BlaerSync'
-// v5.0.0 imports
-import TimeTracker from './components/TimeTracker'
-import NotificationSystem, { useNotificationChecker } from './components/NotificationSystem'
-import RoadmapView from './components/RoadmapView'
-import CalendarSync from './components/CalendarSync'
-import TaskDetailPanel from './components/TaskDetailPanel'
 import { ACCENT_COLORS } from './store/useStore'
 import { requestNotificationPermission } from './utils/notifications'
+
+// Eagerly loaded (core shell)
+import QuickCaptureBar from './components/QuickCaptureBar'
+
+// Lazy-loaded views (loaded on navigation)
+const ProjectView = lazy(() => import('./components/ProjectView'))
+const ProjectsBoard = lazy(() => import('./components/ProjectsBoard'))
+const IdeasInbox = lazy(() => import('./components/IdeasInbox'))
+const HabitsView = lazy(() => import('./components/HabitsView'))
+const CalendarView = lazy(() => import('./components/CalendarView'))
+const FocusHistory = lazy(() => import('./components/FocusHistory'))
+const StatsView = lazy(() => import('./components/StatsView'))
+const NotesView = lazy(() => import('./components/NotesView'))
+const BudgetSaver = lazy(() => import('./components/BudgetSaver'))
+const RoadmapView = lazy(() => import('./components/RoadmapView'))
+
+// Lazy-loaded modals (loaded on open)
+const QuickAddModal = lazy(() => import('./components/QuickAddModal'))
+const CommandPalette = lazy(() => import('./components/CommandPalette'))
+const SettingsModal = lazy(() => import('./components/SettingsModal'))
+const AddProjectModal = lazy(() => import('./components/AddProjectModal'))
+const KeyboardShortcutsModal = lazy(() => import('./components/KeyboardShortcutsModal'))
+const WhatsNewModal = lazy(() => import('./components/WhatsNewModal'))
+const AboutModal = lazy(() => import('./components/AboutModal'))
+const PomodoroTimer = lazy(() => import('./components/PomodoroTimer'))
+const WeeklyReview = lazy(() => import('./components/WeeklyReview'))
+const OnboardingModal = lazy(() => import('./components/OnboardingModal'))
+const RecurringTasksModal = lazy(() => import('./components/RecurringTasksModal'))
+const BlaerSync = lazy(() => import('./components/BlaerSync'))
+const TimeTracker = lazy(() => import('./components/TimeTracker'))
+const CalendarSync = lazy(() => import('./components/CalendarSync'))
+const TaskDetailPanel = lazy(() => import('./components/TaskDetailPanel'))
+
+// NotificationSystem — eagerly imported because useNotificationChecker hook runs at top level
+import NotificationSystem, { useNotificationChecker } from './components/NotificationSystem'
+
+// Minimal loading fallback for lazy components
+const LazyFallback = () => (
+  <div className="flex items-center justify-center h-full opacity-50">
+    <div className="w-5 h-5 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
+  </div>
+)
 
 function App() {
   const { 
@@ -227,32 +241,34 @@ function App() {
   }, [focusStartTime, updateFocusElapsed])
 
   const renderView = () => {
+    let view
     switch (activeView) {
       case 'dashboard':
         return <Dashboard />
       case 'projects':
-        return <ProjectsBoard />
+        view = <ProjectsBoard />; break
       case 'project':
-        return <ProjectView />
+        view = <ProjectView />; break
       case 'ideas':
-        return <IdeasInbox />
+        view = <IdeasInbox />; break
       case 'habits':
-        return <HabitsView />
+        view = <HabitsView />; break
       case 'calendar':
-        return <CalendarView />
+        view = <CalendarView />; break
       case 'focus':
-        return <FocusHistory />
+        view = <FocusHistory />; break
       case 'stats':
-        return <StatsView />
+        view = <StatsView />; break
       case 'notes':
-        return <NotesView />
+        view = <NotesView />; break
       case 'roadmap':
-        return <RoadmapView />
+        view = <RoadmapView />; break
       case 'budget':
-        return <BudgetSaver />
+        view = <BudgetSaver />; break
       default:
         return <Dashboard />
     }
+    return <Suspense fallback={<LazyFallback />}>{view}</Suspense>
   }
 
   return (
@@ -273,23 +289,23 @@ function App() {
           {renderView()}
         </main>
       
-        {/* Modals */}
-        {quickAddOpen && <QuickAddModal />}
-        {commandPaletteOpen && <CommandPalette />}
-        {settingsOpen && <SettingsModal />}
-        {addProjectOpen && <AddProjectModal onClose={() => setAddProjectOpen(false)} />}
-        {keyboardShortcutsOpen && <KeyboardShortcutsModal />}
-        {whatsNewOpen && <WhatsNewModal />}
-        {aboutOpen && <AboutModal />}
-        {pomodoroOpen && <PomodoroTimer onClose={() => setPomodoroOpen(false)} />}
-        {weeklyReviewOpen && <WeeklyReview onClose={() => setWeeklyReviewOpen(false)} />}
-        {onboardingOpen && <OnboardingModal />}
-        {recurringOpen && <RecurringTasksModal onClose={() => setRecurringOpen(false)} />}
-        
-        {/* v5.0.0 Modals */}
-        {timeTrackerOpen && <TimeTracker onClose={() => setTimeTrackerOpen(false)} />}
-        {notificationsPanelOpen && <NotificationSystem onClose={() => setNotificationsPanelOpen(false)} />}
-        {calendarSyncOpen && <CalendarSync onClose={() => setCalendarSyncOpen(false)} />}
+        {/* Modals — lazy loaded, wrapped in Suspense */}
+        <Suspense fallback={null}>
+          {quickAddOpen && <QuickAddModal />}
+          {commandPaletteOpen && <CommandPalette />}
+          {settingsOpen && <SettingsModal />}
+          {addProjectOpen && <AddProjectModal onClose={() => setAddProjectOpen(false)} />}
+          {keyboardShortcutsOpen && <KeyboardShortcutsModal />}
+          {whatsNewOpen && <WhatsNewModal />}
+          {aboutOpen && <AboutModal />}
+          {pomodoroOpen && <PomodoroTimer onClose={() => setPomodoroOpen(false)} />}
+          {weeklyReviewOpen && <WeeklyReview onClose={() => setWeeklyReviewOpen(false)} />}
+          {onboardingOpen && <OnboardingModal />}
+          {recurringOpen && <RecurringTasksModal onClose={() => setRecurringOpen(false)} />}
+          {timeTrackerOpen && <TimeTracker onClose={() => setTimeTrackerOpen(false)} />}
+          {notificationsPanelOpen && <NotificationSystem onClose={() => setNotificationsPanelOpen(false)} />}
+          {calendarSyncOpen && <CalendarSync onClose={() => setCalendarSyncOpen(false)} />}
+        </Suspense>
         
         {/* Quick Capture Bar (Floating) */}
         <QuickCaptureBar 
@@ -299,14 +315,16 @@ function App() {
         />
         
         {/* Blær AI Sync */}
-        <BlaerSync />
+        <Suspense fallback={null}><BlaerSync /></Suspense>
         
         {/* Task Detail Panel (v5.1.2) */}
         {selectedTaskId && (
-          <TaskDetailPanel 
-            taskId={selectedTaskId} 
-            onClose={() => setSelectedTaskId(null)} 
-          />
+          <Suspense fallback={null}>
+            <TaskDetailPanel 
+              taskId={selectedTaskId} 
+              onClose={() => setSelectedTaskId(null)} 
+            />
+          </Suspense>
         )}
       </div>
     </div>
