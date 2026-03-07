@@ -2,6 +2,7 @@ import React from 'react'
 import useStore, { APP_VERSION } from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
+import { preloadView } from '../utils/preload'
 import { TimeTrackerWidget } from './TimeTracker'
 import { 
   LayoutDashboard, 
@@ -80,6 +81,7 @@ function Sidebar({ onOpenCalendarSync }) {
           return (
             <button
               key={item.id}
+              onMouseEnter={() => preloadView(item.id)}
               onClick={() => {
                 setActiveView(item.id)
                 setSelectedProject(null)
