@@ -98,6 +98,7 @@ function CommandPalette() {
     projects,
     tasks,
     ideas,
+    notes,
     toggleTask,
     addIdea,
     setQuickIdeaMode
@@ -314,6 +315,29 @@ function CommandPalette() {
     }))
   }, [ideas, language])
 
+  // Note items — search within note content
+  const noteItems = useMemo(() => {
+    return Object.entries(notes || {}).map(([date, note]) => {
+      const preview = (note.content || '').replace(/[#*`>\-\[\]]/g, '').trim().slice(0, 80)
+      const formattedDate = new Date(date + 'T12:00:00').toLocaleDateString(language === 'is' ? 'is-IS' : 'en-US', {
+        day: 'numeric', month: 'short', year: 'numeric'
+      })
+      return {
+        id: `note-${date}`,
+        type: 'note',
+        icon: FileText,
+        label: formattedDate,
+        subtitle: preview || (language === 'is' ? 'Tóm glósa' : 'Empty note'),
+        keywords: `${date} ${note.content || ''}`.toLowerCase(),
+        action: () => {
+          setActiveView('notes')
+          setSelectedProject(null)
+          setCommandPaletteOpen(false)
+        }
+      }
+    }).sort((a, b) => b.id.localeCompare(a.id)) // newest first
+  }, [notes, language])
+
   // Combined & filtered results with fuzzy search
   const allItems = useMemo(() => {
     let items = []
@@ -326,6 +350,9 @@ function CommandPalette() {
     }
     if (category === 'all' || category === 'ideas') {
       items = [...items, ...ideaItems]
+    }
+    if (category === 'all' || category === 'notes') {
+      items = [...items, ...noteItems]
     }
     
     if (!query) {
@@ -437,6 +464,7 @@ function CommandPalette() {
     switch (type) {
       case 'task': return <Circle size={12} className="text-blue-400" />
       case 'idea': return <Zap size={12} className="text-amber-400" />
+      case 'note': return <FileText size={12} className="text-emerald-400" />
       default: return <ArrowRight size={12} className="text-zinc-500" />
     }
   }
@@ -446,6 +474,7 @@ function CommandPalette() {
     { id: 'commands', label: t('commandPalette.commands'), icon: ArrowRight },
     { id: 'tasks', label: t('commandPalette.tasks'), icon: CheckSquare },
     { id: 'ideas', label: t('commandPalette.ideas'), icon: Lightbulb },
+    { id: 'notes', label: language === 'is' ? 'Glósur' : 'Notes', icon: FileText },
   ]
 
   return (
