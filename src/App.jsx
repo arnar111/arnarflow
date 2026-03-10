@@ -36,7 +36,8 @@ import { requestNotificationPermission } from './utils/notifications'
 
 function App() {
   const { 
-    activeView, 
+    activeView,
+    setActiveView,
     quickAddOpen, 
     setQuickAddOpen,
     setQuickIdeaMode,
@@ -150,11 +151,48 @@ function App() {
     root.style.setProperty('--accent-glow', color + '40')
   }, [accentColor])
 
+  // G+key navigation state
+  const [gKeyPending, setGKeyPending] = useState(false)
+  const gKeyTimer = React.useRef(null)
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
       // Don't trigger if typing in input
       const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)
+
+      // G+key navigation sequences (only when not typing)
+      if (!isTyping && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        if (gKeyPending) {
+          setGKeyPending(false)
+          clearTimeout(gKeyTimer.current)
+          const navMap = {
+            d: 'dashboard',
+            i: 'ideas',
+            h: 'habits',
+            p: 'projects',
+            n: 'notes',
+            c: 'calendar',
+            s: 'stats',
+            f: 'focus',
+            b: 'budget',
+            r: 'roadmap',
+          }
+          const view = navMap[e.key.toLowerCase()]
+          if (view) {
+            e.preventDefault()
+            setActiveView(view)
+            return
+          }
+        }
+        if (e.key === 'g' || e.key === 'G') {
+          if (!gKeyPending) {
+            setGKeyPending(true)
+            gKeyTimer.current = setTimeout(() => setGKeyPending(false), 500)
+            return
+          }
+        }
+      }
       
       // Cmd/Ctrl + K for quick add task
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
