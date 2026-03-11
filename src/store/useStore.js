@@ -198,6 +198,36 @@ const useStore = create(
         )
       })),
 
+      // v5.6.0 - Task Templates
+      taskTemplates: [],
+      addTaskTemplate: (template) => set((state) => ({
+        taskTemplates: [...state.taskTemplates, {
+          id: Date.now().toString(),
+          createdAt: new Date().toISOString(),
+          ...template
+        }]
+      })),
+      deleteTaskTemplate: (id) => set((state) => ({
+        taskTemplates: state.taskTemplates.filter(t => t.id !== id)
+      })),
+      updateTaskTemplate: (id, updates) => set((state) => ({
+        taskTemplates: state.taskTemplates.map(t => t.id === id ? { ...t, ...updates } : t)
+      })),
+      createTaskFromTemplate: (templateId, overrides = {}) => {
+        const state = get();
+        const template = state.taskTemplates.find(t => t.id === templateId);
+        if (!template) return;
+        const { id, createdAt, ...taskData } = template;
+        state.addTask({ ...taskData, fromTemplate: templateId, ...overrides });
+      },
+      saveTaskAsTemplate: (taskId) => {
+        const state = get();
+        const task = state.tasks.find(t => t.id === taskId);
+        if (!task) return;
+        const { id, createdAt, completed, completedAt, timeSpent, aiPriority, aiReason, ...templateData } = task;
+        state.addTaskTemplate({ ...templateData, name: templateData.title });
+      },
+
       // v5.0.0 - Task Dependencies
       addDependency: (taskId, blockedByTaskId) => set((state) => ({
         tasks: state.tasks.map(t => 
@@ -815,6 +845,10 @@ const useStore = create(
       recurringOpen: false,
       setRecurringOpen: (open) => set({ recurringOpen: open }),
       
+      // v5.6.0 - Task Templates Modal
+      templatesOpen: false,
+      setTemplatesOpen: (open) => set({ templatesOpen: open }),
+
       // v5.0.0 - Notifications Panel
       notificationsPanelOpen: false,
       setNotificationsPanelOpen: (open) => set({ notificationsPanelOpen: open }),

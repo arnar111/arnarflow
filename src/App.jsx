@@ -24,6 +24,7 @@ import NotesView from './components/NotesView'
 import BudgetSaver from './components/BudgetSaver'
 import OnboardingModal from './components/OnboardingModal'
 import RecurringTasksModal from './components/RecurringTasksModal'
+import TaskTemplatesModal from './components/TaskTemplatesModal'
 import BlaerSync from './components/BlaerSync'
 // v5.0.0 imports
 import TimeTracker from './components/TimeTracker'
@@ -56,6 +57,8 @@ function App() {
     shouldShowOnboarding,
     recurringOpen,
     setRecurringOpen,
+    templatesOpen,
+    setTemplatesOpen,
     focusStartTime,
     updateFocusElapsed,
     shouldShowWhatsNew,
@@ -285,6 +288,7 @@ function App() {
         {weeklyReviewOpen && <WeeklyReview onClose={() => setWeeklyReviewOpen(false)} />}
         {onboardingOpen && <OnboardingModal />}
         {recurringOpen && <RecurringTasksModal onClose={() => setRecurringOpen(false)} />}
+        {templatesOpen && <TaskTemplatesModal onClose={() => setTemplatesOpen(false)} />}
         
         {/* v5.0.0 Modals */}
         {timeTrackerOpen && <TimeTracker onClose={() => setTimeTrackerOpen(false)} />}
