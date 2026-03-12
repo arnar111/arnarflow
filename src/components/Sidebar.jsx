@@ -43,9 +43,15 @@ function Sidebar({ onOpenCalendarSync }) {
   const today = new Date().toISOString().split('T')[0]
   const inboxIdeas = ideas.filter(i => i.status === 'inbox').length
   const habitsDoneToday = habits.filter(h => habitLogs[`${h.id}-${today}`]).length
+  
+  // Overdue + today task counts
+  const overdueTasks = tasks.filter(t => !t.completed && t.dueDate && t.dueDate < today).length
+  const todayTasks = tasks.filter(t => !t.completed && t.dueDate === today).length
+  const dashboardCount = overdueTasks > 0 ? overdueTasks : (todayTasks > 0 ? todayTasks : null)
+  const dashboardCountColor = overdueTasks > 0 ? 'red' : 'blue'
 
   const navItems = [
-    { id: 'dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
+    { id: 'dashboard', icon: LayoutDashboard, label: t('nav.dashboard'), count: dashboardCount, countColor: dashboardCountColor },
     { id: 'projects', icon: FolderKanban, label: language === 'is' ? 'Verkefni' : 'Projects', badge: 'new' },
     { id: 'calendar', icon: Calendar, label: t('nav.calendar') },
     { id: 'roadmap', icon: GitBranch, label: language === 'is' ? 'Tímalína' : 'Roadmap', badge: 'new' },
@@ -64,6 +70,7 @@ function Sidebar({ onOpenCalendarSync }) {
     purple: 'bg-purple-500/15 text-purple-400',
     green: 'bg-green-500/15 text-green-400',
     blue: 'bg-blue-500/15 text-blue-400',
+    red: 'bg-red-500/15 text-red-400',
   }
 
   return (
