@@ -3,6 +3,7 @@ import useStore from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
 import DailyGoals from './DailyGoals'
+import FocusQueue from './FocusQueue'
 import { format, isToday, isTomorrow, isPast, parseISO, subDays, startOfDay } from 'date-fns'
 import { 
   CheckCircle2, 
@@ -546,6 +547,9 @@ function Dashboard() {
               </div>
             )}
           </div>
+
+          {/* Focus Queue - ADHD task sequencing */}
+          <FocusQueue />
 
           {/* Daily Goals */}
           <DailyGoals />

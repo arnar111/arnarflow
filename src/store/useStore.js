@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const APP_VERSION = '5.5.0'
+const APP_VERSION = '5.5.1'
 
 // Project statuses for Projects Kanban
 // - ideas: Hugmyndir
@@ -721,6 +721,14 @@ const useStore = create(
           { id: 'projects', x: 6, y: 2, w: 6, h: 2 },
         ]
       }),
+
+      // Focus Queue (ADHD-friendly task queue)
+      focusQueueIds: [],
+      setFocusQueueIds: (ids) => set({ focusQueueIds: ids }),
+      focusQueueEstimates: {},
+      setFocusQueueEstimate: (taskId, minutes) => set((state) => ({
+        focusQueueEstimates: { ...state.focusQueueEstimates, [taskId]: minutes }
+      })),
 
       // Focus Timer - enhanced
       focusProject: null,
