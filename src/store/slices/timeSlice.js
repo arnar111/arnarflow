@@ -99,6 +99,14 @@ export const createTimeSlice = (set, get) => ({
     return days
   },
 
+  // Focus Queue (ADHD-friendly task queue)
+  focusQueueIds: [],
+  setFocusQueueIds: (ids) => set({ focusQueueIds: ids }),
+  focusQueueEstimates: {},
+  setFocusQueueEstimate: (taskId, minutes) => set((state) => ({
+    focusQueueEstimates: { ...state.focusQueueEstimates, [taskId]: minutes }
+  })),
+
   // Focus Timer
   focusProject: null,
   focusTask: null,

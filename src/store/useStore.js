@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-<<<<<<< HEAD
 import {
   createTaskSlice,
   createProjectSlice,
@@ -14,9 +13,6 @@ import {
   createCalendarSlice,
   PROJECTS,
 } from './slices'
-=======
-const APP_VERSION = '5.8.0'
->>>>>>> blaer/focus-mode-view
 
 const APP_VERSION = '7.0.0'
 
@@ -37,7 +33,7 @@ const useStore = create(
     {
       name: 'arnarflow-storage',
       version: 7,
-      migrate: (persistedState, version) => {
+      migrate: (persistedState) => {
         const state = persistedState || {}
         const projects = Array.isArray(state.projects) ? state.projects : PROJECTS
 

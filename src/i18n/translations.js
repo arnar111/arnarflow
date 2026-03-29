@@ -73,6 +73,13 @@ export const translations = {
     },
     
     // Habits
+    focusQueue: {
+      empty: 'Ekkert í biðröð — veldu verkefni!',
+      addTask: 'Bæta við verkefni',
+      addMore: 'Bæta við',
+      pickTask: 'Veldu verkefni',
+      noTasks: 'Engin verkefni tiltæk',
+    },
     habits: {
       title: 'Venjur',
       subtitle: 'Litlar aðgerðir skila miklum árangri',
@@ -476,6 +483,13 @@ export const translations = {
     },
     
     // Habits
+    focusQueue: {
+      empty: 'Queue empty — pick some tasks!',
+      addTask: 'Add task',
+      addMore: 'Add more',
+      pickTask: 'Pick a task',
+      noTasks: 'No tasks available',
+    },
     habits: {
       title: 'Daily Habits',
       subtitle: 'Small consistent actions compound into big results',
