@@ -4,10 +4,10 @@ import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
 import { preloadView } from '../utils/preload'
 import { TimeTrackerWidget } from './TimeTracker'
-import { 
-  LayoutDashboard, 
-  Lightbulb, 
-  Target, 
+import {
+  LayoutDashboard,
+  Lightbulb,
+  Target,
   Settings,
   Calendar,
   Clock,
@@ -21,14 +21,15 @@ import {
   FolderKanban,
   PiggyBank,
   Sun,
+  Zap,
 } from 'lucide-react'
 
 function Sidebar({ onOpenCalendarSync }) {
   const { t, language } = useTranslation()
-  const { 
-    activeView, 
-    setActiveView, 
-    selectedProject, 
+  const {
+    activeView,
+    setActiveView,
+    selectedProject,
     setSelectedProject,
     tasks,
     ideas,
@@ -50,8 +51,15 @@ function Sidebar({ onOpenCalendarSync }) {
   const todayDone = todayTaskIds.filter(id => tasks.find(t => t.id === id)?.completed).length
 
   const navItems = [
-    { id: 'today', icon: Sun, label: language === 'is' ? 'Í dag' : 'Today', count: todayTaskIds.length > 0 ? `${todayDone}/${todayTaskIds.length}` : null, countColor: todayDone === todayTaskIds.length && todayTaskIds.length > 0 ? 'green' : 'amber' },
+    {
+      id: 'today',
+      icon: Sun,
+      label: language === 'is' ? 'Í dag' : 'Today',
+      count: todayTaskIds.length > 0 ? `${todayDone}/${todayTaskIds.length}` : null,
+      countColor: todayDone === todayTaskIds.length && todayTaskIds.length > 0 ? 'green' : 'amber',
+    },
     { id: 'dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
+    { id: 'focusmode', icon: Zap, label: language === 'is' ? 'Einbeittu þér' : 'Focus Mode', badge: 'new' },
     { id: 'projects', icon: FolderKanban, label: language === 'is' ? 'Verkefni' : 'Projects', badge: 'new' },
     { id: 'calendar', icon: Calendar, label: t('nav.calendar') },
     { id: 'roadmap', icon: GitBranch, label: language === 'is' ? 'Tímalína' : 'Roadmap', badge: 'new' },
@@ -63,8 +71,6 @@ function Sidebar({ onOpenCalendarSync }) {
     { id: 'budget', icon: PiggyBank, label: language === 'is' ? 'Sparnaður' : 'Budget Saver', badge: 'new' },
   ]
 
-// project stats moved to Projects Board
-
   const countColor = {
     amber: 'bg-amber-500/15 text-amber-400',
     purple: 'bg-purple-500/15 text-purple-400',
@@ -74,12 +80,10 @@ function Sidebar({ onOpenCalendarSync }) {
 
   return (
     <aside className="w-56 bg-[var(--bg-secondary)] border-r border-[var(--border)] flex flex-col overflow-hidden sidebar-desktop">
-      {/* Time Tracker Widget */}
       <div className="p-3 border-b border-[var(--border)]">
         <TimeTrackerWidget />
       </div>
 
-      {/* Navigation */}
       <nav className="p-3 space-y-0.5">
         {navItems.map(item => {
           const isActive = activeView === item.id && !selectedProject
@@ -114,12 +118,9 @@ function Sidebar({ onOpenCalendarSync }) {
         })}
       </nav>
 
-      {/* Spacer */}
       <div className="flex-1 overflow-y-auto" />
 
-      {/* Bottom Actions */}
       <div className="p-3 border-t border-[var(--border)] space-y-1">
-        {/* Quick Actions Row */}
         <div className="flex items-center gap-1 mb-2">
           <button
             onClick={() => setTimeTrackerOpen(true)}
@@ -173,7 +174,6 @@ function Sidebar({ onOpenCalendarSync }) {
         </button>
       </div>
 
-      {/* Version */}
       <div className="px-4 py-2 text-center border-t border-[var(--border)]">
         <span className="text-2xs text-[var(--text-muted)] font-mono">
           ArnarFlow v{APP_VERSION}

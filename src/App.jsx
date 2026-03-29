@@ -3,6 +3,38 @@ import useStore from './store/useStore'
 import TitleBar from './components/TitleBar'
 import Sidebar from './components/Sidebar'
 import Dashboard from './components/Dashboard'
+<<<<<<< HEAD
+=======
+import ProjectView from './components/ProjectView'
+import ProjectsBoard from './components/ProjectsBoard'
+import IdeasInbox from './components/IdeasInbox'
+import HabitsView from './components/HabitsView'
+import CalendarView from './components/CalendarView'
+import QuickAddModal from './components/QuickAddModal'
+import CommandPalette from './components/CommandPalette'
+import SettingsModal from './components/SettingsModal'
+import AddProjectModal from './components/AddProjectModal'
+import KeyboardShortcutsModal from './components/KeyboardShortcutsModal'
+import WhatsNewModal from './components/WhatsNewModal'
+import AboutModal from './components/AboutModal'
+import PomodoroTimer from './components/PomodoroTimer'
+import QuickCaptureBar from './components/QuickCaptureBar'
+import FocusHistory from './components/FocusHistory'
+import WeeklyReview from './components/WeeklyReview'
+import StatsView from './components/StatsView'
+import NotesView from './components/NotesView'
+import BudgetSaver from './components/BudgetSaver'
+import OnboardingModal from './components/OnboardingModal'
+import RecurringTasksModal from './components/RecurringTasksModal'
+import BlaerSync from './components/BlaerSync'
+// v5.0.0 imports
+import TimeTracker from './components/TimeTracker'
+import NotificationSystem, { useNotificationChecker } from './components/NotificationSystem'
+import RoadmapView from './components/RoadmapView'
+import FocusModeView from './components/FocusModeView'
+import CalendarSync from './components/CalendarSync'
+import TaskDetailPanel from './components/TaskDetailPanel'
+>>>>>>> blaer/focus-mode-view
 import { ACCENT_COLORS } from './store/useStore'
 import { requestNotificationPermission } from './utils/notifications'
 
@@ -21,6 +53,7 @@ const NotesView = lazy(() => import('./components/NotesView'))
 const BudgetSaver = lazy(() => import('./components/BudgetSaver'))
 const RoadmapView = lazy(() => import('./components/RoadmapView'))
 const TodayView = lazy(() => import('./components/TodayView'))
+const FocusModeView = lazy(() => import('./components/FocusModeView'))
 
 // Lazy-loaded modals (loaded on open)
 const QuickAddModal = lazy(() => import('./components/QuickAddModal'))
@@ -249,6 +282,9 @@ function App() {
         break
       case 'today':
         view = <TodayView />
+        break
+      case 'focusmode':
+        view = <FocusModeView />
         break
       default:
         return <Dashboard />
