@@ -47,6 +47,11 @@ function Sidebar({ onOpenCalendarSync }) {
   const inboxIdeas = ideas.filter(i => i.status === 'inbox').length
   const habitsDoneToday = habits.filter(h => habitLogs[`${h.id}-${today}`]).length
 
+  const overdueTasks = tasks.filter(t => !t.completed && t.dueDate && t.dueDate < today).length
+  const dueTodayTasks = tasks.filter(t => !t.completed && t.dueDate === today).length
+  const dashboardCount = overdueTasks > 0 ? overdueTasks : (dueTodayTasks > 0 ? dueTodayTasks : null)
+  const dashboardCountColor = overdueTasks > 0 ? 'red' : 'blue'
+
   const todayTaskIds = useStore(state => state.todayTaskIds) || []
   const todayDone = todayTaskIds.filter(id => tasks.find(t => t.id === id)?.completed).length
 
@@ -58,7 +63,7 @@ function Sidebar({ onOpenCalendarSync }) {
       count: todayTaskIds.length > 0 ? `${todayDone}/${todayTaskIds.length}` : null,
       countColor: todayDone === todayTaskIds.length && todayTaskIds.length > 0 ? 'green' : 'amber',
     },
-    { id: 'dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
+    { id: 'dashboard', icon: LayoutDashboard, label: t('nav.dashboard'), count: dashboardCount, countColor: dashboardCountColor },
     { id: 'focusmode', icon: Zap, label: language === 'is' ? 'Einbeittu þér' : 'Focus Mode', badge: 'new' },
     { id: 'projects', icon: FolderKanban, label: language === 'is' ? 'Verkefni' : 'Projects', badge: 'new' },
     { id: 'calendar', icon: Calendar, label: t('nav.calendar') },
@@ -76,6 +81,7 @@ function Sidebar({ onOpenCalendarSync }) {
     purple: 'bg-purple-500/15 text-purple-400',
     green: 'bg-green-500/15 text-green-400',
     blue: 'bg-blue-500/15 text-blue-400',
+    red: 'bg-red-500/15 text-red-400',
   }
 
   return (
