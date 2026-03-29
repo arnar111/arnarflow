@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
-const APP_VERSION = '6.0.0-alpha.1'
+const APP_VERSION = '7.0.0'
 
 // Project statuses for Projects Kanban
 // - ideas: Hugmyndir
