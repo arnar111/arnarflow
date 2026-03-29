@@ -57,6 +57,8 @@ export const createUiSlice = (set, get) => ({
   setWhatsNewOpen: (open) => set({ whatsNewOpen: open }),
   recurringOpen: false,
   setRecurringOpen: (open) => set({ recurringOpen: open }),
+  templatesOpen: false,
+  setTemplatesOpen: (open) => set({ templatesOpen: open }),
   notificationsPanelOpen: false,
   setNotificationsPanelOpen: (open) => set({ notificationsPanelOpen: open }),
   timeTrackerOpen: false,

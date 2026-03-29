@@ -32,6 +32,7 @@ const PomodoroTimer = lazy(() => import('./components/PomodoroTimer'))
 const WeeklyReview = lazy(() => import('./components/WeeklyReview'))
 const OnboardingModal = lazy(() => import('./components/OnboardingModal'))
 const RecurringTasksModal = lazy(() => import('./components/RecurringTasksModal'))
+const TaskTemplatesModal = lazy(() => import('./components/TaskTemplatesModal'))
 const BlaerSync = lazy(() => import('./components/BlaerSync'))
 const TimeTracker = lazy(() => import('./components/TimeTracker'))
 const CalendarSync = lazy(() => import('./components/CalendarSync'))
@@ -68,6 +69,8 @@ function App() {
     shouldShowOnboarding,
     recurringOpen,
     setRecurringOpen,
+    templatesOpen,
+    setTemplatesOpen,
     focusStartTime,
     updateFocusElapsed,
     shouldShowWhatsNew,
@@ -83,7 +86,6 @@ function App() {
     setTimeTrackerOpen,
     notificationsPanelOpen,
     setNotificationsPanelOpen,
-    activeTimeSession,
     selectedTaskId,
     setSelectedTaskId,
   } = useStore()
@@ -96,7 +98,6 @@ function App() {
   const [gKeyPending, setGKeyPending] = useState(false)
   const gKeyTimer = useRef(null)
 
-  const seedProjectTasks = useStore(state => state.seedProjectTasks)
   const recalculateAllStreaks = useStore(state => state.recalculateAllStreaks)
 
   useEffect(() => {
@@ -230,6 +231,7 @@ function App() {
         setKeyboardShortcutsOpen(false)
         setTimeTrackerOpen(false)
         setNotificationsPanelOpen(false)
+        setTemplatesOpen(false)
       }
     }
 
@@ -238,7 +240,7 @@ function App() {
       window.removeEventListener('keydown', handleKeyDown)
       if (gKeyTimer.current) clearTimeout(gKeyTimer.current)
     }
-  }, [gKeyPending, setActiveView, setQuickAddOpen, setCommandPaletteOpen, setSettingsOpen, setKeyboardShortcutsOpen, setQuickIdeaMode, setTimeTrackerOpen, setNotificationsPanelOpen])
+  }, [gKeyPending, setActiveView, setQuickAddOpen, setCommandPaletteOpen, setSettingsOpen, setKeyboardShortcutsOpen, setQuickIdeaMode, setTimeTrackerOpen, setNotificationsPanelOpen, setTemplatesOpen])
 
   useEffect(() => {
     if (!focusStartTime) return
@@ -319,6 +321,7 @@ function App() {
           {weeklyReviewOpen && <WeeklyReview onClose={() => setWeeklyReviewOpen(false)} />}
           {onboardingOpen && <OnboardingModal />}
           {recurringOpen && <RecurringTasksModal onClose={() => setRecurringOpen(false)} />}
+          {templatesOpen && <TaskTemplatesModal onClose={() => setTemplatesOpen(false)} />}
           {timeTrackerOpen && <TimeTracker onClose={() => setTimeTrackerOpen(false)} />}
           {notificationsPanelOpen && <NotificationSystem onClose={() => setNotificationsPanelOpen(false)} />}
           {calendarSyncOpen && <CalendarSync onClose={() => setCalendarSyncOpen(false)} />}

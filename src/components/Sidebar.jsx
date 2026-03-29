@@ -37,6 +37,7 @@ function Sidebar({ onOpenCalendarSync }) {
     habitLogs,
     setSettingsOpen,
     setRecurringOpen,
+    setTemplatesOpen,
     setTimeTrackerOpen,
     setNotificationsPanelOpen,
     setKeyboardShortcutsOpen,
@@ -169,6 +170,13 @@ function Sidebar({ onOpenCalendarSync }) {
         >
           <Repeat size={18} />
           <span className="flex-1 text-left">{language === 'is' ? 'Endurtekin' : 'Recurring'}</span>
+        </button>
+        <button
+          onClick={() => setTemplatesOpen(true)}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-all"
+        >
+          <FileText size={18} />
+          <span className="flex-1 text-left">{language === 'is' ? 'Sniðmát' : 'Templates'}</span>
         </button>
         <button
           onClick={() => setSettingsOpen(true)}
