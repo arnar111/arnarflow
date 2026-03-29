@@ -6,5 +6,17 @@ export default defineConfig({
   base: './',
   server: {
     port: 5173
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunk — cached across app updates
+          vendor: ['react', 'react-dom'],
+          // Store + utilities — shared across views
+          store: ['zustand'],
+        }
+      }
+    }
   }
 })
