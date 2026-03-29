@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import useStore from '../store/useStore'
+import { renderMarkdown, markdownStyles } from '../utils/markdown'
 import { 
   Plus, 
   Search, 
@@ -10,7 +11,9 @@ import {
   ChevronRight,
   Save,
   X,
-  FileText
+  FileText,
+  Eye,
+  Pencil
 } from 'lucide-react'
 
 // Helper to get date string
@@ -41,6 +44,7 @@ export default function NotesView() {
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
+  const [previewMode, setPreviewMode] = useState(false)
   const textareaRef = useRef(null)
 
   // Get current note
@@ -200,13 +204,44 @@ export default function NotesView() {
           <div className="note-editor">
             {isEditing ? (
               <>
-                <textarea
-                  ref={textareaRef}
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                  placeholder="Skrifaðu glósur hér..."
-                  className="note-textarea"
-                />
+                {/* Editor toolbar */}
+                <div className="editor-toolbar">
+                  <div className="toolbar-tabs">
+                    <button
+                      onClick={() => setPreviewMode(false)}
+                      className={`toolbar-tab ${!previewMode ? 'active' : ''}`}
+                    >
+                      <Pencil size={14} />
+                      Skrifa
+                    </button>
+                    <button
+                      onClick={() => setPreviewMode(true)}
+                      className={`toolbar-tab ${previewMode ? 'active' : ''}`}
+                    >
+                      <Eye size={14} />
+                      Forskoðun
+                    </button>
+                  </div>
+                  <span className="toolbar-hint">
+                    Styður **feitletrað**, *skáletrað*, `kóða`, # fyrirsagnir, - lista
+                  </span>
+                </div>
+
+                {previewMode ? (
+                  <div className="note-display md-preview">
+                    {editContent.trim() ? renderMarkdown(editContent) : (
+                      <p className="text-muted">Ekkert til að forskoða...</p>
+                    )}
+                  </div>
+                ) : (
+                  <textarea
+                    ref={textareaRef}
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    placeholder="Skrifaðu glósur hér... (markdown stutt)"
+                    className="note-textarea"
+                  />
+                )}
                 <div className="editor-actions">
                   <button onClick={handleCancel} className="cancel-btn">
                     <X size={16} />
@@ -220,10 +255,8 @@ export default function NotesView() {
               </>
             ) : currentNote ? (
               <>
-                <div className="note-display">
-                  {currentNote.content.split('\n').map((line, i) => (
-                    <p key={i}>{line || '\u00A0'}</p>
-                  ))}
+                <div className="note-display md-preview">
+                  {renderMarkdown(currentNote.content)}
                 </div>
                 <div className="display-actions">
                   <button onClick={handleEdit} className="edit-btn">
@@ -578,6 +611,58 @@ export default function NotesView() {
         .start-writing-btn:hover {
           opacity: 0.9;
         }
+
+        .editor-toolbar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 12px;
+          gap: 12px;
+        }
+
+        .toolbar-tabs {
+          display: flex;
+          background: var(--bg-secondary);
+          border: 1px solid var(--border-color);
+          border-radius: 8px;
+          overflow: hidden;
+        }
+
+        .toolbar-tab {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 14px;
+          background: none;
+          border: none;
+          color: var(--text-secondary);
+          font-size: 13px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .toolbar-tab.active {
+          background: var(--accent-${accentColor})20;
+          color: var(--accent-${accentColor});
+          font-weight: 500;
+        }
+
+        .toolbar-tab:hover:not(.active) {
+          background: var(--bg-tertiary);
+        }
+
+        .toolbar-hint {
+          font-size: 12px;
+          color: var(--text-secondary);
+          opacity: 0.6;
+        }
+
+        .text-muted {
+          color: var(--text-secondary);
+          font-style: italic;
+        }
+
+        ${markdownStyles}
       `}</style>
     </div>
   )
