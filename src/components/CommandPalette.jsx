@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { Command } from 'cmdk'
+import Fuse from 'fuse.js'
 import useStore from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
-import { 
-  Search, 
-  LayoutDashboard, 
-  Lightbulb, 
-  Target, 
+import {
+  Search,
+  LayoutDashboard,
+  Lightbulb,
+  Target,
   Plus,
   Settings,
   Keyboard,
@@ -17,100 +19,50 @@ import {
   FileText,
   ArrowRight,
   Clock,
-  RefreshCw,
   Calendar,
   GitBranch,
   BarChart3,
   History,
   Sparkles,
-  Tag,
-  Flag
+  Flag,
+  ChefHat,
+  PiggyBank,
+  Timer,
 } from 'lucide-react'
-
-// Simple fuzzy match that returns match indices
-function fuzzyMatch(text, query) {
-  const textLower = text.toLowerCase()
-  const queryLower = query.toLowerCase()
-  
-  let queryIndex = 0
-  const matchIndices = []
-  
-  for (let i = 0; i < text.length && queryIndex < query.length; i++) {
-    if (textLower[i] === queryLower[queryIndex]) {
-      matchIndices.push(i)
-      queryIndex++
-    }
-  }
-  
-  // All query chars found?
-  if (queryIndex !== query.length) return null
-  
-  // Score: prefer consecutive matches and matches at word starts
-  let score = matchIndices.length * 10
-  for (let i = 1; i < matchIndices.length; i++) {
-    if (matchIndices[i] === matchIndices[i-1] + 1) score += 5 // consecutive
-  }
-  if (matchIndices[0] === 0) score += 15 // starts with query
-  
-  return { matchIndices, score }
-}
-
-// Highlight matched characters
-function HighlightedText({ text, matchIndices }) {
-  if (!matchIndices || matchIndices.length === 0) {
-    return <span>{text}</span>
-  }
-  
-  const parts = []
-  let lastIndex = 0
-  
-  matchIndices.forEach((index, i) => {
-    if (index > lastIndex) {
-      parts.push(<span key={`pre-${i}`}>{text.slice(lastIndex, index)}</span>)
-    }
-    parts.push(
-      <span key={`match-${i}`} className="text-accent font-semibold">
-        {text[index]}
-      </span>
-    )
-    lastIndex = index + 1
-  })
-  
-  if (lastIndex < text.length) {
-    parts.push(<span key="post">{text.slice(lastIndex)}</span>)
-  }
-  
-  return <>{parts}</>
-}
 
 function CommandPalette() {
   const { t, language } = useTranslation()
-  const { 
-    setCommandPaletteOpen, 
-    setActiveView, 
-    setSelectedProject,
-    setQuickAddOpen,
-    setSettingsOpen,
-    setKeyboardShortcutsOpen,
-    setAboutOpen,
-    setFocusProject,
-    setFocusTask,
-    projects,
-    tasks,
-    ideas,
-    notes,
-    toggleTask,
-    addIdea,
-    setQuickIdeaMode
-  } = useStore()
-  
+
+  const setCommandPaletteOpen = useStore((state) => state.setCommandPaletteOpen)
+  const setActiveView = useStore((state) => state.setActiveView)
+  const setSelectedProject = useStore((state) => state.setSelectedProject)
+  const setQuickAddOpen = useStore((state) => state.setQuickAddOpen)
+  const setSettingsOpen = useStore((state) => state.setSettingsOpen)
+  const setKeyboardShortcutsOpen = useStore((state) => state.setKeyboardShortcutsOpen)
+  const setAboutOpen = useStore((state) => state.setAboutOpen)
+  const setFocusProject = useStore((state) => state.setFocusProject)
+  const setFocusTask = useStore((state) => state.setFocusTask)
+
+  const projects = useStore((state) => state.projects)
+  const tasks = useStore((state) => state.tasks)
+  const ideas = useStore((state) => state.ideas)
+  const habits = useStore((state) => state.habits)
+  const habitLogs = useStore((state) => state.habitLogs)
+  const recipes = useStore((state) => state.recipes)
+  const notes = useStore((state) => state.notes)
+  const calendarEvents = useStore((state) => state.calendarEvents)
+
+  const toggleTask = useStore((state) => state.toggleTask)
+  const addIdea = useStore((state) => state.addIdea)
+  const quickIdeaMode = useStore((state) => state.quickIdeaMode)
+  const setQuickIdeaMode = useStore((state) => state.setQuickIdeaMode)
+
   const [query, setQuery] = useState('')
-  const [selectedIndex, setSelectedIndex] = useState(0)
   const [category, setCategory] = useState('all')
   const [ideaCaptureMode, setIdeaCaptureMode] = useState(false)
   const [recentlyUsed, setRecentlyUsed] = useState([])
+
   const inputRef = useRef(null)
-  const listRef = useRef(null)
 
   // Load recent from localStorage
   useEffect(() => {
@@ -122,367 +74,478 @@ function CommandPalette() {
     }
   }, [])
 
-  // Track command usage
+  // Open directly into idea-capture when Ctrl/Cmd+I triggers palette
+  useEffect(() => {
+    if (quickIdeaMode) {
+      setIdeaCaptureMode(true)
+      setQuery('')
+      setQuickIdeaMode(false)
+    }
+  }, [quickIdeaMode, setQuickIdeaMode])
+
   const trackUsage = (commandId) => {
-    const updated = [commandId, ...recentlyUsed.filter(id => id !== commandId)].slice(0, 5)
+    const updated = [commandId, ...recentlyUsed.filter((id) => id !== commandId)].slice(0, 6)
     setRecentlyUsed(updated)
     localStorage.setItem('arnarflow-recent-commands', JSON.stringify(updated))
   }
 
-  // Priority colors for tasks
   const getPriorityInfo = (priority) => {
     const info = {
-      urgent: { color: '#ef4444', label: 'Urgent' },
-      high: { color: '#f97316', label: 'High' },
-      medium: { color: '#eab308', label: 'Medium' },
-      low: { color: '#22c55e', label: 'Low' }
+      urgent: { color: '#ef4444', label: language === 'is' ? 'Brýnt' : 'Urgent' },
+      high: { color: '#f97316', label: language === 'is' ? 'Hátt' : 'High' },
+      medium: { color: '#eab308', label: language === 'is' ? 'Mið' : 'Medium' },
+      low: { color: '#22c55e', label: language === 'is' ? 'Lágt' : 'Low' },
     }
     return info[priority] || info.medium
   }
 
-  // Base commands
-  const commands = useMemo(() => [
-    { 
-      id: 'new-task', 
-      type: 'command',
-      icon: Plus, 
-      label: t('commandPalette.newTask'), 
-      shortcut: '⌘K', 
-      keywords: 'create add task verkefni',
-      action: () => { setCommandPaletteOpen(false); setQuickAddOpen(true) } 
-    },
-    { 
-      id: 'capture-idea', 
-      type: 'command',
-      icon: Zap, 
-      label: t('commandPalette.captureIdea'),
-      keywords: 'idea hugmynd capture quick',
-      shortcut: '⌘I', 
-      action: () => setIdeaCaptureMode(true)
-    },
-    { 
-      id: 'dashboard', 
-      type: 'command',
-      icon: LayoutDashboard, 
-      label: `${t('commandPalette.goTo')} ${t('nav.dashboard')}`, 
-      shortcut: 'G D',
-      keywords: 'home overview yfirlit',
-      action: () => { setActiveView('dashboard'); setSelectedProject(null) } 
-    },
-    { 
-      id: 'ideas', 
-      type: 'command',
-      icon: Lightbulb, 
-      label: `${t('commandPalette.goTo')} ${t('nav.ideas')}`, 
-      shortcut: 'G I',
-      keywords: 'inbox hugmyndir brainstorm',
-      action: () => { setActiveView('ideas'); setSelectedProject(null) } 
-    },
-    { 
-      id: 'habits', 
-      type: 'command',
-      icon: Target, 
-      label: `${t('commandPalette.goTo')} ${t('nav.habits')}`, 
-      shortcut: 'G H',
-      keywords: 'venjur routine daily',
-      action: () => { setActiveView('habits'); setSelectedProject(null) } 
-    },
-    { 
-      id: 'calendar', 
-      type: 'command',
-      icon: Calendar, 
-      label: `${t('commandPalette.goTo')} ${t('nav.calendar')}`, 
-      shortcut: 'G C',
-      keywords: 'dagatal schedule events',
-      action: () => { setActiveView('calendar'); setSelectedProject(null) } 
-    },
-    { 
-      id: 'roadmap', 
-      type: 'command',
-      icon: GitBranch, 
-      label: `${t('commandPalette.goTo')} ${language === 'is' ? 'Tímalína' : 'Roadmap'}`, 
-      shortcut: 'G R',
-      keywords: 'timeline gantt planning',
-      action: () => { setActiveView('roadmap'); setSelectedProject(null) } 
-    },
-    { 
-      id: 'focus', 
-      type: 'command',
-      icon: Clock, 
-      label: `${t('commandPalette.goTo')} ${language === 'is' ? 'Einbeiting' : 'Focus'}`, 
-      shortcut: 'G F',
-      keywords: 'pomodoro timer work',
-      action: () => { setActiveView('focus'); setSelectedProject(null) } 
-    },
-    { 
-      id: 'notes', 
-      type: 'command',
-      icon: FileText, 
-      label: `${t('commandPalette.goTo')} ${language === 'is' ? 'Glósur' : 'Notes'}`, 
-      shortcut: 'G N',
-      keywords: 'writing documents',
-      action: () => { setActiveView('notes'); setSelectedProject(null) } 
-    },
-    { 
-      id: 'stats', 
-      type: 'command',
-      icon: BarChart3, 
-      label: `${t('commandPalette.goTo')} ${language === 'is' ? 'Tölfræði' : 'Stats'}`, 
-      shortcut: 'G S',
-      keywords: 'analytics statistics data',
-      action: () => { setActiveView('stats'); setSelectedProject(null) } 
-    },
-    ...projects.map(p => ({
+  const baseCommands = useMemo(
+    () => [
+      {
+        id: 'new-task',
+        type: 'command',
+        group: 'commands',
+        icon: Plus,
+        label: t('commandPalette.newTask'),
+        keywords: 'create add task verkefni',
+        action: () => {
+          setCommandPaletteOpen(false)
+          setQuickAddOpen(true)
+        },
+      },
+      {
+        id: 'capture-idea',
+        type: 'command',
+        group: 'commands',
+        icon: Zap,
+        label: t('commandPalette.captureIdea'),
+        keywords: 'idea hugmynd capture quick',
+        action: () => setIdeaCaptureMode(true),
+      },
+      {
+        id: 'start-focus',
+        type: 'command',
+        group: 'commands',
+        icon: Timer,
+        label: language === 'is' ? 'Starta focus' : 'Start focus',
+        keywords: 'focus pomodoro timer einbeiting',
+        action: () => {
+          setCommandPaletteOpen(false)
+          setActiveView('focus')
+          setSelectedProject(null)
+        },
+      },
+      {
+        id: 'dashboard',
+        type: 'nav',
+        group: 'navigation',
+        icon: LayoutDashboard,
+        label: `${t('commandPalette.goTo')} ${t('nav.dashboard')}`,
+        keywords: 'home overview yfirlit',
+        action: () => {
+          setActiveView('dashboard')
+          setSelectedProject(null)
+        },
+      },
+      {
+        id: 'ideas',
+        type: 'nav',
+        group: 'navigation',
+        icon: Lightbulb,
+        label: `${t('commandPalette.goTo')} ${t('nav.ideas')}`,
+        keywords: 'inbox hugmyndir brainstorm',
+        action: () => {
+          setActiveView('ideas')
+          setSelectedProject(null)
+        },
+      },
+      {
+        id: 'habits',
+        type: 'nav',
+        group: 'navigation',
+        icon: Target,
+        label: `${t('commandPalette.goTo')} ${t('nav.habits')}`,
+        keywords: 'venjur routine daily',
+        action: () => {
+          setActiveView('habits')
+          setSelectedProject(null)
+        },
+      },
+      {
+        id: 'calendar',
+        type: 'nav',
+        group: 'navigation',
+        icon: Calendar,
+        label: `${t('commandPalette.goTo')} ${t('nav.calendar')}`,
+        keywords: 'dagatal schedule events',
+        action: () => {
+          setActiveView('calendar')
+          setSelectedProject(null)
+        },
+      },
+      {
+        id: 'roadmap',
+        type: 'nav',
+        group: 'navigation',
+        icon: GitBranch,
+        label: `${t('commandPalette.goTo')} ${language === 'is' ? 'Tímalína' : 'Roadmap'}`,
+        keywords: 'timeline gantt planning',
+        action: () => {
+          setActiveView('roadmap')
+          setSelectedProject(null)
+        },
+      },
+      {
+        id: 'focus',
+        type: 'nav',
+        group: 'navigation',
+        icon: Clock,
+        label: `${t('commandPalette.goTo')} ${language === 'is' ? 'Einbeiting' : 'Focus'}`,
+        keywords: 'pomodoro timer work',
+        action: () => {
+          setActiveView('focus')
+          setSelectedProject(null)
+        },
+      },
+      {
+        id: 'notes',
+        type: 'nav',
+        group: 'navigation',
+        icon: FileText,
+        label: `${t('commandPalette.goTo')} ${language === 'is' ? 'Glósur' : 'Notes'}`,
+        keywords: 'writing documents journal',
+        action: () => {
+          setActiveView('notes')
+          setSelectedProject(null)
+        },
+      },
+      {
+        id: 'stats',
+        type: 'nav',
+        group: 'navigation',
+        icon: BarChart3,
+        label: `${t('commandPalette.goTo')} ${language === 'is' ? 'Tölfræði' : 'Stats'}`,
+        keywords: 'analytics statistics data',
+        action: () => {
+          setActiveView('stats')
+          setSelectedProject(null)
+        },
+      },
+      {
+        id: 'recipes',
+        type: 'nav',
+        group: 'navigation',
+        icon: ChefHat,
+        label: `${t('commandPalette.goTo')} ${language === 'is' ? 'Uppskriftir' : 'Recipes'}`,
+        keywords: 'recipes matreiðsla cooking',
+        action: () => {
+          setActiveView('recipes')
+          setSelectedProject(null)
+        },
+      },
+      {
+        id: 'budget',
+        type: 'nav',
+        group: 'navigation',
+        icon: PiggyBank,
+        label: `${t('commandPalette.goTo')} ${language === 'is' ? 'Sparnaður' : 'Budget Saver'}`,
+        keywords: 'budget sparnaður savings',
+        action: () => {
+          setActiveView('budget')
+          setSelectedProject(null)
+        },
+      },
+      {
+        id: 'settings',
+        type: 'command',
+        group: 'settings',
+        icon: Settings,
+        label: t('commandPalette.openSettings'),
+        keywords: 'preferences stillingar options',
+        action: () => {
+          setCommandPaletteOpen(false)
+          setSettingsOpen(true)
+        },
+      },
+      {
+        id: 'shortcuts',
+        type: 'command',
+        group: 'settings',
+        icon: Keyboard,
+        label: t('settings.keyboardShortcuts'),
+        keywords: 'keys hotkeys flýtilyklar',
+        action: () => {
+          setCommandPaletteOpen(false)
+          setKeyboardShortcutsOpen(true)
+        },
+      },
+      {
+        id: 'about',
+        type: 'command',
+        group: 'settings',
+        icon: Info,
+        label: t('settings.about'),
+        keywords: 'version info um',
+        action: () => {
+          setCommandPaletteOpen(false)
+          setAboutOpen(true)
+        },
+      },
+    ],
+    [t, language, setCommandPaletteOpen, setQuickAddOpen, setActiveView, setSelectedProject, setSettingsOpen, setKeyboardShortcutsOpen, setAboutOpen]
+  )
+
+  const projectItems = useMemo(() => {
+    return (projects || []).map((p) => ({
       id: `project-${p.id}`,
-      type: 'command',
+      type: 'project',
+      group: 'projects',
       icon: () => <DynamicIcon name={p.icon} size={16} style={{ color: p.color }} />,
       label: `${t('commandPalette.goTo')} ${p.name}`,
       subtitle: p.description,
-      keywords: p.name.toLowerCase(),
-      action: () => { setActiveView('project'); setSelectedProject(p.id) }
-    })),
-    { 
-      id: 'settings', 
-      type: 'command',
-      icon: Settings, 
-      label: t('commandPalette.openSettings'), 
-      shortcut: '⌘,',
-      keywords: 'preferences stillingar options',
-      action: () => { setCommandPaletteOpen(false); setSettingsOpen(true) } 
-    },
-    { 
-      id: 'shortcuts', 
-      type: 'command',
-      icon: Keyboard, 
-      label: t('settings.keyboardShortcuts'),
-      keywords: 'keys hotkeys flýtilyklar',
-      shortcut: '?', 
-      action: () => { setCommandPaletteOpen(false); setKeyboardShortcutsOpen(true) } 
-    },
-    { 
-      id: 'about', 
-      type: 'command',
-      icon: Info, 
-      label: t('settings.about'),
-      keywords: 'version info um',
-      action: () => { setCommandPaletteOpen(false); setAboutOpen(true) } 
-    },
-  ], [t, projects, language])
+      keywords: `${p.name} ${p.description || ''}`.toLowerCase(),
+      action: () => {
+        setActiveView('project')
+        setSelectedProject(p.id)
+      },
+      meta: { color: p.color },
+    }))
+  }, [projects, t, setActiveView, setSelectedProject])
 
-  // Task items with better info
   const taskItems = useMemo(() => {
-    return tasks.filter(t => !t.completed).slice(0, 30).map(task => {
-      const project = projects.find(p => p.id === task.projectId)
+    const open = (tasks || []).filter((x) => !x.completed)
+    return open.slice(0, 60).map((task) => {
+      const project = (projects || []).find((p) => p.id === task.projectId)
       const priorityInfo = getPriorityInfo(task.priority)
       return {
         id: `task-${task.id}`,
         type: 'task',
+        group: 'tasks',
         icon: Circle,
         label: task.title,
         subtitle: project?.name || (language === 'is' ? 'Ekkert verkefni' : 'No project'),
-        color: project?.color,
-        priority: task.priority,
-        priorityColor: priorityInfo.color,
         keywords: `${task.title} ${project?.name || ''} ${task.description || ''}`.toLowerCase(),
+        meta: {
+          priority: task.priority,
+          priorityColor: priorityInfo.color,
+          projectColor: project?.color,
+          taskId: task.id,
+          projectId: task.projectId,
+        },
         action: () => {
           toggleTask(task.id)
-          setCommandPaletteOpen(false)
         },
         secondaryAction: () => {
           if (task.projectId) {
             setFocusProject(task.projectId)
             setFocusTask(task.id)
           }
-          setCommandPaletteOpen(false)
-        }
+        },
       }
     })
-  }, [tasks, projects, language])
+  }, [tasks, projects, language, toggleTask, setFocusProject, setFocusTask])
 
-  // Idea items
   const ideaItems = useMemo(() => {
-    return ideas.filter(i => i.status === 'inbox').slice(0, 15).map(idea => ({
-      id: `idea-${idea.id}`,
-      type: 'idea',
-      icon: Zap,
-      label: idea.title,
-      subtitle: idea.type || (language === 'is' ? 'Hugmynd' : 'Idea'),
-      keywords: `${idea.title} ${idea.type || ''}`.toLowerCase(),
-      action: () => {
-        setActiveView('ideas')
-        setCommandPaletteOpen(false)
-      }
-    }))
-  }, [ideas, language])
+    return (ideas || [])
+      .filter((i) => i.status === 'inbox')
+      .slice(0, 40)
+      .map((idea) => ({
+        id: `idea-${idea.id}`,
+        type: 'idea',
+        group: 'ideas',
+        icon: Zap,
+        label: idea.title,
+        subtitle: idea.type || (language === 'is' ? 'Hugmynd' : 'Idea'),
+        keywords: `${idea.title} ${idea.type || ''}`.toLowerCase(),
+        action: () => {
+          setActiveView('ideas')
+          setSelectedProject(null)
+        },
+      }))
+  }, [ideas, language, setActiveView, setSelectedProject])
 
-  // Note items — search within note content
+  const habitItems = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0]
+    return (habits || []).map((h) => {
+      const done = Boolean(habitLogs?.[`${h.id}-${today}`])
+      return {
+        id: `habit-${h.id}`,
+        type: 'habit',
+        group: 'habits',
+        icon: Target,
+        label: language === 'is' ? (h.nameIs || h.name) : (h.name || h.nameIs),
+        subtitle: done ? (language === 'is' ? 'Lokið í dag' : 'Done today') : (language === 'is' ? 'Ólokið í dag' : 'Not done today'),
+        keywords: `${h.name} ${h.nameIs} ${h.target || ''} ${h.targetIs || ''}`.toLowerCase(),
+        action: () => {
+          setActiveView('habits')
+          setSelectedProject(null)
+        },
+      }
+    })
+  }, [habits, habitLogs, language, setActiveView, setSelectedProject])
+
+  const recipeItems = useMemo(() => {
+    return (recipes || []).slice(0, 80).map((r) => ({
+      id: `recipe-${r.id}`,
+      type: 'recipe',
+      group: 'recipes',
+      icon: ChefHat,
+      label: r.name,
+      subtitle: r.category || (language === 'is' ? 'Uppskrift' : 'Recipe'),
+      keywords: `${r.name} ${r.category || ''} ${(r.tags || []).join(' ')}`.toLowerCase(),
+      action: () => {
+        setActiveView('recipes')
+        setSelectedProject(null)
+      },
+    }))
+  }, [recipes, language, setActiveView, setSelectedProject])
+
   const noteItems = useMemo(() => {
-    return Object.entries(notes || {}).map(([date, note]) => {
-      const preview = (note.content || '').replace(/[#*`>\-\[\]]/g, '').trim().slice(0, 80)
-      const formattedDate = new Date(date + 'T12:00:00').toLocaleDateString(language === 'is' ? 'is-IS' : 'en-US', {
-        day: 'numeric', month: 'short', year: 'numeric'
-      })
+    const entries = Object.entries(notes || {})
+    // Latest first
+    entries.sort((a, b) => String(b[0]).localeCompare(String(a[0])))
+    return entries.slice(0, 80).map(([date, note]) => {
+      const content = String(note?.content || '')
+      const firstLine = content.split('\n').find(Boolean) || ''
+      const preview = firstLine.trim().slice(0, 60)
       return {
         id: `note-${date}`,
         type: 'note',
+        group: 'notes',
         icon: FileText,
-        label: formattedDate,
-        subtitle: preview || (language === 'is' ? 'Tóm glósa' : 'Empty note'),
-        keywords: `${date} ${note.content || ''}`.toLowerCase(),
+        label: language === 'is' ? `Glósa: ${date}` : `Note: ${date}`,
+        subtitle: preview,
+        keywords: `${date} ${content}`.toLowerCase(),
         action: () => {
           setActiveView('notes')
           setSelectedProject(null)
-          setCommandPaletteOpen(false)
-        }
+        },
       }
-    }).sort((a, b) => b.id.localeCompare(a.id)) // newest first
-  }, [notes, language])
+    })
+  }, [notes, language, setActiveView, setSelectedProject])
 
-  // Combined & filtered results with fuzzy search
+  // Include calendar events in the search space (so "events" quick stat is discoverable)
+  const eventItems = useMemo(() => {
+    return (calendarEvents || []).slice(0, 80).map((e) => {
+      const title = e?.title || e?.summary || e?.name || (language === 'is' ? 'Viðburður' : 'Event')
+      const start = e?.start || e?.startTime || e?.startDate || ''
+      const startDate = typeof start === 'string' ? start.slice(0, 10) : ''
+      return {
+        id: `event-${e?.id || `${title}-${startDate}`}`,
+        type: 'event',
+        group: 'events',
+        icon: Calendar,
+        label: title,
+        subtitle: startDate,
+        keywords: `${title} ${startDate}`.toLowerCase(),
+        action: () => {
+          setActiveView('calendar')
+          setSelectedProject(null)
+        },
+      }
+    })
+  }, [calendarEvents, language, setActiveView, setSelectedProject])
+
   const allItems = useMemo(() => {
-    let items = []
-    
-    if (category === 'all' || category === 'commands') {
-      items = [...items, ...commands]
+    const items = [
+      ...baseCommands,
+      ...projectItems,
+      ...taskItems,
+      ...ideaItems,
+      ...habitItems,
+      ...recipeItems,
+      ...noteItems,
+      ...eventItems,
+    ]
+
+    // category filter
+    const filteredByCategory = (() => {
+      if (category === 'all') return items
+      if (category === 'commands') return items.filter((x) => x.group === 'commands' || x.group === 'navigation' || x.group === 'settings')
+      return items.filter((x) => x.group === category)
+    })()
+
+    // no query: show recent first
+    if (!query.trim()) {
+      const recent = recentlyUsed.map((id) => filteredByCategory.find((x) => x.id === id)).filter(Boolean)
+      const rest = filteredByCategory.filter((x) => !recentlyUsed.includes(x.id))
+      return [...recent, ...rest].slice(0, 20)
     }
-    if (category === 'all' || category === 'tasks') {
-      items = [...items, ...taskItems]
-    }
-    if (category === 'all' || category === 'ideas') {
-      items = [...items, ...ideaItems]
-    }
-    if (category === 'all' || category === 'notes') {
-      items = [...items, ...noteItems]
-    }
-    
-    if (!query) {
-      // Show recent items first when no query
-      const recentItems = recentlyUsed
-        .map(id => items.find(item => item.id === id))
-        .filter(Boolean)
-      
-      const otherItems = items.filter(item => !recentlyUsed.includes(item.id))
-      
-      return [...recentItems, ...otherItems].slice(0, 15)
-    }
-    
-    // Fuzzy search with scoring
-    const scored = items
-      .map(item => {
-        const labelMatch = fuzzyMatch(item.label, query)
-        const keywordsMatch = item.keywords ? fuzzyMatch(item.keywords, query) : null
-        const subtitleMatch = item.subtitle ? fuzzyMatch(item.subtitle, query) : null
-        
-        const bestMatch = [labelMatch, keywordsMatch, subtitleMatch]
-          .filter(Boolean)
-          .sort((a, b) => b.score - a.score)[0]
-        
-        if (!bestMatch) return null
-        
-        return {
-          ...item,
-          matchIndices: labelMatch?.matchIndices || [],
-          score: bestMatch.score
-        }
-      })
-      .filter(Boolean)
-      .sort((a, b) => b.score - a.score)
-    
-    return scored.slice(0, 15)
-  }, [commands, taskItems, ideaItems, query, category, recentlyUsed])
+
+    // query: fuse search
+    const fuse = new Fuse(filteredByCategory, {
+      keys: ['label', 'subtitle', 'keywords'],
+      threshold: 0.35,
+      ignoreLocation: true,
+      minMatchCharLength: 2,
+    })
+
+    return fuse.search(query.trim()).map((r) => r.item).slice(0, 20)
+  }, [baseCommands, projectItems, taskItems, ideaItems, habitItems, recipeItems, noteItems, eventItems, category, query, recentlyUsed])
 
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
 
-  useEffect(() => {
-    setSelectedIndex(0)
-  }, [query, category])
+  const categories = useMemo(
+    () => [
+      { id: 'all', label: t('commandPalette.all'), icon: Search },
+      { id: 'commands', label: t('commandPalette.commands'), icon: ArrowRight },
+      { id: 'tasks', label: t('commandPalette.tasks'), icon: CheckSquare },
+      { id: 'projects', label: language === 'is' ? 'Verkefni' : 'Projects', icon: LayoutDashboard },
+      { id: 'habits', label: t('nav.habits'), icon: Target },
+      { id: 'recipes', label: language === 'is' ? 'Uppskriftir' : 'Recipes', icon: ChefHat },
+      { id: 'notes', label: language === 'is' ? 'Glósur' : 'Notes', icon: FileText },
+      { id: 'ideas', label: t('commandPalette.ideas'), icon: Lightbulb },
+    ],
+    [t, language]
+  )
 
-  // Scroll selected item into view
-  useEffect(() => {
-    if (listRef.current && allItems.length > 0) {
-      const selectedEl = listRef.current.querySelector(`[data-index="${selectedIndex}"]`)
-      if (selectedEl) {
-        selectedEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
-      }
-    }
-  }, [selectedIndex])
+  const placeholder = ideaCaptureMode
+    ? (language === 'is' ? 'Skráðu hugmynd...' : 'Type your idea...')
+    : (language === 'is' ? 'Leita eða skipun...' : t('commandPalette.placeholder'))
 
-  const handleKeyDown = (e) => {
-    if (ideaCaptureMode) {
-      if (e.key === 'Escape') {
-        setIdeaCaptureMode(false)
-        setQuery('')
-      } else if (e.key === 'Enter' && query.trim()) {
-        addIdea({
-          title: query.trim(),
-          type: 'other'
-        })
-        setQuery('')
-        setIdeaCaptureMode(false)
-        setCommandPaletteOpen(false)
-      }
-      return
-    }
-
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      setSelectedIndex(i => Math.min(i + 1, allItems.length - 1))
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      setSelectedIndex(i => Math.max(i - 1, 0))
-    } else if (e.key === 'Enter' && allItems[selectedIndex]) {
-      e.preventDefault()
-      const item = allItems[selectedIndex]
-      trackUsage(item.id)
-      item.action()
-      setCommandPaletteOpen(false)
-    } else if (e.key === 'Tab') {
-      e.preventDefault()
-      const categories = ['all', 'commands', 'tasks', 'ideas']
-      const currentIndex = categories.indexOf(category)
-      setCategory(categories[(currentIndex + 1) % categories.length])
-    } else if (e.key === 'Escape') {
-      setCommandPaletteOpen(false)
-    }
-  }
-
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      setCommandPaletteOpen(false)
-    }
-  }
-
-  const handleItemClick = (item) => {
-    trackUsage(item.id)
-    item.action()
+  const closePalette = () => {
     setCommandPaletteOpen(false)
+    setIdeaCaptureMode(false)
+    setQuery('')
+    setCategory('all')
   }
-
-  const getTypeIcon = (type) => {
-    switch (type) {
-      case 'task': return <Circle size={12} className="text-blue-400" />
-      case 'idea': return <Zap size={12} className="text-amber-400" />
-      case 'note': return <FileText size={12} className="text-emerald-400" />
-      default: return <ArrowRight size={12} className="text-zinc-500" />
-    }
-  }
-
-  const categories = [
-    { id: 'all', label: t('commandPalette.all'), icon: Search },
-    { id: 'commands', label: t('commandPalette.commands'), icon: ArrowRight },
-    { id: 'tasks', label: t('commandPalette.tasks'), icon: CheckSquare },
-    { id: 'ideas', label: t('commandPalette.ideas'), icon: Lightbulb },
-    { id: 'notes', label: language === 'is' ? 'Glósur' : 'Notes', icon: FileText },
-  ]
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center pt-16 z-50 animate-fade-in"
-      onClick={handleBackdropClick}
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) closePalette()
+      }}
     >
-      <div className="w-full max-w-2xl bg-dark-900 rounded-2xl border border-dark-500 shadow-2xl shadow-black/50 overflow-hidden animate-fade-in-scale">
+      <Command
+        className="w-full max-w-2xl bg-dark-900 rounded-2xl border border-dark-500 shadow-2xl shadow-black/50 overflow-hidden animate-fade-in-scale"
+        // we provide our own filtering (Fuse)
+        shouldFilter={false}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') {
+            e.preventDefault()
+            closePalette()
+            return
+          }
+
+          if (ideaCaptureMode && e.key === 'Enter') {
+            e.preventDefault()
+            if (!query.trim()) return
+            addIdea({ title: query.trim(), type: 'other' })
+            closePalette()
+            return
+          }
+
+          if (!ideaCaptureMode && e.key === 'Tab') {
+            e.preventDefault()
+            const ids = categories.map((c) => c.id)
+            const idx = ids.indexOf(category)
+            setCategory(ids[(idx + 1) % ids.length])
+          }
+        }}
+      >
         {/* Search Input */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-dark-600">
           {ideaCaptureMode ? (
@@ -490,29 +553,23 @@ function CommandPalette() {
           ) : (
             <Search size={20} className="text-zinc-500" />
           )}
-          <input
+
+          <Command.Input
             ref={inputRef}
-            type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={ideaCaptureMode 
-              ? (language === 'is' ? 'Skráðu hugmynd...' : 'Type your idea...')
-              : t('commandPalette.placeholder')
-            }
+            onValueChange={setQuery}
+            placeholder={placeholder}
             className="flex-1 bg-transparent text-lg outline-none placeholder:text-zinc-600"
             autoComplete="off"
-            spellCheck="false"
+            spellCheck={false}
           />
+
           {ideaCaptureMode ? (
             <button
               onClick={() => {
-                if (query.trim()) {
-                  addIdea({ title: query.trim(), type: 'other' })
-                  setQuery('')
-                  setIdeaCaptureMode(false)
-                  setCommandPaletteOpen(false)
-                }
+                if (!query.trim()) return
+                addIdea({ title: query.trim(), type: 'other' })
+                closePalette()
               }}
               disabled={!query.trim()}
               className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -529,10 +586,15 @@ function CommandPalette() {
           <div className="px-5 py-3 bg-amber-500/10 border-b border-amber-500/20 flex items-center gap-2 animate-fade-in">
             <Sparkles size={14} className="text-amber-400" />
             <span className="text-sm text-amber-300">
-              {language === 'is' ? 'Hugmyndafanga virkur - sláðu inn og ýttu á Enter' : 'Idea capture mode - type and press Enter'}
+              {language === 'is'
+                ? 'Hugmyndafanga virkur — sláðu inn og ýttu á Enter'
+                : 'Idea capture mode — type and press Enter'}
             </span>
             <button
-              onClick={() => setIdeaCaptureMode(false)}
+              onClick={() => {
+                setIdeaCaptureMode(false)
+                setQuery('')
+              }}
               className="ml-auto text-amber-400 hover:text-amber-300 text-sm"
             >
               {language === 'is' ? 'Hætta við' : 'Cancel'}
@@ -542,14 +604,14 @@ function CommandPalette() {
 
         {/* Category Tabs */}
         {!ideaCaptureMode && (
-          <div className="flex gap-1 px-4 py-2 border-b border-dark-600/50 bg-dark-800/30">
-            {categories.map(cat => (
+          <div className="flex gap-1 px-4 py-2 border-b border-dark-600/50 bg-dark-800/30 flex-wrap">
+            {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setCategory(cat.id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  category === cat.id 
-                    ? 'bg-accent/20 text-accent' 
+                  category === cat.id
+                    ? 'bg-accent/20 text-accent'
                     : 'text-zinc-500 hover:text-zinc-300 hover:bg-dark-700'
                 }`}
               >
@@ -563,17 +625,19 @@ function CommandPalette() {
           </div>
         )}
 
-        {/* Results */}
-        {!ideaCaptureMode && (
-          <div ref={listRef} className="max-h-96 overflow-y-auto py-2">
-            {allItems.length === 0 ? (
+        <Command.List className="max-h-96 overflow-y-auto py-2">
+          <Command.Empty>
+            {!ideaCaptureMode && (
               <div className="px-4 py-12 text-center">
                 <Search size={32} className="mx-auto text-zinc-700 mb-3" />
                 <p className="text-zinc-500">{t('commandPalette.noResults')}</p>
                 <p className="text-xs text-zinc-600 mt-1">{t('commandPalette.tryDifferent')}</p>
                 <div className="flex items-center justify-center gap-2 mt-4">
                   <button
-                    onClick={() => { setCommandPaletteOpen(false); setQuickAddOpen(true) }}
+                    onClick={() => {
+                      closePalette()
+                      setQuickAddOpen(true)
+                    }}
                     className="px-3 py-1.5 bg-accent/20 hover:bg-accent/30 text-accent text-sm rounded-lg transition-colors"
                   >
                     + {language === 'is' ? 'Nýtt verkefni' : 'New task'}
@@ -586,93 +650,88 @@ function CommandPalette() {
                   </button>
                 </div>
               </div>
-            ) : (
-              <>
-                {/* Recent header when showing recent items */}
-                {!query && recentlyUsed.length > 0 && (
-                  <div className="px-5 py-1.5 flex items-center gap-2 text-2xs text-zinc-600 uppercase tracking-wider">
-                    <History size={10} />
-                    {language === 'is' ? 'Nýlega notað' : 'Recent'}
+            )}
+          </Command.Empty>
+
+          {/* Recent header */}
+          {!ideaCaptureMode && !query.trim() && recentlyUsed.length > 0 && (
+            <div className="px-5 py-1.5 flex items-center gap-2 text-2xs text-zinc-600 uppercase tracking-wider">
+              <History size={10} />
+              {language === 'is' ? 'Nýlega notað' : 'Recent'}
+            </div>
+          )}
+
+          {allItems.map((item) => {
+            const Icon = item.icon
+            const isTask = item.type === 'task'
+
+            return (
+              <Command.Item
+                key={item.id}
+                value={`${item.label} ${item.subtitle || ''} ${item.keywords || ''}`}
+                onSelect={() => {
+                  // idea capture mode: Enter captures idea
+                  if (ideaCaptureMode) {
+                    if (!query.trim()) return
+                    addIdea({ title: query.trim(), type: 'other' })
+                    closePalette()
+                    return
+                  }
+
+                  trackUsage(item.id)
+                  item.action?.()
+                  setCommandPaletteOpen(false)
+                }}
+                className="mx-2 rounded-xl"
+              >
+                {({ active }) => (
+                  <div
+                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-left transition-all rounded-xl ${
+                      active ? 'bg-dark-700' : 'hover:bg-dark-800'
+                    }`}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                        active ? 'bg-dark-600 scale-110' : 'bg-dark-800'
+                      }`}
+                    >
+                      {typeof Icon === 'function' ? <Icon /> : <Icon size={16} style={{ color: item.meta?.color }} />}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm truncate ${active ? 'text-white' : 'text-zinc-300'}`}>{item.label}</p>
+                      {item.subtitle && <p className="text-2xs text-zinc-500 truncate">{item.subtitle}</p>}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {isTask && item.meta?.priority && item.meta?.priority !== 'medium' && (
+                        <Flag size={12} style={{ color: item.meta?.priorityColor }} />
+                      )}
+
+                      {isTask && item.secondaryAction && (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            trackUsage(item.id)
+                            item.secondaryAction?.()
+                            setCommandPaletteOpen(false)
+                          }}
+                          className={`p-1.5 rounded transition-colors ${active ? 'hover:bg-accent/20 text-accent' : 'text-zinc-600 hover:text-accent hover:bg-accent/10'}`}
+                          title={language === 'is' ? 'Einbeita sér að verkefni' : 'Focus on task'}
+                        >
+                          <Clock size={14} />
+                        </button>
+                      )}
+
+                      <ArrowRight size={12} className="text-zinc-600" />
+                    </div>
                   </div>
                 )}
-                
-                <ul>
-                  {allItems.map((item, index) => {
-                    const Icon = item.icon
-                    const isSelected = index === selectedIndex
-                    const isRecent = !query && recentlyUsed.includes(item.id) && index < recentlyUsed.length
-                    
-                    return (
-                      <li key={item.id} data-index={index}>
-                        <button
-                          onClick={() => handleItemClick(item)}
-                          onMouseEnter={() => setSelectedIndex(index)}
-                          className={`w-full flex items-center gap-3 px-5 py-2.5 text-left transition-all ${
-                            isSelected 
-                              ? 'bg-dark-700' 
-                              : 'hover:bg-dark-800'
-                          }`}
-                        >
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
-                            isSelected ? 'bg-dark-600 scale-110' : 'bg-dark-800'
-                          }`}>
-                            {typeof Icon === 'function' ? <Icon /> : <Icon size={16} style={{ color: item.color }} />}
-                          </div>
-                          
-                          <div className="flex-1 min-w-0">
-                            <p className={`text-sm truncate ${isSelected ? 'text-white' : 'text-zinc-300'}`}>
-                              {item.matchIndices ? (
-                                <HighlightedText text={item.label} matchIndices={item.matchIndices} />
-                              ) : (
-                                item.label
-                              )}
-                            </p>
-                            {item.subtitle && (
-                              <p className="text-2xs text-zinc-500 truncate">{item.subtitle}</p>
-                            )}
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            {/* Priority indicator for tasks */}
-                            {item.type === 'task' && item.priority && item.priority !== 'medium' && (
-                              <Flag size={12} style={{ color: item.priorityColor }} />
-                            )}
-                            
-                            {/* Recent indicator */}
-                            {isRecent && (
-                              <History size={12} className="text-zinc-600" />
-                            )}
-                            
-                            {getTypeIcon(item.type)}
-                            
-                            {item.shortcut && (
-                              <kbd className="kbd">{item.shortcut}</kbd>
-                            )}
-                            
-                            {/* Focus button for tasks */}
-                            {item.type === 'task' && item.secondaryAction && isSelected && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  trackUsage(item.id)
-                                  item.secondaryAction()
-                                }}
-                                className="p-1.5 hover:bg-accent/20 rounded text-accent"
-                                title={language === 'is' ? 'Einbeita sér að verkefni' : 'Focus on task'}
-                              >
-                                <Clock size={14} />
-                              </button>
-                            )}
-                          </div>
-                        </button>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </>
-            )}
-          </div>
-        )}
+              </Command.Item>
+            )
+          })}
+        </Command.List>
 
         {/* Footer */}
         <div className="flex items-center gap-4 px-5 py-3 border-t border-dark-600 text-2xs text-zinc-600 bg-dark-800/30">
@@ -682,11 +741,9 @@ function CommandPalette() {
           <span className="flex items-center gap-1">
             <kbd className="kbd text-2xs">↵</kbd> {t('commandPalette.select')}
           </span>
-          {!ideaCaptureMode && (
-            <span className="flex items-center gap-1">
-              <kbd className="kbd text-2xs">Tab</kbd> {t('commandPalette.category')}
-            </span>
-          )}
+          <span className="flex items-center gap-1">
+            <kbd className="kbd text-2xs">Tab</kbd> {t('commandPalette.category')}
+          </span>
           <span className="flex-1" />
           {!ideaCaptureMode && (
             <span className="text-zinc-500">
@@ -694,7 +751,8 @@ function CommandPalette() {
             </span>
           )}
         </div>
-      </div>
+      </Command>
+
     </div>
   )
 }

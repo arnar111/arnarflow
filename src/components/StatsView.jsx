@@ -1,5 +1,14 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import useStore from '../store/useStore'
+import WeeklyReview from './WeeklyReview'
+import {
+  BarChart3,
+  CheckCircle2,
+  Clock,
+  Flame,
+  CreditCard,
+  ArrowRight
+} from 'lucide-react'
 
 // Helper to get date string
 const getDateStr = (date) => date.toISOString().split('T')[0]
@@ -266,8 +275,10 @@ export default function StatsView() {
   const tasks = useStore(state => state.tasks)
   const projects = useStore(state => state.projects)
   const habits = useStore(state => state.habits)
+  const habitLogs = useStore(state => state.habitLogs)
   const pomodoroSessions = useStore(state => state.pomodoroSessions || [])
-  const accentColor = useStore(state => state.accentColor)
+  const budgetTransactions = useStore(state => state.budgetTransactions || [])
+  const [showWeeklyReview, setShowWeeklyReview] = useState(false)
 
   const stats = useMemo(() => {
     const now = new Date()
@@ -320,6 +331,36 @@ export default function StatsView() {
     
     const pomodoroDaily = last7Days.map(dateStr => pomodoroSessions.filter(s => getDateStr(new Date(s.startTime)) === dateStr).length)
     
+    // Cross-module metrics
+    // Habit consistency (this week)
+    const daysSinceWeekStart = Math.floor((now - weekStart) / (1000 * 60 * 60 * 24)) + 1
+    const totalPossibleHabits = habits.length * daysSinceWeekStart
+    const completedHabitsThisWeek = habits.reduce((acc, habit) => {
+      let count = 0
+      for (let i = 0; i < daysSinceWeekStart; i++) {
+        const d = new Date(weekStart)
+        d.setDate(d.getDate() + i)
+        if (habitLogs[`${habit.id}-${getDateStr(d)}`]) count++
+      }
+      return acc + count
+    }, 0)
+    const habitConsistency = totalPossibleHabits > 0 ? Math.round((completedHabitsThisWeek / totalPossibleHabits) * 100) : 0
+
+    // Budget Spending (this week vs last week)
+    const lastWeekStart = new Date(weekStart)
+    lastWeekStart.setDate(lastWeekStart.getDate() - 7)
+    
+    const thisWeekSpending = budgetTransactions
+      .filter(t => new Date(t.date) >= weekStart && t.amount < 0)
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0)
+      
+    const lastWeekSpending = budgetTransactions
+      .filter(t => new Date(t.date) >= lastWeekStart && new Date(t.date) < weekStart && t.amount < 0)
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0)
+      
+    const budgetTrend = thisWeekSpending > lastWeekSpending ? 'up' : 'down'
+    const budgetDiff = Math.abs(thisWeekSpending - lastWeekSpending)
+
     return {
       totalTasks: allTasks.length,
       completedTasks: completedTasks.length,
@@ -339,8 +380,12 @@ export default function StatsView() {
       dailyData,
       dailyCounts: dailyData.map(d => d.count),
       totalHabits: habits.length,
+      habitConsistency,
+      thisWeekSpending,
+      budgetTrend,
+      budgetDiff
     }
-  }, [tasks, projects, habits, pomodoroSessions])
+  }, [tasks, projects, habits, habitLogs, pomodoroSessions, budgetTransactions])
 
   const dayNames = ['Sun', 'Mán', 'Þri', 'Mið', 'Fim', 'Fös', 'Lau']
   const shortDayNames = stats.dailyData.map(d => dayNames[new Date(d.date).getDay()])
@@ -356,13 +401,71 @@ export default function StatsView() {
           <h1>Tölfræði</h1>
           <p className="stats-subtitle">Yfirlit yfir framleiðni þína</p>
         </div>
-        <div className="stats-header-decoration">
-          <div className="decoration-ring" />
-          <div className="decoration-ring" />
-          <div className="decoration-ring" />
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setShowWeeklyReview(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-accent to-accent-hover text-white rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+          >
+            <BarChart3 size={18} />
+            Vikulegt yfirlit
+          </button>
+          <div className="stats-header-decoration">
+            <div className="decoration-ring" />
+            <div className="decoration-ring" />
+            <div className="decoration-ring" />
+          </div>
         </div>
       </header>
 
+      {/* Cross-Module Overview Section */}
+      <section className="metrics-section">
+        <div className="grid grid-cols-4 gap-4 mb-6">
+          <div className="bg-dark-800/80 p-4 rounded-xl border border-dark-600 flex items-center gap-4">
+            <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400">
+              <CheckCircle2 size={24} />
+            </div>
+            <div>
+              <p className="text-xs text-zinc-400 uppercase font-medium">Verkefni (vika)</p>
+              <p className="text-xl font-bold text-white">{stats.weekCompleted}</p>
+            </div>
+          </div>
+          
+          <div className="bg-dark-800/80 p-4 rounded-xl border border-dark-600 flex items-center gap-4">
+            <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center text-purple-400">
+              <Clock size={24} />
+            </div>
+            <div>
+              <p className="text-xs text-zinc-400 uppercase font-medium">Einbeiting (vika)</p>
+              <p className="text-xl font-bold text-white">{(stats.totalFocusMinutes / 60).toFixed(1)}h</p>
+            </div>
+          </div>
+          
+          <div className="bg-dark-800/80 p-4 rounded-xl border border-dark-600 flex items-center gap-4">
+            <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center text-orange-400">
+              <Flame size={24} />
+            </div>
+            <div>
+              <p className="text-xs text-zinc-400 uppercase font-medium">Vanarútína</p>
+              <p className="text-xl font-bold text-white">{stats.habitConsistency}%</p>
+            </div>
+          </div>
+
+          <div className="bg-dark-800/80 p-4 rounded-xl border border-dark-600 flex items-center gap-4">
+            <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center text-green-400">
+              <CreditCard size={24} />
+            </div>
+            <div>
+              <p className="text-xs text-zinc-400 uppercase font-medium">Eyðsla (vika)</p>
+              <p className="text-xl font-bold text-white">{stats.thisWeekSpending.toLocaleString()} kr</p>
+              <span className={`text-xs ${stats.budgetTrend === 'up' ? 'text-red-400' : 'text-green-400'}`}>
+                {stats.budgetTrend === 'up' ? '↑' : '↓'} {stats.budgetDiff.toLocaleString()} kr
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Daily Metrics */}
       <section className="metrics-section">
         <div className="metrics-grid">
           <MetricCard icon="🔥" value={stats.currentStreak} label="Daga í röð" trend={stats.currentStreak > 0 ? 'up' : 'neutral'} trendValue={stats.currentStreak > 0 ? 'Áfram!' : '—'} delay={0} />
@@ -435,6 +538,8 @@ export default function StatsView() {
           </div>
         </section>
       )}
+
+      {showWeeklyReview && <WeeklyReview onClose={() => setShowWeeklyReview(false)} />}
 
       <style jsx>{`
         .stats-view { position: relative; padding: 32px; max-width: 1200px; margin: 0 auto; min-height: 100%; overflow-y: auto; }

@@ -64,7 +64,9 @@ export function SubtaskBadge({ subtasks = [] }) {
 // Full subtask list component
 function SubtaskList({ taskId, subtasks = [], compact = false }) {
   const { language } = useTranslation()
-  const { addSubtask, toggleSubtask, deleteSubtask } = useStore()
+  const addSubtask = useStore(state => state.addSubtask)
+  const toggleSubtask = useStore(state => state.toggleSubtask)
+  const deleteSubtask = useStore(state => state.deleteSubtask)
   const [newSubtask, setNewSubtask] = useState('')
   const [isAdding, setIsAdding] = useState(false)
 

@@ -1,167 +1,386 @@
 {
-  "version": "1.0",
-  "lastUpdated": "2026-02-03T12:00:00Z",
-  "source": "Blær AI",
   "tasks": [
     {
-      "title": "Deploy Stripe Cloud Functions",
-      "description": "Run firebase deploy --only functions to enable payments",
+      "title": "Remove hardcoded Gemini API key from client",
+      "description": "Eignamat: js/gemini.js contains a hardcoded Google API key; move all Gemini calls server-side (Cloud Functions or Netlify function) and rotate the key.",
       "projectId": "eignamat",
       "priority": "high",
-      "dueDate": "2026-02-02",
-      "tags": ["deployment"]
+      "status": "todo",
+      "tags": ["security", "ai", "backend"]
     },
     {
-      "title": "Set up Stripe webhook in dashboard",
-      "description": "Add webhook endpoint URL and select checkout.session.completed event",
+      "title": "Rotate compromised Gemini API key",
+      "description": "After moving Gemini server-side, revoke/rotate the exposed key and set up env-based secret management.",
       "projectId": "eignamat",
       "priority": "high",
-      "dueDate": "2026-02-02",
-      "tags": ["deployment"]
+      "status": "todo",
+      "tags": ["security", "ops"]
     },
     {
-      "title": "Test TV Mode on real display",
-      "description": "Open TakkArena on office TV and test fullscreen mode",
-      "projectId": "takkarena",
+      "title": "Implement per-user/IP quota + abuse prevention for AI endpoints",
+      "description": "Add rate limiting, logging, and basic anti-abuse controls to the server-side Gemini proxy.",
+      "projectId": "eignamat",
+      "priority": "high",
+      "status": "todo",
+      "tags": ["security", "backend", "observability"]
+    },
+    {
+      "title": "Unify vision detections schema (valuation + IRIS)",
+      "description": "Eignamat: align prompts/output schema so VISION_SYSTEM_PROMPT and valuation_engine expectations match; avoid fragmented detection outputs.",
+      "projectId": "eignamat",
+      "priority": "high",
+      "status": "todo",
+      "tags": ["ai", "valuation", "refactor"]
+    },
+    {
+      "title": "Fix prompt mismatch: update feature list + contract",
+      "description": "Eignamat: prompt text still references a smaller feature set; update prompt + mapping so engine sees all expected detections.",
+      "projectId": "eignamat",
       "priority": "medium",
-      "dueDate": "2026-02-03",
-      "tags": ["testing"]
+      "status": "todo",
+      "tags": ["ai", "bug"]
     },
     {
-      "title": "Add PersonalBestsWidget to Dashboard",
-      "description": "Import and add the new widget component to the main dashboard",
-      "projectId": "takkarena",
-      "priority": "low",
-      "tags": ["feature"]
-    },
-    {
-      "title": "Fix ArnarFlow build issues",
-      "description": "Run npm install from PowerShell to fix rollup binary mismatch",
-      "projectId": "arnar",
-      "priority": "medium",
-      "tags": ["bug"]
-    },
-    {
-      "title": "Test Eignamat valuation on sample properties",
-      "description": "Run valuation v2.1 tests for Hlíðargerði 17, Mjóahlíð 12 and Skúlagata 46; compare results to previous runs and log differences.",
+      "title": "Build Condition Score (0-100) + grade from detections",
+      "description": "Eignamat Phase 2: compute explainable Condition Score with confidence thresholds, evidence strings, and conservative rules for negative claims.",
       "projectId": "eignamat",
       "priority": "high",
+      "status": "todo",
+      "tags": ["feature", "ai", "ux"]
+    },
+    {
+      "title": "Add 'What the AI saw' UI section",
+      "description": "Show detected features/issues with confidence + evidence, plus a 'Needs verification' bucket for low-confidence detections.",
+      "projectId": "eignamat",
+      "priority": "medium",
+      "status": "todo",
+      "tags": ["ux", "feature"]
+    },
+    {
+      "title": "Implement PDF report generation (short + full)",
+      "description": "Eignamat: generate branded PDF with valuation waterfall, key drivers, confidence, disclaimers; optionally include photo appendix.",
+      "projectId": "eignamat",
+      "priority": "medium",
+      "status": "todo",
+      "tags": ["feature", "pdf"]
+    },
+    {
+      "title": "Choose PDF rendering approach and prototype",
+      "description": "Decide client-side (jsPDF/html2canvas) vs server-side (Cloud Function + headless Chromium) and build a working prototype.",
+      "projectId": "eignamat",
+      "priority": "medium",
+      "status": "todo",
+      "tags": ["architecture", "pdf"]
+    },
+    {
+      "title": "Create calibration dataset import (CSV) for multipliers",
+      "description": "Eignamat: add tooling to import comparable sales/transactions and compute multipliers by postcode/type/size/year bands.",
+      "projectId": "eignamat",
+      "priority": "medium",
+      "status": "todo",
+      "tags": ["valuation", "data"]
+    },
+    {
+      "title": "Build accuracy test harness (MAPE, bias by segment)",
+      "description": "Eignamat: define a 50–100 property test set and compute metrics (MAPE/median abs error/overvaluation rate).",
+      "projectId": "eignamat",
+      "priority": "medium",
+      "status": "todo",
       "tags": ["testing", "valuation"]
     },
     {
-      "title": "Configure Stripe billing portal and test subscription flows",
-      "description": "Enable billing portal in Stripe dashboard, configure customer portal, and test subscription upgrades/downgrades and cancellations.",
-      "projectId": "eignamat",
-      "priority": "high",
-      "dueDate": "2026-02-05",
-      "tags": ["deployment", "billing"]
-    },
-    {
-      "title": "Publish Eignamat blog post: 'Hvernig virkar gervigreind í fasteignamati?'",
-      "description": "Review blog-post-1.md, add images, schedule publish and share social posts.",
+      "title": "Add B2B landing split (consumer vs broker vs investor)",
+      "description": "Eignamat Phase 2: create segmented landing pages with tailored copy and CTAs.",
       "projectId": "eignamat",
       "priority": "medium",
-      "tags": ["marketing", "content"]
+      "status": "todo",
+      "tags": ["marketing", "feature"]
     },
     {
-      "title": "Review & deploy Eignamat email onboarding sequence",
-      "description": "Validate content in email-sequence.md, set up in transactional email service and schedule the onboarding sequence.",
+      "title": "Implement lead magnet: free Condition Snapshot PDF (email gated)",
+      "description": "Capture email before generating a shareable short PDF; store lead metadata.",
       "projectId": "eignamat",
       "priority": "medium",
+      "status": "todo",
+      "tags": ["marketing", "growth"]
+    },
+    {
+      "title": "Create onboarding email sequence and wire to provider",
+      "description": "Eignamat: review /content/email-sequence.md and implement in an email provider (loops, postmark, etc.).",
+      "projectId": "eignamat",
+      "priority": "medium",
+      "status": "todo",
       "tags": ["marketing", "email"]
     },
     {
-      "title": "Verify TV Mode kiosk password & celebration overlays",
-      "description": "Test kiosk exit password 'takk2026', celebration overlays and auto-rotate behavior; fix any UI issues.",
+      "title": "Run valuation v2.1 regression tests on sample properties",
+      "description": "Re-run Hlíðargerði 17, Mjóahlíð 12, Skúlagata 46; log new vs old results and note drivers.",
+      "projectId": "eignamat",
+      "priority": "high",
+      "status": "todo",
+      "tags": ["testing", "valuation"]
+    },
+
+    {
+      "title": "Define Firebase data contract (public vs private user data)",
+      "description": "TakkArena: document collections and which fields are public vs PII; split into users_public/users_private or equivalent.",
+      "projectId": "takkarena",
+      "priority": "high",
+      "status": "todo",
+      "tags": ["security", "firebase", "docs"]
+    },
+    {
+      "title": "Align identity mapping (uid ↔ staffId)",
+      "description": "TakkArena: make user identity deterministic (prefer uid-first) so Firestore rules can enforce ownership.",
+      "projectId": "takkarena",
+      "priority": "high",
+      "status": "todo",
+      "tags": ["security", "firebase", "refactor"]
+    },
+    {
+      "title": "Rewrite Firestore security rules to least-privilege",
+      "description": "TakkArena: update firestore.rules to match the real data model and cover all collections used in code.",
+      "projectId": "takkarena",
+      "priority": "high",
+      "status": "todo",
+      "tags": ["security", "firebase"]
+    },
+    {
+      "title": "Remove PII exposure: restrict users collection reads",
+      "description": "TakkArena: app currently subscribes to all users and stores email/kennitala; ensure regular users cannot read PII.",
+      "projectId": "takkarena",
+      "priority": "high",
+      "status": "todo",
+      "tags": ["security", "privacy"]
+    },
+    {
+      "title": "Add missing rules for collections used by app",
+      "description": "TakkArena: add rules for projects, challenges, nudges, performance_snapshots, user_achievements, personal_bests, users/*/drafts, etc.",
+      "projectId": "takkarena",
+      "priority": "high",
+      "status": "todo",
+      "tags": ["security", "firebase"]
+    },
+    {
+      "title": "Harden MyTimePlan Netlify proxy (auth + rate limit)",
+      "description": "mytimeplan-proxy is unauthenticated and accepts raw kennitala with Access-Control-Allow-Origin:*; require Firebase ID token, verify server-side, restrict origin, add rate limiting/audit.",
+      "projectId": "takkarena",
+      "priority": "high",
+      "status": "todo",
+      "tags": ["security", "privacy", "backend"]
+    },
+    {
+      "title": "Stop sending kennitala from client",
+      "description": "TakkArena: fetch kennitala server-side from users_private after auth check; remove from browser payloads.",
+      "projectId": "takkarena",
+      "priority": "high",
+      "status": "todo",
+      "tags": ["security", "privacy"]
+    },
+    {
+      "title": "Add Firebase Emulator + rules unit tests",
+      "description": "TakkArena: add @firebase/rules-unit-testing tests to prevent security regressions; wire into CI if desired.",
       "projectId": "takkarena",
       "priority": "medium",
-      "tags": ["testing", "tv"]
+      "status": "todo",
+      "tags": ["testing", "firebase", "security"]
     },
     {
-      "title": "Review and merge betrithu firebase-refactor PR",
-      "description": "Review PR blaer/firebase-refactor on GitHub, run tests locally and merge when ready.",
+      "title": "Fix CompetitionsPage userCoins placeholder",
+      "description": "TakkArena: components/Competitions/CompetitionsPage.tsx passes userCoins={0}; wire real user coin balance.",
+      "projectId": "takkarena",
+      "priority": "low",
+      "status": "todo",
+      "tags": ["bug", "feature"]
+    },
+    {
+      "title": "Decide whether to keep 'cats theme' TODO or remove",
+      "description": "TakkArena: Competitions.tsx sets activeTheme('cats') with a TODO; either implement full theme plumbing or delete.",
+      "projectId": "takkarena",
+      "priority": "low",
+      "status": "todo",
+      "tags": ["cleanup", "ux"]
+    },
+
+    {
+      "title": "Build Betrithu frontend (store UI)",
+      "description": "Next.js app: complete the customer-facing pages (home, browse, product page, checkout success/cancel, library).",
       "projectId": "betrithu",
       "priority": "high",
-      "dueDate": "2026-02-05",
-      "tags": ["review", "pr"]
+      "status": "todo",
+      "tags": ["frontend", "feature"]
     },
     {
-      "title": "Deploy Betrithu to staging and smoke-test recording streaming API",
-      "description": "Deploy the firebase refactor branch to staging and test recording playback, checkout and orders flow.",
+      "title": "Implement Swipe payment integration",
+      "description": "Betrithu: implement actual Swipe API call in /api/checkout (or parallel flow) + handle webhooks.",
       "projectId": "betrithu",
       "priority": "high",
-      "dueDate": "2026-02-07",
-      "tags": ["deployment", "testing"]
+      "status": "todo",
+      "tags": ["payments", "backend"]
     },
     {
-      "title": "Verify Stripe/Swipe payment integration on Betrithu",
-      "description": "Run end-to-end checkout tests, verify webhook handling and order fulfillment flows.",
+      "title": "Confirm Stripe fallback checkout works end-to-end",
+      "description": "Betrithu: /api/checkout currently creates Stripe session; validate webhooks update orders and grant library access.",
       "projectId": "betrithu",
-      "priority": "medium",
+      "priority": "high",
+      "status": "todo",
       "tags": ["payments", "testing"]
     },
     {
-      "title": "Archive Kosningagátt & write postmortem",
-      "description": "Create an archive bundle of the Kosningagátt codebase and write a short postmortem summarizing outcomes, metrics and learnings.",
-      "projectId": "kosningagatt",
+      "title": "Build audio player UI (web)",
+      "description": "Betrithu: create a clean, mobile-friendly audio player for purchased recordings (progress, resume, speed, sleep timer).",
+      "projectId": "betrithu",
       "priority": "medium",
-      "tags": ["archive", "doc"]
+      "status": "todo",
+      "tags": ["frontend", "ux"]
     },
     {
-      "title": "Store voter-compare outputs and Zenter scrape data in archive",
-      "description": "Save kjosendur.json, kjosendur.txt and voter-compare exports into the project archive folder for future reference.",
-      "projectId": "kosningagatt",
+      "title": "Create product page design system",
+      "description": "Betrithu: design product detail layout (benefits, preview, testimonials, pricing, trust badges).",
+      "projectId": "betrithu",
       "priority": "medium",
-      "tags": ["archive", "data"]
+      "status": "todo",
+      "tags": ["design", "frontend"]
     },
     {
-      "title": "Review and merge ArnarFlow v4.3 PR",
-      "description": "Open PR blær/v4.3-features, run a local build (PowerShell if needed), review the changes and merge; publish release notes.",
-      "projectId": "arnar",
+      "title": "Set up staging deploy + smoke tests",
+      "description": "Deploy firebase-refactor branch to staging; test streaming, checkout, orders, admin flows.",
+      "projectId": "betrithu",
       "priority": "high",
-      "dueDate": "2026-02-05",
-      "tags": ["review", "release"]
+      "status": "todo",
+      "tags": ["deployment", "testing"]
     },
     {
-      "title": "Test DataExportImport backup & onboarding flow in ArnarFlow",
-      "description": "Export current data to JSON, import back, and run the onboarding modal flow to verify onboardingComplete flags and data integrity.",
-      "projectId": "arnar",
-      "priority": "medium",
-      "tags": ["testing", "backup"]
-    },
-    {
-      "title": "Create Gleðinefnd budget & savings plan",
-      "description": "Draft event committee budget including a target savings goal (300,000 ISK) and a weekly contribution plan (10,000 ISK/week).",
-      "projectId": "gleðinefnd",
+      "title": "Review firebase-refactor branch and merge to main",
+      "description": "Betrithu: code review + run lint/build; merge when stable.",
+      "projectId": "betrithu",
       "priority": "high",
-      "tags": ["planning", "budget"]
+      "status": "in-progress",
+      "tags": ["review", "git"]
+    },
+
+    {
+      "title": "Update portfolio with latest projects",
+      "description": "Portfolio: add/refresh project cards and links for Eignamat + TakkArena + ArnarFlow.",
+      "projectId": "arnar",
+      "priority": "low",
+      "status": "todo",
+      "tags": ["marketing", "content"]
     },
     {
-      "title": "Build weekly savings tracker and recurring check",
-      "description": "Add a simple weekly tracker (sheet or ArnarFlow task) to record 10,000 ISK contributions and set up automated weekly reminders.",
-      "projectId": "gleðinefnd",
-      "priority": "medium",
-      "tags": ["finance", "habit"]
+      "title": "Add live links / demos for featured work",
+      "description": "Portfolio: replace placeholder 'View Project' links with real URLs and add screenshots.",
+      "projectId": "arnar",
+      "priority": "low",
+      "status": "todo",
+      "tags": ["ux", "content"]
     },
     {
-      "title": "Plan meal-prep alternative to Wolt and estimate monthly savings",
-      "description": "Create a 4-week meal-prep plan, grocery list, and compare costs to recent Wolt orders to estimate monthly savings.",
-      "projectId": "gleðinefnd",
+      "title": "SEO + metadata polish",
+      "description": "Portfolio: verify meta description, OpenGraph tags, and performance basics.",
+      "projectId": "arnar",
+      "priority": "low",
+      "status": "todo",
+      "tags": ["seo", "polish"]
+    },
+
+    {
+      "title": "Finish ArnarFlow branch: email receipts + budget integration",
+      "description": "ArnarFlow (blaer/email-receipts-budget): complete the changes in electron.js/preload/store/UI, stabilize and prepare merge.",
+      "projectId": "arnarflow",
+      "priority": "high",
+      "status": "in-progress",
+      "tags": ["feature", "finance"]
+    },
+    {
+      "title": "Review and integrate new RecipeBank.jsx changes",
+      "description": "ArnarFlow: RecipeBank v2 is present; ensure it matches store schema (incl. nutrition fields), and add any missing UI states/tests.",
+      "projectId": "arnarflow",
       "priority": "medium",
-      "tags": ["savings", "food"]
+      "status": "in-progress",
+      "tags": ["feature", "recipes"]
+    },
+    {
+      "title": "RecipeBank: URL import (JSON-LD → clipper → Gemini fallback)",
+      "description": "Implement v5.12.0 plan: paste recipe URL to prefill recipe object; show preview/edit before saving.",
+      "projectId": "arnarflow",
+      "priority": "high",
+      "status": "todo",
+      "tags": ["feature", "recipes", "ai"]
+    },
+    {
+      "title": "RecipeBank: add sourceUrl field + migration normalization",
+      "description": "If URL import is added, extend recipe schema with sourceUrl and ensure normalize/migration for older persisted recipes.",
+      "projectId": "arnarflow",
+      "priority": "medium",
+      "status": "todo",
+      "tags": ["refactor", "recipes"]
+    },
+    {
+      "title": "RecipeBank: Open Food Facts integration (barcode → nutrition/allergens)",
+      "description": "Phase 8 idea: add OFF lookup + tagging; set User-Agent and map nutrition/allergen tags.",
+      "projectId": "arnarflow",
+      "priority": "medium",
+      "status": "todo",
+      "tags": ["feature", "recipes", "integration"]
+    },
+    {
+      "title": "ArnarFlow Mobile PWA: add Firebase project config",
+      "description": "arnarflow-mobile exists; set Firebase config values in src/lib/firebase.js and verify auth + recipes CRUD.",
+      "projectId": "arnarflow",
+      "priority": "high",
+      "status": "todo",
+      "tags": ["mobile", "firebase"]
+    },
+    {
+      "title": "ArnarFlow Mobile PWA: implement Projects Kanban (move-to actions)",
+      "description": "Implement lightweight kanban view + move project between columns without touch DnD.",
+      "projectId": "arnarflow",
+      "priority": "medium",
+      "status": "todo",
+      "tags": ["mobile", "feature"]
+    },
+    {
+      "title": "ArnarFlow Mobile PWA: implement Budget/Savings overview",
+      "description": "Add read-heavy savings overview + light edits (goal/weekly target) + add savings event.",
+      "projectId": "arnarflow",
+      "priority": "medium",
+      "status": "todo",
+      "tags": ["mobile", "feature", "finance"]
+    },
+    {
+      "title": "ArnarFlow: Firestore sync strategy (desktop ↔ mobile)",
+      "description": "Implement outbox + flush + conflict strategy so desktop local state can sync to Firestore canonical data.",
+      "projectId": "arnarflow",
+      "priority": "high",
+      "status": "todo",
+      "tags": ["architecture", "sync"]
+    },
+    {
+      "title": "ArnarFlow Rainmeter widget: implement UTF-16 LE export pipeline",
+      "description": "Build exporter + sample skin; ensure Icelandic chars render correctly (ini UTF-16 LE).",
+      "projectId": "arnarflow",
+      "priority": "low",
+      "status": "todo",
+      "tags": ["integration", "widget"]
+    },
+
+    {
+      "title": "RecipeBank v2 (edit + duplicate + import/export JSON) verification",
+      "description": "Confirm v5.11.0 shipped behavior: edit preserves createdAt, import validates schema, collisions handled, export is stable JSON.",
+      "projectId": "arnarflow",
+      "priority": "medium",
+      "status": "done",
+      "tags": ["recipes", "testing"]
+    },
+    {
+      "title": "Projects Board UI spec alignment (left color strip, quick actions)",
+      "description": "Confirmed implementation already matched spec; no code changes required (see .blaer-projects-board-commit.txt).",
+      "projectId": "arnarflow",
+      "priority": "low",
+      "status": "done",
+      "tags": ["ux", "projects"]
     }
   ],
-  "ideas": [
-    {
-      "title": "AI Bookkeeping SaaS for Icelandic SMBs",
-      "content": "Auto-reconcile with DK/Navision. Target: small businesses. Price: 4.900-14.900 kr/mán",
-      "category": "product"
-    },
-    {
-      "title": "Wearable Health Coach App",
-      "content": "Connect Apple Watch/Fitbit data with AI for personalized health advice",
-      "category": "product"
-    }
-  ],
-  "notes": []
+  "syncedAt": "2026-02-10T21:47:03+00:00"
 }

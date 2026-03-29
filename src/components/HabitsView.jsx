@@ -2,9 +2,11 @@ import React, { useEffect, useState, useRef, useMemo } from 'react'
 import useStore from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
-import { format, subDays, startOfWeek, addDays, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns'
-import { Target, Check, Flame, Heart, TrendingUp, Calendar, Sparkles, Award, Zap, Trophy, ChevronRight, MoreHorizontal } from 'lucide-react'
+import { format, subDays, startOfWeek, addDays, startOfMonth, endOfMonth, eachDayOfInterval, subYears } from 'date-fns'
+import { Target, Check, Flame, Heart, TrendingUp, Calendar, Sparkles, Award, Zap, Trophy, ChevronRight, MoreHorizontal, SkipForward } from 'lucide-react'
 import Confetti, { ConfettiBurst } from './Confetti'
+import CalendarHeatmap from 'react-calendar-heatmap'
+import 'react-calendar-heatmap/dist/styles.css'
 
 // Plane-inspired Circular Progress Indicator
 function CircularProgress({ size = 48, percentage = 0, strokeWidth = 4, strokeColor = '#22c55e', children }) {
@@ -191,7 +193,12 @@ function WeekCell({ day, habits, habitLogs, onToggle, isToday }) {
 
 function HabitsView() {
   const { t, language } = useTranslation()
-  const { habits, habitLogs, habitStreaks, toggleHabit, recalculateAllStreaks } = useStore()
+  const habits = useStore(state => state.habits)
+  const habitLogs = useStore(state => state.habitLogs)
+  const habitStreaks = useStore(state => state.habitStreaks)
+  const toggleHabit = useStore(state => state.toggleHabit)
+  const setHabitStatus = useStore(state => state.setHabitStatus)
+  const recalculateAllStreaks = useStore(state => state.recalculateAllStreaks)
   const [completedAnimation, setCompletedAnimation] = useState(null)
   const [viewMode, setViewMode] = useState('week')
   const [showConfetti, setShowConfetti] = useState(false)
@@ -227,17 +234,22 @@ function HabitsView() {
 
   // Stats calculations
   const stats = useMemo(() => {
-    const todayCompleted = habits.filter(h => habitLogs[`${h.id}-${today}`]).length
+    const todayCompleted = habits.filter(h => {
+      const s = habitLogs[`${h.id}-${today}`]
+      return s === true || s === 'done'
+    }).length
     let weeklyTotal = 0
     weekDays.forEach(day => {
       habits.forEach(habit => {
-        if (habitLogs[`${habit.id}-${day.date}`]) weeklyTotal++
+        const s = habitLogs[`${habit.id}-${day.date}`]
+        if (s === true || s === 'done') weeklyTotal++
       })
     })
     let monthlyTotal = 0
     monthDays.forEach(day => {
       habits.forEach(habit => {
-        if (habitLogs[`${habit.id}-${day.date}`]) monthlyTotal++
+        const s = habitLogs[`${habit.id}-${day.date}`]
+        if (s === true || s === 'done') monthlyTotal++
       })
     })
     const totalPossible = habits.length * monthDays.length
@@ -259,11 +271,47 @@ function HabitsView() {
     }
   }, [habits, habitLogs, habitStreaks, today, weekDays, monthDays])
 
-  const handleToggleHabit = (habitId, date, event) => {
-    const wasCompleted = habitLogs[`${habitId}-${date}`]
-    toggleHabit(habitId, date)
+  const heatmapData = useMemo(() => {
+    const counts = {}
+    const startDate = subYears(new Date(), 1)
+    const endDate = new Date()
     
-    if (!wasCompleted && date === today) {
+    // Initialize empty days so heatmap shows full year
+    eachDayOfInterval({ start: startDate, end: endDate }).forEach(day => {
+      counts[format(day, 'yyyy-MM-dd')] = 0
+    })
+
+    // Count completions
+    Object.keys(habitLogs).forEach(key => {
+      // habitLogs keys are "habitId-YYYY-MM-DD"
+      // Wait, splitting by "-" might fail if habitId has dashes.
+      // But habits ids are simple strings here.
+      // Better regex: /(.+)-(\d{4}-\d{2}-\d{2})/
+      const match = key.match(/(.+)-(\d{4}-\d{2}-\d{2})/)
+      if (match) {
+        const dateStr = match[2]
+        const status = habitLogs[key]
+        if ((status === true || status === 'done') && counts[dateStr] !== undefined) {
+          counts[dateStr] = (counts[dateStr] || 0) + 1
+        }
+      }
+    })
+    
+    return Object.entries(counts).map(([date, count]) => ({ date, count }))
+  }, [habitLogs])
+
+  const handleToggleHabit = (habitId, date, event) => {
+    const status = habitLogs[`${habitId}-${date}`]
+    const isDone = status === true || status === 'done'
+    
+    // Use setHabitStatus directly
+    // If done -> clear (null)
+    // If skipped -> done
+    // If clear -> done
+    const newStatus = isDone ? null : 'done'
+    setHabitStatus(habitId, date, newStatus)
+    
+    if (newStatus === 'done' && date === today) {
       setCompletedAnimation(habitId)
       setRecentlyCompleted(prev => new Set([...prev, habitId]))
       setTimeout(() => setCompletedAnimation(null), 800)
@@ -568,7 +616,9 @@ function HabitsView() {
       <div className="space-y-3">
         {habits.map((habit, index) => {
           const streak = getStreak(habit.id)
-          const isCompletedToday = habitLogs[`${habit.id}-${today}`]
+          const status = habitLogs[`${habit.id}-${today}`]
+          const isDone = status === true || status === 'done'
+          const isSkipped = status === 'skip'
           const isAnimating = completedAnimation === habit.id
           const wasRecentlyCompleted = recentlyCompleted.has(habit.id)
           
@@ -576,30 +626,41 @@ function HabitsView() {
             <div 
               key={habit.id}
               className={`
-                p-5 rounded-2xl border transition-all duration-300 group
-                ${isCompletedToday 
+                p-5 rounded-2xl border transition-all duration-300 group relative overflow-hidden
+                ${isDone 
                   ? 'bg-gradient-to-r from-green-500/10 via-green-500/5 to-transparent border-green-500/30' 
+                  : isSkipped
+                  ? 'bg-dark-800/60 border-dark-600/30 opacity-75'
                   : 'bg-dark-800/40 border-dark-600/30 hover:bg-dark-800/60 hover:border-dark-500/50'
                 }
                 ${isAnimating ? 'scale-[1.02] shadow-lg shadow-green-500/10' : ''}
               `}
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <div className="flex items-center gap-5">
+              {/* Skipped overlay pattern */}
+              {isSkipped && (
+                <div className="absolute inset-0 pointer-events-none opacity-5" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '10px 10px' }} />
+              )}
+              
+              <div className="flex items-center gap-5 relative z-10">
                 {/* Toggle Button - Enhanced */}
                 <button
                   onClick={(e) => handleToggleHabit(habit.id, today, e)}
                   className={`
                     relative w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300
-                    ${isCompletedToday
+                    ${isDone
                       ? 'bg-green-500 text-white shadow-lg shadow-green-500/30'
+                      : isSkipped
+                      ? 'bg-dark-700 text-zinc-600 ring-2 ring-zinc-700/50'
                       : 'bg-dark-700/50 text-zinc-500 hover:bg-dark-600 hover:text-zinc-300 hover:scale-105 border border-dark-500/50'
                     }
                     ${isAnimating ? 'animate-celebrate' : ''}
                   `}
                 >
-                  {isCompletedToday ? (
+                  {isDone ? (
                     <Check size={28} strokeWidth={3} className={isAnimating ? 'animate-scale-in' : ''} />
+                  ) : isSkipped ? (
+                    <SkipForward size={24} />
                   ) : (
                     <DynamicIcon name={habit.icon} size={26} />
                   )}
@@ -610,16 +671,37 @@ function HabitsView() {
                   )}
                 </button>
                 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <h3 className={`font-semibold text-base ${isCompletedToday ? 'text-green-300' : ''}`}>
-                    {getHabitName(habit)}
-                  </h3>
-                  <p className="text-sm text-zinc-500 truncate mt-0.5">{getHabitTarget(habit)}</p>
+                {/* Info & Controls */}
+                <div className="flex-1 min-w-0 flex items-center gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h3 className={`font-semibold text-base flex items-center gap-2 ${isDone ? 'text-green-300' : isSkipped ? 'text-zinc-500 line-through' : ''}`}>
+                      {getHabitName(habit)}
+                      {isSkipped && <span className="text-2xs px-1.5 py-0.5 rounded bg-dark-700 text-zinc-500 font-medium tracking-wide uppercase">{language === 'is' ? 'Sleppt' : 'Skipped'}</span>}
+                    </h3>
+                    <p className="text-sm text-zinc-500 truncate mt-0.5">{getHabitTarget(habit)}</p>
+                  </div>
+
+                  {/* Skip Button - Only show if not done */}
+                  {!isDone && (
+                    <button
+                      onClick={() => setHabitStatus(habit.id, today, isSkipped ? null : 'skip')}
+                      className={`
+                        p-2 rounded-lg transition-all text-xs font-medium flex items-center gap-1.5
+                        ${isSkipped 
+                          ? 'text-zinc-400 bg-dark-700 hover:bg-dark-600 hover:text-white' 
+                          : 'text-zinc-600 hover:text-zinc-400 hover:bg-dark-700/50'
+                        }
+                      `}
+                      title={language === 'is' ? 'Sleppa deginum (heldur röð)' : 'Skip day (keeps streak)'}
+                    >
+                      <SkipForward size={14} />
+                      <span className="hidden sm:inline">{language === 'is' ? 'Sleppa' : 'Skip'}</span>
+                    </button>
+                  )}
                 </div>
                 
                 {/* Streak Badge - Enhanced */}
-                {streak.current > 0 && (
+                {(streak.current > 0 || isSkipped) && (
                   <Tooltip content={`${language === 'is' ? 'Lengsta röð' : 'Longest'}: ${streak.longest} ${t('habits.days')}`}>
                     <div className={`
                       flex items-center gap-2 px-4 py-2 rounded-xl transition-all
@@ -627,6 +709,7 @@ function HabitsView() {
                         ? 'bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-amber-500/20 border border-amber-500/30' 
                         : 'bg-amber-500/10 border border-amber-500/20'
                       }
+                      ${isSkipped ? 'opacity-50 grayscale' : ''}
                     `}>
                       <StreakFire streak={streak.current} isAnimating={isAnimating} />
                       <div className="flex flex-col items-end">
@@ -680,6 +763,66 @@ function HabitsView() {
             </div>
           )
         })}
+      </div>
+
+      {/* Yearly Heatmap */}
+      <div className="mt-8 p-5 bg-dark-800/30 rounded-2xl border border-dark-600/30 animate-fade-in">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-2">
+            <Calendar size={16} className="text-zinc-400" />
+            <span className="text-sm font-medium text-zinc-300">
+              {language === 'is' ? 'Ársyfirlit' : 'Yearly Activity'}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 text-2xs text-zinc-500">
+            <span>{language === 'is' ? 'Minna' : 'Less'}</span>
+            {[0, 1, 2, 3, 4].map(level => (
+              <div 
+                key={level}
+                className={`w-2.5 h-2.5 rounded-sm bg-green-${level === 0 ? '900/20' : level * 200 + 300}`}
+                style={{ 
+                  backgroundColor: level === 0 ? 'rgba(39, 39, 42, 0.4)' 
+                    : `rgba(34, 197, 94, ${0.2 * level})`
+                }}
+              />
+            ))}
+            <span>{language === 'is' ? 'Meira' : 'More'}</span>
+          </div>
+        </div>
+        
+        <div className="heatmap-container overflow-x-auto pb-2">
+          <div className="min-w-[700px]">
+            <CalendarHeatmap
+              startDate={subDays(new Date(), 365)}
+              endDate={new Date()}
+              values={heatmapData}
+              classForValue={(value) => {
+                if (!value || value.count === 0) return 'color-empty';
+                return `color-scale-${Math.min(4, value.count)}`;
+              }}
+              transformDayElement={(element, value, index) => {
+                const count = value ? value.count : 0;
+                const alpha = count === 0 ? 0.1 : 0.2 + (Math.min(4, count) / 4) * 0.6;
+                const fill = count === 0 ? '#27272a' : '#22c55e'; // Zinc-800 or Green-500
+                return React.cloneElement(element, { 
+                  style: { 
+                    fill, 
+                    fillOpacity: alpha, 
+                    rx: 2, 
+                    ry: 2 
+                  } 
+                });
+              }}
+              titleForValue={(value) => {
+                const date = value ? value.date : '';
+                const count = value ? value.count : 0;
+                return `${date}: ${count} ${language === 'is' ? 'venjur' : 'habits'}`;
+              }}
+              showWeekdayLabels={true}
+              gutterSize={2}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Encouragement - Enhanced */}

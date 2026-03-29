@@ -40,24 +40,22 @@ function TaskDetailPanel({ taskId, onClose }) {
   const { language } = useTranslation()
   const locale = language === 'is' ? is : enUS
   
-  const {
-    tasks,
-    projects,
-    tags,
-    updateTask,
-    toggleTask,
-    deleteTask,
-    isTaskBlocked,
-    getBlockingTasks,
-    addDependency,
-    removeDependency,
-    addTagToTask,
-    removeTagFromTask,
-    setFocusProject,
-    setFocusTask,
-    startTimeTracking,
-    activeTimeSession
-  } = useStore()
+  const tasks = useStore(state => state.tasks)
+  const projects = useStore(state => state.projects)
+  const tags = useStore(state => state.tags)
+  const updateTask = useStore(state => state.updateTask)
+  const toggleTask = useStore(state => state.toggleTask)
+  const deleteTask = useStore(state => state.deleteTask)
+  const isTaskBlocked = useStore(state => state.isTaskBlocked)
+  const getBlockingTasks = useStore(state => state.getBlockingTasks)
+  const addDependency = useStore(state => state.addDependency)
+  const removeDependency = useStore(state => state.removeDependency)
+  const addTagToTask = useStore(state => state.addTagToTask)
+  const removeTagFromTask = useStore(state => state.removeTagFromTask)
+  const setFocusProject = useStore(state => state.setFocusProject)
+  const setFocusTask = useStore(state => state.setFocusTask)
+  const startTimeTracking = useStore(state => state.startTimeTracking)
+  const activeTimeSession = useStore(state => state.activeTimeSession)
   
   const task = tasks.find(t => t.id === taskId)
   const project = task ? projects.find(p => p.id === task.projectId) : null

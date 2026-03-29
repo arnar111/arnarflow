@@ -61,15 +61,13 @@ const TAG_COLORS = {
 
 function QuickAddModal() {
   const { t, language } = useTranslation()
-  const { 
-    setQuickAddOpen, 
-    addTask, 
-    addIdea, 
-    projects,
-    tags,
-    quickIdeaMode,
-    setQuickIdeaMode
-  } = useStore()
+  const setQuickAddOpen = useStore((s) => s.setQuickAddOpen)
+  const addTask = useStore((s) => s.addTask)
+  const addIdea = useStore((s) => s.addIdea)
+  const projects = useStore((s) => s.projects)
+  const tags = useStore((s) => s.tags)
+  const quickIdeaMode = useStore((s) => s.quickIdeaMode)
+  const setQuickIdeaMode = useStore((s) => s.setQuickIdeaMode)
 
   const QUICK_DATES = [
     { label: t('time.today'), labelIs: 'Í dag', value: format(new Date(), 'yyyy-MM-dd') },

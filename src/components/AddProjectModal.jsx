@@ -18,7 +18,9 @@ const COLORS = [
 
 function AddProjectModal({ onClose }) {
   const { t, language } = useTranslation()
-  const { addProject, addProjectDefaultStatus, setAddProjectDefaultStatus } = useStore()
+  const addProject = useStore(state => state.addProject)
+  const addProjectDefaultStatus = useStore(state => state.addProjectDefaultStatus)
+  const setAddProjectDefaultStatus = useStore(state => state.setAddProjectDefaultStatus)
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [icon, setIcon] = useState('Folder')

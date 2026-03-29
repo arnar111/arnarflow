@@ -5,7 +5,7 @@ import { X, Keyboard } from 'lucide-react'
 
 function KeyboardShortcutsModal() {
   const { t } = useTranslation()
-  const { setKeyboardShortcutsOpen } = useStore()
+  const setKeyboardShortcutsOpen = useStore(state => state.setKeyboardShortcutsOpen)
 
   const shortcutGroups = [
     {

@@ -72,22 +72,20 @@ function SettingsModal() {
     }
   }
   
-  const { 
-    setSettingsOpen,
-    theme,
-    setTheme,
-    accentColor,
-    setAccentColor,
-    notificationsEnabled,
-    setNotificationsEnabled,
-    habitRemindersEnabled,
-    setHabitRemindersEnabled,
-    taskRemindersEnabled,
-    setTaskRemindersEnabled,
-    setKeyboardShortcutsOpen,
-    setAboutOpen,
-    setLanguage
-  } = useStore()
+  const setSettingsOpen = useStore((s) => s.setSettingsOpen)
+  const theme = useStore((s) => s.theme)
+  const setTheme = useStore((s) => s.setTheme)
+  const accentColor = useStore((s) => s.accentColor)
+  const setAccentColor = useStore((s) => s.setAccentColor)
+  const notificationsEnabled = useStore((s) => s.notificationsEnabled)
+  const setNotificationsEnabled = useStore((s) => s.setNotificationsEnabled)
+  const habitRemindersEnabled = useStore((s) => s.habitRemindersEnabled)
+  const setHabitRemindersEnabled = useStore((s) => s.setHabitRemindersEnabled)
+  const taskRemindersEnabled = useStore((s) => s.taskRemindersEnabled)
+  const setTaskRemindersEnabled = useStore((s) => s.setTaskRemindersEnabled)
+  const setKeyboardShortcutsOpen = useStore((s) => s.setKeyboardShortcutsOpen)
+  const setAboutOpen = useStore((s) => s.setAboutOpen)
+  const setLanguage = useStore((s) => s.setLanguage)
 
   const themes = [
     { id: 'dark', icon: Moon, label: t('settings.dark') },
@@ -335,6 +333,43 @@ function SettingsModal() {
               <HardDrive size={14} className="text-accent" />
               {language === 'is' ? 'Gögn og Afrit' : 'Data & Backup'}
             </h3>
+
+            {/* LocalStorage size indicator */}
+            {(() => {
+              let bytes = 0
+              try {
+                bytes = JSON.stringify(localStorage.getItem('arnarflow-storage')).length
+              } catch (e) {
+                bytes = 0
+              }
+              const mb = bytes / (1024 * 1024)
+              const limitMb = 5
+              const pct = Math.min(100, (mb / limitMb) * 100)
+              const warn = mb >= 4
+
+              return (
+                <div className={`mb-4 rounded-lg p-3 border ${warn ? 'bg-red-500/5 border-red-500/20' : 'bg-dark-800 border-dark-600'}`}>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-zinc-400">{language === 'is' ? 'Notkun á geymslu' : 'Storage usage'}</span>
+                    <span className={`font-mono ${warn ? 'text-red-400' : 'text-zinc-300'}`}>
+                      {mb.toFixed(2)} MB / {limitMb} MB
+                    </span>
+                  </div>
+                  <div className="mt-2 h-2 bg-dark-700 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${warn ? 'bg-red-500' : 'bg-accent'}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  {warn && (
+                    <div className="mt-2 text-[11px] text-red-400">
+                      {language === 'is' ? 'Viðvörun: þú ert nálægt 5MB localStorage takmörkuninni.' : 'Warning: you are close to the 5MB localStorage limit.'}
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
+
             <DataExportImport />
           </section>
 

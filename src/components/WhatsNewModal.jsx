@@ -344,7 +344,8 @@ const changelog = [
 
 function WhatsNewModal() {
   const { t } = useTranslation()
-  const { setWhatsNewOpen, markWhatsNewSeen } = useStore()
+  const setWhatsNewOpen = useStore(state => state.setWhatsNewOpen)
+  const markWhatsNewSeen = useStore(state => state.markWhatsNewSeen)
 
   const handleClose = () => {
     markWhatsNewSeen(APP_VERSION)

@@ -1,10 +1,6 @@
 {
   "name": "arnarflow",
-<<<<<<< HEAD
   "version": "7.0.0",
-=======
-  "version": "5.5.1",
->>>>>>> blaer/daily-planner-widget
   "description": "Personal project management for Arnar",
   "main": "electron.js",
   "scripts": {
@@ -17,22 +13,33 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.20",
+    "chrono-node": "^2.9.0",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "electron-is-dev": "^3.0.1",
+    "electron-log": "^5.0.0",
+    "electron-updater": "^6.1.7",
+    "firebase": "^12.9.0",
     "fuse.js": "^7.1.0",
+    "howler": "^2.2.4",
     "lucide-react": "^0.344.0",
     "marked": "^16.2.1",
+    "papaparse": "^5.5.3",
     "postcss": "^8.5.3",
     "react": "^18.2.0",
+    "react-calendar-heatmap": "^1.10.0",
     "react-confetti": "^6.4.0",
     "react-dom": "^18.2.0",
     "react-grid-layout": "^1.5.2",
     "react-markdown": "^10.1.0",
-    "recharts": "^2.15.3",
+    "recharts": "^2.15.4",
     "remark-gfm": "^4.0.1",
+    "rrule": "^2.8.1",
     "tailwindcss": "^3.4.17",
     "vite": "^5.1.4",
     "zustand": "^4.5.1"
@@ -54,7 +61,10 @@
     },
     "files": [
       "dist/**/*",
-      "electron.js"
+      "electron.js",
+      "preload.js",
+      "update-splash.html",
+      "package.json"
     ],
     "mac": {
       "category": "public.app-category.productivity"
@@ -65,7 +75,23 @@
     "linux": {
       "target": [
         "AppImage"
-      ]
+      ],
+      "category": "Utility"
+    },
+    "asar": true,
+    "asarUnpack": [],
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "installerIcon": "public/icon.ico",
+      "uninstallerIcon": "public/icon.ico",
+      "include": "build/installer.nsh"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "arnar111",
+      "repo": "arnarflow",
+      "releaseType": "release"
     }
   }
 }

@@ -130,19 +130,17 @@ function ProjectView() {
     low: { label: t('projectView.priority.low'), color: '#22c55e', bg: 'bg-green-500/10', border: 'border-green-500/20', icon: '🟢' }
   }
   
-  const { 
-    projects, 
-    selectedProject, 
-    tasks, 
-    addTask, 
-    toggleTask, 
-    deleteTask,
-    updateTask,
-    setFocusProject,
-    setFocusTask,
-    focusProject,
-    setSelectedTaskId
-  } = useStore()
+  const projects = useStore((s) => s.projects)
+  const selectedProject = useStore((s) => s.selectedProject)
+  const tasks = useStore((s) => s.tasks)
+  const addTask = useStore((s) => s.addTask)
+  const toggleTask = useStore((s) => s.toggleTask)
+  const deleteTask = useStore((s) => s.deleteTask)
+  const updateTask = useStore((s) => s.updateTask)
+  const setFocusProject = useStore((s) => s.setFocusProject)
+  const setFocusTask = useStore((s) => s.setFocusTask)
+  const focusProject = useStore((s) => s.focusProject)
+  const setSelectedTaskId = useStore((s) => s.setSelectedTaskId)
   
   const [viewMode, setViewMode] = useState('kanban')
   const [newTask, setNewTask] = useState('')
@@ -919,14 +917,12 @@ function TaskCard({
   t,
   language
 }) {
-  const { 
-    tasks, 
-    isTaskBlocked, 
-    getBlockingTasks, 
-    addDependency, 
-    removeDependency,
-    updateTask
-  } = useStore()
+  const tasks = useStore((s) => s.tasks)
+  const isTaskBlocked = useStore((s) => s.isTaskBlocked)
+  const getBlockingTasks = useStore((s) => s.getBlockingTasks)
+  const addDependency = useStore((s) => s.addDependency)
+  const removeDependency = useStore((s) => s.removeDependency)
+  const updateTask = useStore((s) => s.updateTask)
   
   const dueInfo = formatDueDate(task.dueDate)
   const timeSpent = formatTime(task.timeSpent)

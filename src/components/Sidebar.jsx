@@ -22,6 +22,7 @@ import {
   PiggyBank,
   Sun,
   Zap,
+  ChefHat,
 } from 'lucide-react'
 
 function Sidebar({ onOpenCalendarSync }) {
@@ -35,6 +36,7 @@ function Sidebar({ onOpenCalendarSync }) {
     ideas,
     habits,
     habitLogs,
+    notes,
     setSettingsOpen,
     setRecurringOpen,
     setTemplatesOpen,
@@ -69,11 +71,13 @@ function Sidebar({ onOpenCalendarSync }) {
     { id: 'projects', icon: FolderKanban, label: language === 'is' ? 'Verkefni' : 'Projects', badge: 'new' },
     { id: 'calendar', icon: Calendar, label: t('nav.calendar') },
     { id: 'roadmap', icon: GitBranch, label: language === 'is' ? 'Tímalína' : 'Roadmap', badge: 'new' },
+    { id: 'inbox', icon: Lightbulb, label: language === 'is' ? 'Innbakstur' : 'Inbox', count: (inboxIdeas + Object.keys(notes || {}).length) > 0 ? (inboxIdeas + Object.keys(notes || {}).length) : null, countColor: 'amber' },
     { id: 'ideas', icon: Lightbulb, label: t('nav.ideas'), count: inboxIdeas > 0 ? inboxIdeas : null, countColor: 'amber' },
     { id: 'habits', icon: Target, label: t('nav.habits'), count: habits.length > 0 ? `${habitsDoneToday}/${habits.length}` : null, countColor: habitsDoneToday === habits.length ? 'green' : 'purple' },
     { id: 'focus', icon: Clock, label: language === 'is' ? 'Einbeiting' : 'Focus' },
     { id: 'notes', icon: FileText, label: language === 'is' ? 'Glósur' : 'Notes' },
     { id: 'stats', icon: BarChart3, label: language === 'is' ? 'Tölfræði' : 'Stats' },
+    { id: 'recipes', icon: ChefHat, label: language === 'is' ? 'Uppskriftir' : 'Recipes', badge: 'new' },
     { id: 'budget', icon: PiggyBank, label: language === 'is' ? 'Sparnaður' : 'Budget Saver', badge: 'new' },
   ]
 

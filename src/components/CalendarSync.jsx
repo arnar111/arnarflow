@@ -64,19 +64,17 @@ function generateICalFile(tasks, projects) {
 function CalendarSync({ onClose }) {
   const { language } = useTranslation()
   
-  const {
-    tasks,
-    projects,
-    calendarSyncEnabled,
-    googleCalendarConnected,
-    appleCalendarEnabled,
-    calendarEvents,
-    lastCalendarSync,
-    setCalendarSyncEnabled,
-    setGoogleCalendarConnected,
-    setAppleCalendarEnabled,
-    setCalendarEvents
-  } = useStore()
+  const tasks = useStore(state => state.tasks)
+  const projects = useStore(state => state.projects)
+  const calendarSyncEnabled = useStore(state => state.calendarSyncEnabled)
+  const googleCalendarConnected = useStore(state => state.googleCalendarConnected)
+  const appleCalendarEnabled = useStore(state => state.appleCalendarEnabled)
+  const calendarEvents = useStore(state => state.calendarEvents)
+  const lastCalendarSync = useStore(state => state.lastCalendarSync)
+  const setCalendarSyncEnabled = useStore(state => state.setCalendarSyncEnabled)
+  const setGoogleCalendarConnected = useStore(state => state.setGoogleCalendarConnected)
+  const setAppleCalendarEnabled = useStore(state => state.setAppleCalendarEnabled)
+  const setCalendarEvents = useStore(state => state.setCalendarEvents)
   
   const [activeTab, setActiveTab] = useState('google') // 'google' | 'apple' | 'export'
   const [syncing, setSyncing] = useState(false)

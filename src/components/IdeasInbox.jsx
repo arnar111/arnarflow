@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import useStore, { IDEA_CATEGORIES } from '../store/useStore'
 import { useTranslation } from '../i18n/useTranslation'
 import DynamicIcon from './Icons'
@@ -33,25 +33,125 @@ const IDEA_TYPES = [
 
 function IdeasInbox() {
   const { t, language } = useTranslation()
-  const { 
-    ideas, 
-    addIdea, 
-    updateIdea, 
-    deleteIdea, 
-    projects,
-    addTagToIdea,
-    removeTagFromIdea,
-    ideaCategories
-  } = useStore()
+  const ideas = useStore(state => state.ideas)
+  const addIdea = useStore(state => state.addIdea)
+  const updateIdea = useStore(state => state.updateIdea)
+  const deleteIdea = useStore(state => state.deleteIdea)
+  const addTask = useStore(state => state.addTask)
+  const projects = useStore(state => state.projects)
+  const addTagToIdea = useStore(state => state.addTagToIdea)
+  const removeTagFromIdea = useStore(state => state.removeTagFromIdea)
+  const ideaCategories = useStore(state => state.ideaCategories)
   const [newIdea, setNewIdea] = useState('')
   const [ideaType, setIdeaType] = useState('app')
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [newTag, setNewTag] = useState('')
 
+  // GTD Triage mode (v6.0.0)
+  const [triageMode, setTriageMode] = useState(false)
+  const [triageIndex, setTriageIndex] = useState(0)
+
   const inboxIdeas = ideas.filter(i => i.status === 'inbox')
   const starredIdeas = ideas.filter(i => i.status === 'starred')
   const archivedIdeas = ideas.filter(i => i.status === 'archived')
   const linkedIdeas = ideas.filter(i => i.projectId)
+
+  const triageIdeas = useMemo(() => inboxIdeas, [inboxIdeas])
+  const triageTotal = triageIdeas.length
+  const triageCurrent = triageIdeas[triageIndex] || null
+
+  // Keep triageIndex in range as inbox changes
+  useEffect(() => {
+    if (!triageMode) return
+    if (triageTotal === 0) {
+      setTriageMode(false)
+      setTriageIndex(0)
+      return
+    }
+    setTriageIndex((idx) => Math.max(0, Math.min(idx, triageTotal - 1)))
+  }, [triageMode, triageTotal])
+
+  const nextTriage = () => {
+    setTriageIndex((idx) => {
+      const next = idx + 1
+      return next >= triageTotal ? 0 : next
+    })
+  }
+
+  const handleTriageConvertToTask = () => {
+    if (!triageCurrent) return
+    addTask({
+      title: triageCurrent.title,
+      projectId: triageCurrent.projectId || projects[0]?.id,
+      priority: 'medium',
+    })
+    deleteIdea(triageCurrent.id)
+  }
+
+  const handleTriageDelete = () => {
+    if (!triageCurrent) return
+    deleteIdea(triageCurrent.id)
+  }
+
+  const handleTriageMoveToProject = () => {
+    if (!triageCurrent) return
+
+    const input = window.prompt(
+      language === 'is' ? 'Settu inn verkefnisnafn (eða id):' : 'Enter project name (or id):'
+    )
+    if (!input) return
+
+    const q = input.trim().toLowerCase()
+    const project = projects.find((p) => p.id.toLowerCase() === q || p.name.toLowerCase().startsWith(q))
+    if (!project) {
+      window.alert(language === 'is' ? 'Verkefni fannst ekki.' : 'Project not found.')
+      return
+    }
+
+    updateIdea(triageCurrent.id, { projectId: project.id, status: 'assigned' })
+  }
+
+  // Keyboard shortcuts in triage
+  useEffect(() => {
+    if (!triageMode) return
+
+    const onKeyDown = (e) => {
+      const activeTag = document.activeElement?.tagName
+      const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)
+      if (isTyping) return
+
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        setTriageMode(false)
+        return
+      }
+
+      const key = e.key?.toLowerCase?.()
+      if (key === 's') {
+        e.preventDefault()
+        nextTriage()
+        return
+      }
+      if (key === 'd') {
+        e.preventDefault()
+        handleTriageDelete()
+        return
+      }
+      if (key === 't') {
+        e.preventDefault()
+        handleTriageConvertToTask()
+        return
+      }
+      if (key === 'p') {
+        e.preventDefault()
+        handleTriageMoveToProject()
+        return
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [triageMode, triageTotal, triageCurrent, language, projects])
 
   const handleAddIdea = (e) => {
     e.preventDefault()
@@ -94,18 +194,36 @@ function IdeasInbox() {
             </p>
           </div>
           
-          <div className="flex gap-4 text-sm">
-            <div className="text-right">
-              <p className="text-2xl font-semibold font-mono text-amber-400">{inboxIdeas.length}</p>
-              <p className="text-2xs text-zinc-500">{t('ideas.inbox')}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-semibold font-mono text-yellow-400">{starredIdeas.length}</p>
-              <p className="text-2xs text-zinc-500">{t('ideas.starred')}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-semibold font-mono text-cyan-400">{linkedIdeas.length}</p>
-              <p className="text-2xs text-zinc-500">{language === 'is' ? 'Tengdar' : 'Linked'}</p>
+          <div className="flex items-center gap-3 text-sm">
+            <button
+              type="button"
+              onClick={() => {
+                setTriageIndex(0)
+                setTriageMode((v) => !v)
+              }}
+              className={`px-3 py-2 rounded-xl border text-xs font-medium transition-all ${
+                triageMode
+                  ? 'bg-amber-500/15 border-amber-500/40 text-amber-300'
+                  : 'bg-dark-800 border-dark-600 text-zinc-400 hover:text-white hover:border-dark-500'
+              }`}
+              title={language === 'is' ? 'GTD triage (eitt í einu)' : 'GTD triage (one at a time)'}
+            >
+              {language === 'is' ? 'Triage' : 'Triage'}
+            </button>
+
+            <div className="flex gap-4">
+              <div className="text-right">
+                <p className="text-2xl font-semibold font-mono text-amber-400">{inboxIdeas.length}</p>
+                <p className="text-2xs text-zinc-500">{t('ideas.inbox')}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-semibold font-mono text-yellow-400">{starredIdeas.length}</p>
+                <p className="text-2xs text-zinc-500">{t('ideas.starred')}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-semibold font-mono text-cyan-400">{linkedIdeas.length}</p>
+                <p className="text-2xs text-zinc-500">{language === 'is' ? 'Tengdar' : 'Linked'}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -190,7 +308,107 @@ function IdeasInbox() {
         </div>
       </form>
 
-      <div className="grid grid-cols-3 gap-6">
+      {triageMode ? (
+        <div className="mt-2 rounded-2xl border border-dark-600 bg-dark-800/40 p-5 animate-fade-in">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-sm font-medium text-zinc-300">{language === 'is' ? 'Triage' : 'Triage'}</h2>
+              <p className="text-xs text-zinc-500 mt-1">
+                {language === 'is'
+                  ? 'T = Task · P = Verkefni · D = Eyða · S = Sleppa · Esc = Hætta'
+                  : 'T = Task · P = Project · D = Delete · S = Skip/Next · Esc = Exit'}
+              </p>
+            </div>
+            <div className="text-xs text-zinc-500 font-mono">
+              {triageTotal === 0 ? '0/0' : `${triageIndex + 1}/${triageTotal}`}
+            </div>
+          </div>
+
+          {triageCurrent ? (
+            <div className="mt-5">
+              <div className="p-4 rounded-xl border border-dark-600 bg-dark-900/40">
+                <div className="flex items-start gap-3">
+                  <div
+                    className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: `${getTypeConfig(triageCurrent.type).color}15` }}
+                  >
+                    {React.createElement(getTypeConfig(triageCurrent.type).icon, {
+                      size: 16,
+                      style: { color: getTypeConfig(triageCurrent.type).color },
+                    })}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium text-white leading-snug">{triageCurrent.title}</div>
+                    <div className="mt-2 flex items-center gap-2 flex-wrap">
+                      {triageCurrent.category && (
+                        <span className="text-2xs px-2 py-0.5 rounded bg-dark-700 text-zinc-300">
+                          {getCategoryLabel(ideaCategories.find((c) => c.id === triageCurrent.category) || { name: triageCurrent.category, nameIs: triageCurrent.category })}
+                        </span>
+                      )}
+                      {triageCurrent.tags?.slice(0, 6).map((tag) => (
+                        <span key={tag} className="text-2xs px-2 py-0.5 rounded-full bg-dark-700 text-zinc-400">
+                          #{tag}
+                        </span>
+                      ))}
+                      {triageCurrent.projectId && (
+                        <span className="text-2xs px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                          {projects.find((p) => p.id === triageCurrent.projectId)?.name || triageCurrent.projectId}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={handleTriageConvertToTask}
+                  className="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-sm font-medium"
+                >
+                  {language === 'is' ? 'T: Breyta í task' : 'T: Convert to task'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleTriageMoveToProject}
+                  className="px-3 py-2 rounded-xl border border-dark-600 bg-dark-800 hover:bg-dark-700 text-zinc-200 text-sm"
+                >
+                  {language === 'is' ? 'P: Flytja í verkefni' : 'P: Move to project'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    nextTriage()
+                  }}
+                  className="px-3 py-2 rounded-xl border border-dark-600 bg-dark-800 hover:bg-dark-700 text-zinc-200 text-sm"
+                >
+                  {language === 'is' ? 'S: Sleppa' : 'S: Skip/Next'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleTriageDelete}
+                  className="px-3 py-2 rounded-xl border border-red-500/40 bg-red-500/10 hover:bg-red-500/15 text-red-300 text-sm"
+                >
+                  {language === 'is' ? 'D: Eyða' : 'D: Delete'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setTriageMode(false)}
+                  className="ml-auto px-3 py-2 rounded-xl border border-dark-600 bg-dark-800 hover:bg-dark-700 text-zinc-400 text-sm"
+                >
+                  {language === 'is' ? 'Hætta (Esc)' : 'Exit (Esc)'}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-6 text-center text-zinc-500">
+              {language === 'is' ? 'Engar hugmyndir í Inbox.' : 'No inbox ideas.'}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-6">
         {/* Inbox */}
         <div className="col-span-2">
           <h2 className="text-sm font-medium text-zinc-400 mb-4 flex items-center gap-2">
@@ -338,6 +556,7 @@ function IdeasInbox() {
           )}
         </div>
       </div>
+      )}
     </div>
   )
 }

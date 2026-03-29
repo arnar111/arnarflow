@@ -20,5 +20,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   readSyncFile: () => ipcRenderer.invoke('read-sync-file'),
 
   // Budget Sync
-  readBudgetSyncFile: () => ipcRenderer.invoke('read-budget-sync-file')
+  readBudgetSyncFile: () => ipcRenderer.invoke('read-budget-sync-file'),
+
+  // Rainmeter Widget Export
+  exportWidgetData: (jsonString) => ipcRenderer.invoke('export-widget-data', jsonString)
 })
