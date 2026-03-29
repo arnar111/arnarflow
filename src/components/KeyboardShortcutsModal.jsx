@@ -25,6 +25,12 @@ function KeyboardShortcutsModal() {
         { keys: ['G', 'I'], description: t('keyboardShortcuts.goToIdeas') },
         { keys: ['G', 'H'], description: t('keyboardShortcuts.goToHabits') },
         { keys: ['G', 'P'], description: t('keyboardShortcuts.goToProjects') },
+        { keys: ['G', 'N'], description: t('keyboardShortcuts.goToNotes') },
+        { keys: ['G', 'C'], description: t('keyboardShortcuts.goToCalendar') },
+        { keys: ['G', 'S'], description: t('keyboardShortcuts.goToStats') },
+        { keys: ['G', 'F'], description: t('keyboardShortcuts.goToFocus') },
+        { keys: ['G', 'B'], description: t('keyboardShortcuts.goToBudget') },
+        { keys: ['G', 'R'], description: t('keyboardShortcuts.goToRoadmap') },
       ]
     },
     {

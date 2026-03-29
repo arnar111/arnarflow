@@ -1,47 +1,13 @@
-import React, { useEffect, useState, lazy, Suspense } from 'react'
+import React, { useEffect, useState, useRef, lazy, Suspense } from 'react'
 import useStore from './store/useStore'
 import TitleBar from './components/TitleBar'
 import Sidebar from './components/Sidebar'
 import Dashboard from './components/Dashboard'
-<<<<<<< HEAD
-=======
-import ProjectView from './components/ProjectView'
-import ProjectsBoard from './components/ProjectsBoard'
-import IdeasInbox from './components/IdeasInbox'
-import HabitsView from './components/HabitsView'
-import CalendarView from './components/CalendarView'
-import QuickAddModal from './components/QuickAddModal'
-import CommandPalette from './components/CommandPalette'
-import SettingsModal from './components/SettingsModal'
-import AddProjectModal from './components/AddProjectModal'
-import KeyboardShortcutsModal from './components/KeyboardShortcutsModal'
-import WhatsNewModal from './components/WhatsNewModal'
-import AboutModal from './components/AboutModal'
-import PomodoroTimer from './components/PomodoroTimer'
-import QuickCaptureBar from './components/QuickCaptureBar'
-import FocusHistory from './components/FocusHistory'
-import WeeklyReview from './components/WeeklyReview'
-import StatsView from './components/StatsView'
-import NotesView from './components/NotesView'
-import BudgetSaver from './components/BudgetSaver'
-import OnboardingModal from './components/OnboardingModal'
-import RecurringTasksModal from './components/RecurringTasksModal'
-import BlaerSync from './components/BlaerSync'
-// v5.0.0 imports
-import TimeTracker from './components/TimeTracker'
-import NotificationSystem, { useNotificationChecker } from './components/NotificationSystem'
-import RoadmapView from './components/RoadmapView'
-import FocusModeView from './components/FocusModeView'
-import CalendarSync from './components/CalendarSync'
-import TaskDetailPanel from './components/TaskDetailPanel'
->>>>>>> blaer/focus-mode-view
 import { ACCENT_COLORS } from './store/useStore'
 import { requestNotificationPermission } from './utils/notifications'
 
-// Eagerly loaded (core shell)
 import QuickCaptureBar from './components/QuickCaptureBar'
 
-// Lazy-loaded views (loaded on navigation)
 const ProjectView = lazy(() => import('./components/ProjectView'))
 const ProjectsBoard = lazy(() => import('./components/ProjectsBoard'))
 const IdeasInbox = lazy(() => import('./components/IdeasInbox'))
@@ -55,7 +21,6 @@ const RoadmapView = lazy(() => import('./components/RoadmapView'))
 const TodayView = lazy(() => import('./components/TodayView'))
 const FocusModeView = lazy(() => import('./components/FocusModeView'))
 
-// Lazy-loaded modals (loaded on open)
 const QuickAddModal = lazy(() => import('./components/QuickAddModal'))
 const CommandPalette = lazy(() => import('./components/CommandPalette'))
 const SettingsModal = lazy(() => import('./components/SettingsModal'))
@@ -72,7 +37,6 @@ const TimeTracker = lazy(() => import('./components/TimeTracker'))
 const CalendarSync = lazy(() => import('./components/CalendarSync'))
 const TaskDetailPanel = lazy(() => import('./components/TaskDetailPanel'))
 
-// NotificationSystem — eagerly imported because useNotificationChecker hook runs at top level
 import NotificationSystem, { useNotificationChecker } from './components/NotificationSystem'
 
 const LazyFallback = () => (
@@ -84,6 +48,7 @@ const LazyFallback = () => (
 function App() {
   const {
     activeView,
+    setActiveView,
     quickAddOpen,
     setQuickAddOpen,
     setQuickIdeaMode,
@@ -128,6 +93,8 @@ function App() {
   const isQuickCaptureOpen = quickCaptureExpanded ?? localQuickCapture
   const toggleQuickCapture = setQuickCaptureExpanded ?? setLocalQuickCapture
   const [weeklyReviewOpen, setWeeklyReviewOpen] = useState(false)
+  const [gKeyPending, setGKeyPending] = useState(false)
+  const gKeyTimer = useRef(null)
 
   const seedProjectTasks = useStore(state => state.seedProjectTasks)
   const recalculateAllStreaks = useStore(state => state.recalculateAllStreaks)
@@ -184,6 +151,39 @@ function App() {
     const handleKeyDown = (e) => {
       const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)
 
+      if (!isTyping && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        if (gKeyPending) {
+          setGKeyPending(false)
+          clearTimeout(gKeyTimer.current)
+          const navMap = {
+            d: 'dashboard',
+            i: 'ideas',
+            h: 'habits',
+            p: 'projects',
+            n: 'notes',
+            c: 'calendar',
+            s: 'stats',
+            f: 'focus',
+            b: 'budget',
+            r: 'roadmap',
+            t: 'today',
+          }
+          const view = navMap[e.key.toLowerCase()]
+          if (view) {
+            e.preventDefault()
+            setActiveView(view)
+            return
+          }
+        }
+        if (e.key === 'g' || e.key === 'G') {
+          if (!gKeyPending) {
+            setGKeyPending(true)
+            gKeyTimer.current = setTimeout(() => setGKeyPending(false), 500)
+            return
+          }
+        }
+      }
+
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
         setQuickIdeaMode(false)
@@ -234,8 +234,11 @@ function App() {
     }
 
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [setQuickAddOpen, setCommandPaletteOpen, setSettingsOpen, setKeyboardShortcutsOpen, setQuickIdeaMode, setTimeTrackerOpen, setNotificationsPanelOpen])
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      if (gKeyTimer.current) clearTimeout(gKeyTimer.current)
+    }
+  }, [gKeyPending, setActiveView, setQuickAddOpen, setCommandPaletteOpen, setSettingsOpen, setKeyboardShortcutsOpen, setQuickIdeaMode, setTimeTrackerOpen, setNotificationsPanelOpen])
 
   useEffect(() => {
     if (!focusStartTime) return
